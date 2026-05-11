@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SARFAESI Console - Cases</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .sidebar-active {
+            background-color: #1e2937;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .stage-pill {
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 500;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        #sidebarOverlay {
+            display: none;
+        }
+
+        #sidebarOverlay.active {
+            display: block;
+        }
+
+        #sidebar {
+            transition: transform 0.25s ease;
+        }
+
+        @media (max-width: 768px) {
+            #sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                z-index: 40;
+                transform: translateX(-100%);
+            }
+
+            #sidebar.open {
+                transform: translateX(0);
+            }
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            font-size: 12.5px;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            padding: 10px 12px !important;
+            font-size: 11px;
+        }
+
+        tbody td {
+            padding: 8px 12px !important;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 min-h-screen">
+
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 md:hidden" onclick="closeSidebar()"></div>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-52 bg-[#0f172a] text-white flex flex-col flex-shrink-0 md:relative md:translate-x-0">
+            <div class="p-4 border-b border-slate-700 flex items-center gap-2">
+                <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-shield-halved text-white text-xs"></i>
+                </div>
+                <div>
+                    <h1 class="text-sm font-semibold tracking-tight">SARFAESI</h1>
+                    <p class="text-slate-400 text-xs">Console</p>
+                </div>
+            </div>
+            <div class="flex-1 py-3">
+                <nav class="px-2 space-y-0.5">
+                    <a href="admin-dashboard"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-gauge-high w-3.5 text-center"></i> Dashboard
+                    </a>
+                    <a href="admin-case"
+                        class="sidebar-active flex items-center gap-2 px-3 py-2 text-white rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-briefcase w-3.5 text-center"></i> Cases
+                    </a>
+                    <a href="admin-reports"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-chart-bar w-3.5 text-center"></i> Reports
+                    </a>
+                    <a href="admin-users"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-users w-3.5 text-center"></i> Users
+                    </a>
+                </nav>
+            </div>
+            <div class="p-3 border-t border-slate-700">
+                <button onclick="logout()"
+                    class="w-full flex items-center justify-center gap-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 py-2 rounded-xl text-xs font-medium">
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Main -->
+        <div class="flex-1 flex flex-col min-w-0">
+            <!-- Topbar -->
+            <div class="bg-white border-b flex items-center justify-between px-4 md:px-5 py-2.5 flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <button class="md:hidden text-slate-500 hover:text-slate-700" onclick="openSidebar()">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h2 class="text-sm font-semibold text-slate-800 hidden sm:block">Bank Legal Case Management System
+                    </h2>
+                    <h2 class="text-sm font-semibold text-slate-800 sm:hidden">BLCMS</h2>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <div class="text-right hidden sm:block">
+                        <p class="font-semibold text-slate-800 text-xs">Anita Verma</p>
+                        <p class="text-xs text-emerald-600">SUPER_ADMIN · All Zones</p>
+                    </div>
+                    <div
+                        class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xs cursor-pointer">
+                        AV</div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 overflow-auto p-3.5 md:p-5">
+
+                <div class="flex justify-between items-center mb-3.5">
+                    <h1 class="text-base font-bold text-slate-800">Cases</h1>
+                    <a href="/new-case"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl flex items-center gap-1.5 text-xs font-semibold transition-all active:scale-95 shadow-sm">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span class="hidden sm:inline">New Case</span>
+                        <span class="sm:hidden">New</span>
+                    </a>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white rounded-2xl shadow-sm p-3 mb-3.5">
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <div class="flex-1 min-w-[150px]">
+                            <div class="relative">
+                                <input id="searchInput" type="text" placeholder="Search account, branch..."
+                                    class="w-full pl-7 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 text-xs">
+                                <i
+                                    class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-slate-400 text-xs"></i>
+                            </div>
+                        </div>
+                        <select id="stageFilter" onchange="filterCases()"
+                            class="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none">
+                            <option value="">All Stages</option>
+                            <option value="Section 13(2)">Sec 13(2)</option>
+                            <option value="Section 13(4)">Sec 13(4)</option>
+                            <option value="Possession">Possession</option>
+                            <option value="Section 14">Section 14</option>
+                            <option value="Sale">Sale</option>
+                            <option value="Close">Close</option>
+                        </select>
+                        <select id="bankFilter" onchange="filterCases()"
+                            class="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none">
+                            <option value="">All Banks</option>
+                            <option value="SBI">SBI</option>
+                            <option value="Punjab National Bank">PNB</option>
+                            <option value="HDFC Bank">HDFC</option>
+                            <option value="ICICI Bank">ICICI</option>
+                            <option value="Axis Bank">Axis</option>
+                           
+                            <option value="IndusInd Bank">IndusInd</option>
+                            <option value="Bank of Baroda">Bank of Baroda</option>
+                            <option value="Canara Bank">Canara Bank</option>
+                            <option value="Union Bank">Union Bank</option>
+                            <option value="Bank of India">Bank of India</option>
+                            <option value="Indian Bank">Indian Bank</option>
+                            <option value="Central Bank of India">Central Bank of India</option>
+                            <option value="Yes Bank">Yes Bank</option>
+                           
+                             
+                        </select>
+                        <select id="zoneFilter" onchange="filterCases()"
+                            class="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none">
+                            <option value="">All Zones</option>
+                            <option value="North">North</option>
+                            <option value="South">South</option>
+                            <option value="East">East</option>
+                            <option value="West">West</option>
+                            <option value="Central">Central</option>
+                        </select>
+                        <button onclick="resetFilters()" title="Reset"
+                            class="px-2.5 py-1.5 text-slate-500 hover:text-slate-700 border border-slate-200 rounded-lg hover:bg-slate-50 text-xs">
+                            <i class="fa-solid fa-rotate"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div class="table-wrap">
+                        <table class="w-full min-w-[540px]">
+                            <thead>
+                                <tr class="border-b bg-slate-50">
+                                    <th class="text-left font-semibold text-slate-500 uppercase tracking-wide">No</th>
+                                    <th class="text-left font-semibold text-slate-500 uppercase tracking-wide">Account
+                                        Name</th>
+                                    <th
+                                        class="text-left font-semibold text-slate-500 uppercase tracking-wide hidden md:table-cell">
+                                        Bank</th>
+                                    <th class="text-left font-semibold text-slate-500 uppercase tracking-wide">Branch
+                                    </th>
+                                    <th class="text-left font-semibold text-slate-500 uppercase tracking-wide">Zone</th>
+                                    <th class="text-left font-semibold text-slate-500 uppercase tracking-wide">Stage
+                                    </th>
+                                    <th class="text-left font-semibold text-slate-500 uppercase tracking-wide">Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="casesTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <p id="caseCount" class="text-xs text-slate-400 mt-2 px-0.5"></p>
+            </div>
+        </div>
+    </div>
+
+  <script>
+    let allCases = [];
+
+    const zoneColor = z => ({
+        North: 'bg-sky-100 text-sky-700',
+        South: 'bg-teal-100 text-teal-700',
+        East: 'bg-violet-100 text-violet-700',
+        West: 'bg-pink-100 text-pink-700',
+        Central: 'bg-slate-200 text-slate-600'
+    }[z] || 'bg-gray-100 text-gray-600');
+
+    const stageColor = s => {
+        if (s.includes('13(4)')) return 'bg-orange-100 text-orange-700';
+        if (s === 'Possession' || s.includes('possession')) return 'bg-blue-100 text-blue-700';
+        if (s.includes('13(2)')) return 'bg-amber-100 text-amber-700';
+        if (s.includes('14')) return 'bg-red-100 text-red-700';
+        if (s.includes('Sale') || s.includes('sale')) return 'bg-emerald-100 text-emerald-700';
+        return 'bg-gray-100 text-gray-600';
+    };
+
+    const stageLabel = s => s.replace('Section ', 'Sec ');
+
+    async function fetchCases() {
+        try {
+         const res = await fetch('/admin-case/data');  // or your API endpoint e.g. '/api/cases'
+            if (!res.ok) throw new Error('Failed to fetch');
+
+            allCases = await res.json();
+
+            // Add SI number (serial)
+            allCases = allCases.map((c, i) => ({
+                ...c,
+                si: allCases.length - i,           // newest gets highest number
+                account: c.accountName,
+                bank: c.bank,
+                branch: c.branch || '-',
+                zone: c.zone,
+                stage: c.currentStage || 'ALLOTMENT'
+            }));
+
+            renderCases(allCases);
+        } catch (err) {
+            console.error(err);
+            document.getElementById('casesTableBody').innerHTML = `
+                <tr><td colspan="7" class="text-center text-red-500 py-8">
+                    Failed to load cases. Please try again.
+                </td></tr>`;
+        }
+    }
+
+    function renderCases(list) {
+        const tbody = document.getElementById('casesTableBody');
+        tbody.innerHTML = '';
+
+        document.getElementById('caseCount').textContent =
+            `${list.length} case${list.length !== 1 ? 's' : ''} found`;
+
+        if (!list.length) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center text-slate-400 py-8 text-xs">No cases found.</td></tr>`;
+            return;
+        }
+
+        list.forEach(c => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50 transition-colors';
+            tr.innerHTML = `
+                <td class="font-medium text-slate-400">${c.si}</td>
+                <td class="font-semibold text-slate-800">${c.account}</td>
+                <td class="text-slate-500 hidden md:table-cell">${c.bank}</td>
+                <td class="text-slate-600">${c.branch}</td>
+                <td><span class="stage-pill ${zoneColor(c.zone)}">${c.zone}</span></td>
+                <td><span class="stage-pill ${stageColor(c.stage)}">${stageLabel(c.stage)}</span></td>
+                <td>
+                    <button onclick="viewCase('${c._id}')" 
+                            class="text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1 text-xs">
+                        <i class="fa-solid fa-eye text-xs"></i> View
+                    </button>
+                </td>`;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function filterCases() {
+        const q = document.getElementById('searchInput').value.toLowerCase().trim();
+        const sf = document.getElementById('stageFilter').value;
+        const bf = document.getElementById('bankFilter').value;
+        const zf = document.getElementById('zoneFilter').value;
+
+        const filtered = allCases.filter(c =>
+            (!q ||
+                c.account?.toLowerCase().includes(q) ||
+                c.branch?.toLowerCase().includes(q) ||
+                c.bank?.toLowerCase().includes(q)
+            ) &&
+            (!sf || c.stage === sf) &&
+            (!bf || c.bank === bf) &&
+            (!zf || c.zone === zf)
+        );
+
+        renderCases(filtered);
+    }
+
+    function resetFilters() {
+        ['searchInput', 'stageFilter', 'bankFilter', 'zoneFilter'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+        renderCases(allCases);
+    }
+
+    function viewCase(id) {
+        window.location.href = `/case-view/${id}`;   // create this route later
+        // alert(`Viewing case ID: ${id}`);
+    }
+
+    // Success message from redirect
+    function showSuccessMessage() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success') === 'true') {
+            const msg = document.createElement('div');
+            msg.className = "bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-4 text-sm";
+            msg.innerHTML = `✅ New case added successfully!`;
+            document.querySelector('.flex-1.overflow-auto').prepend(msg);
+
+            // Remove success param from URL
+            setTimeout(() => {
+                window.history.replaceState({}, '', '/admin-case');
+                msg.remove();
+            }, 4000);
+        }
+    }
+
+    window.onload = () => {
+        fetchCases();
+        showSuccessMessage();
+
+        document.getElementById('searchInput').addEventListener('input', filterCases);
+    };
+
+            function logout() {
+                    if (confirm('Logout?')) window.location.href = '/';
+                }
+
+                function openSidebar() {
+                    document.getElementById('sidebar').classList.add('open');
+                    document.getElementById('sidebarOverlay').classList.add('active');
+                }
+
+                function closeSidebar() {
+                    document.getElementById('sidebar').classList.remove('open');
+                    document.getElementById('sidebarOverlay').classList.remove('active');
+                }
+</script>
+</body>
+
+</html>

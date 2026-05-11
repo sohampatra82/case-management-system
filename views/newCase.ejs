@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SARFAESI Console - New Case</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .sidebar-active {
+            background-color: #1e2937;
+            border-left: 3px solid #3b82f6;
+        }
+
+        #sidebarOverlay {
+            display: none;
+        }
+
+        #sidebarOverlay.active {
+            display: block;
+        }
+
+        #sidebar {
+            transition: transform 0.25s ease;
+        }
+
+        @media (max-width: 768px) {
+            #sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                z-index: 40;
+                transform: translateX(-100%);
+            }
+
+            #sidebar.open {
+                transform: translateX(0);
+            }
+        }
+
+        .input {
+            @apply w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 min-h-screen">
+
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 md:hidden" onclick="closeSidebar()"></div>
+
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-52 bg-[#0f172a] text-white flex flex-col flex-shrink-0 md:relative md:translate-x-0">
+
+            <div class="p-4 border-b border-slate-700 flex items-center gap-2">
+                <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved text-xs"></i>
+                </div>
+                <div>
+                    <h1 class="text-sm font-semibold">SARFAESI</h1>
+                    <p class="text-slate-400 text-xs">Console</p>
+                </div>
+            </div>
+
+            <div class="flex-1 py-3">
+                <nav class="px-2 space-y-0.5">
+                    <a href="/admin-dashboard"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs">
+                        <i class="fa-solid fa-gauge-high w-3.5"></i> Dashboard
+                    </a>
+
+                    <a href="/admin-case"
+                        class="sidebar-active flex items-center gap-2 px-3 py-2 text-white rounded-lg text-xs">
+                        <i class="fa-solid fa-briefcase w-3.5"></i> Cases
+                    </a>
+
+                    <a href="/admin-reports"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs">
+                        <i class="fa-solid fa-chart-bar w-3.5"></i> Reports
+                    </a>
+
+                    <a href="/admin-users"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs">
+                        <i class="fa-solid fa-users w-3.5"></i> Users
+                    </a>
+                </nav>
+            </div>
+
+            <div class="p-3 border-t border-slate-700">
+                <button onclick="logout()"
+                    class="w-full flex items-center justify-center gap-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 py-2 rounded-xl text-xs">
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Main -->
+        <div class="flex-1 flex flex-col min-w-0">
+
+            <!-- Topbar -->
+            <div class="bg-white border-b flex items-center justify-between px-4 md:px-5 py-2.5">
+                <div class="flex items-center gap-3">
+                    <button class="md:hidden text-slate-500" onclick="openSidebar()">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h2 class="text-sm font-semibold text-slate-800 hidden sm:block">
+                        Bank Legal Case Management System
+                    </h2>
+                    <h2 class="text-sm font-semibold sm:hidden">BLCMS</h2>
+                </div>
+
+                <div class="flex items-center gap-2.5">
+                    <div class="text-right hidden sm:block">
+                        <p class="font-semibold text-slate-800 text-xs">Anita Verma</p>
+                        <p class="text-xs text-emerald-600">SUPER_ADMIN</p>
+                    </div>
+                    <div
+                        class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xs">
+                        AV
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 overflow-auto p-4 md:p-6 space-y-4">
+            
+                <!-- Header -->
+                <!-- <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-lg font-bold text-slate-800">Create New Case</h1>
+                        <p class="text-sm text-slate-500">Enter basic details first, then update legal stages</p>
+                    </div>
+            
+                    <button type="submit" id="submitBtn"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Save Case
+                    </button>
+                </div> -->
+            
+                <!-- Step 1 -->
+   <!-- JUST CHANGE THIS -->
+<form action="/new-case" method="POST" class="max-w-5xl mx-auto text-sm">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+
+        <div>
+            <h1 class="text-lg font-semibold text-slate-800">
+                Create New Case
+            </h1>
+
+            <p class="text-sm text-slate-500 mt-1">
+                Fill all mandatory fields to register a new SARFAESI case
+            </p>
+        </div>
+
+        <button type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm transition">
+            <i class="fa-solid fa-floppy-disk text-sm"></i>
+            Save Case
+        </button>
+
+    </div>
+
+    <!-- Step 1 -->
+    <div class="bg-white rounded-3xl shadow p-6 mb-6">
+
+        <h2 class="text-base font-semibold text-blue-600 mb-5 flex items-center gap-2">
+            <i class="fa-solid fa-user text-sm"></i>
+            Identity & Assignment
+        </h2>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Account Name
+                    <span class="text-red-500">*</span>
+                </label>
+
+                <input type="text" name="accountName" required placeholder="e.g. ACME Corp"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:border-blue-500 outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Bank
+                    <span class="text-red-500">*</span>
+                </label>
+
+                <select name="bank" required
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                    <option value="">Select Bank</option>
+                    <option>Punjab National Bank</option>
+                    <option>SBI</option>
+                    <option>HDFC</option>
+                    <option>ICICI</option>
+                    <option>Axis Bank</option>
+                    <option>Bank of Baroda</option>
+                    <option>Canara Bank</option>
+                    <option>Union Bank</option>
+                    <option>Bank of India</option>
+                    <option>Indian Bank</option>
+                    <option>Central Bank of India</option>
+                    <option>Yes Bank</option>
+                  <option>Bank of India</option>
+             
+                   
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Zone
+                    <span class="text-red-500">*</span>
+                </label>
+
+                <select name="zone" required
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                    <option value="">Select Zone</option>
+                    <option>North</option>
+                    <option>South</option>
+                    <option>East</option>
+                    <option>West</option>
+                    <option>Central</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Region
+                </label>
+
+                <input type="text" name="region" placeholder="Delhi"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Branch
+                </label>
+
+                <input type="text" name="branch" placeholder="Connaught Place"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Current Stage
+                </label>
+
+                <select name="currentStage"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                    <option>ALLOTMENT</option>
+                    <option>Section 13(2)</option>
+                    <option>Section 13(4)</option>
+                    <option>Section 14</option>
+                    <option>Possession</option>
+                    <option>Sale</option>
+                    <option>Close</option>
+                </select>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Step 2 -->
+    <div class="bg-white rounded-3xl shadow p-6 mb-6">
+
+        <h2 class="text-base font-semibold text-blue-600 mb-5">
+            Legal Timeline
+        </h2>
+
+        <div class="grid md:grid-cols-3 gap-5">
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Allotment Date
+                </label>
+
+                <input type="date" name="allotmentDate"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    13(2) Notice Date
+                </label>
+
+                <input type="date" name="noticeDate13_2"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Ack Date
+                </label>
+
+                <input type="date" name="ackDate"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    13(4) Notice Date
+                </label>
+
+                <input type="date" name="noticeDate13_4"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Publication Date
+                </label>
+
+                <input type="date" name="publicationDate"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Step 3 -->
+    <div class="bg-white rounded-3xl shadow p-6 mb-6">
+
+        <h2 class="text-base font-semibold text-blue-600 mb-5">
+            Section 14 & Court Proceedings
+        </h2>
+
+        <div class="grid md:grid-cols-3 gap-5">
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Court
+                </label>
+
+                <input type="text" name="court"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Filed By
+                </label>
+
+                <input type="text" name="filedBy"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Application Date
+                </label>
+
+                <input type="date" name="applicationDate"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Filing Date
+                </label>
+
+                <input type="date" name="filingDate"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Hearing Date
+                </label>
+
+                <input type="date" name="hearingDate"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Order Date
+                </label>
+
+                <input type="date" name="orderDate"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div class="md:col-span-3">
+                <label class="block text-slate-700 font-medium mb-2">
+                    Advocate Commissioner
+                </label>
+
+                <input type="text" name="advocateCommissioner"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Step 4 -->
+    <div class="bg-white rounded-3xl shadow p-6 mb-6">
+
+        <h2 class="text-base font-semibold text-blue-600 mb-5">
+            Police, Possession & Sale
+        </h2>
+
+        <div class="grid md:grid-cols-3 gap-5">
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Police Letter Date
+                </label>
+
+                <input type="date" name="policeLetterDate"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Cost Receive Date
+                </label>
+
+                <input type="date" name="costReceiveDate"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Cost Deposit Date
+                </label>
+
+                <input type="date" name="costDepositDate"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Pre-Intimation Date
+                </label>
+
+                <input type="date" name="preIntimationDate"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Possession Date
+                </label>
+
+                <input type="date" name="possessionDate"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+            <div>
+                <label class="block text-slate-700 font-medium mb-2">
+                    Sale Date
+                </label>
+
+                <input type="date" name="saleDate"
+                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Remarks -->
+    <div class="bg-white rounded-3xl shadow p-6">
+
+        <h2 class="text-base font-semibold text-blue-600 mb-4">
+            Initial Remarks
+        </h2>
+
+        <textarea name="initialRemarks" rows="5" placeholder="Add important notes or case remarks..."
+            class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl resize-y outline-none"></textarea>
+
+    </div>
+
+</form>
+            </div>
+        </div>
+    </div>
+
+  <script>
+    let allCases = [];
+
+    // Color & Label Helpers
+    const zoneColor = z => ({ North: 'bg-sky-100 text-sky-700', South: 'bg-teal-100 text-teal-700', East: 'bg-violet-100 text-violet-700', West: 'bg-pink-100 text-pink-700', Central: 'bg-slate-200 text-slate-600' }[z] || 'bg-gray-100 text-gray-600');
+
+    const stageColor = s => {
+        if (!s) return 'bg-gray-100 text-gray-600';
+        if (s.includes('13(4)')) return 'bg-orange-100 text-orange-700';
+        if (s.includes('13(2)')) return 'bg-amber-100 text-amber-700';
+        if (s.includes('Possession')) return 'bg-blue-100 text-blue-700';
+        if (s.includes('14')) return 'bg-red-100 text-red-700';
+        if (s.includes('Sale')) return 'bg-emerald-100 text-emerald-700';
+        return 'bg-gray-100 text-gray-600';
+    };
+
+    async function fetchCases() {
+        const tbody = document.getElementById('casesTableBody');
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-12"><i class="fa-solid fa-spinner fa-spin text-blue-500 text-xl"></i></td></tr>`;
+
+        try {
+            const response = await fetch('/admin-case');   // Change to '/api/cases' if needed
+
+            if (!response.ok) throw new Error('Server error');
+
+            const data = await response.json();
+            console.log("📥 Cases received from backend:", data);
+
+            allCases = data.map((c, index) => ({
+                ...c,
+                si: data.length - index,
+                account: c.accountName || 'N/A',
+                bank: c.bank || 'N/A',
+                branch: c.branch || '-',
+                zone: c.zone || 'N/A',
+                stage: c.currentStage || 'ALLOTMENT'
+            }));
+
+            renderCases(allCases);
+
+        } catch (error) {
+            console.error("Fetch error:", error);
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center text-red-500 py-12 text-sm">
+                        ❌ Failed to load cases<br>
+                        <small>Check console (F12) and make sure backend is running</small>
+                    </td>
+                </tr>`;
+        }
+    }
+
+    function renderCases(list) {
+        const tbody = document.getElementById('casesTableBody');
+        tbody.innerHTML = '';
+
+        document.getElementById('caseCount').textContent = `${list.length} case${list.length !== 1 ? 's' : ''} found`;
+
+        if (list.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center text-slate-400 py-12">No cases found</td></tr>`;
+            return;
+        }
+
+        list.forEach(c => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50';
+            tr.innerHTML = `
+                <td class="font-medium text-slate-400">${c.si}</td>
+                <td class="font-semibold text-slate-800">${c.account}</td>
+                <td class="text-slate-500 hidden md:table-cell">${c.bank}</td>
+                <td class="text-slate-600">${c.branch}</td>
+                <td><span class="stage-pill ${zoneColor(c.zone)}">${c.zone}</span></td>
+                <td><span class="stage-pill ${stageColor(c.stage)}">${c.stage}</span></td>
+                <td>
+                    <button onclick="viewCase('${c._id}')" class="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 text-xs">
+                        <i class="fa-solid fa-eye"></i> View
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function filterCases() {
+        const q = document.getElementById('searchInput').value.toLowerCase().trim();
+        const filtered = allCases.filter(c =>
+            !q ||
+            c.account.toLowerCase().includes(q) ||
+            (c.branch && c.branch.toLowerCase().includes(q))
+        );
+        renderCases(filtered);
+    }
+
+    function viewCase(id) {
+        if (id) window.location.href = `/case-view/${id}`;
+        else alert("Case ID not found");
+    }
+
+    // Show success message
+    function checkSuccess() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('success') === 'true') {
+            const div = document.createElement('div');
+            div.className = "bg-green-50 border border-green-300 text-green-700 px-4 py-3 rounded-2xl mb-4 text-sm";
+            div.textContent = "✅ New case created successfully!";
+            document.querySelector('.flex-1.overflow-auto').prepend(div);
+
+            setTimeout(() => div.remove(), 5000);
+            window.history.replaceState({}, '', '/admin-case');
+        }
+    }
+
+    // Initialize
+    window.onload = () => {
+        fetchCases();
+        checkSuccess();
+        document.getElementById('searchInput').addEventListener('input', filterCases);
+    };
+
+            function logout() {
+                    if (confirm('Logout?')) window.location.href = '/';
+                }
+
+                function openSidebar() {
+                    document.getElementById('sidebar').classList.add('open');
+                    document.getElementById('sidebarOverlay').classList.add('active');
+                }
+
+                function closeSidebar() {
+                    document.getElementById('sidebar').classList.remove('open');
+                    document.getElementById('sidebarOverlay').classList.remove('active');
+                }
+</script>
+
+</body>
+
+</html>

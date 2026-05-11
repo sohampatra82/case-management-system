@@ -1,0 +1,3 @@
+a8yOgZ9pjcOljJI6
+
+mongodb+srv://case-manage:a8yOgZ9pjcOljJI6@cluster0.3zlr9.mongodb.net/

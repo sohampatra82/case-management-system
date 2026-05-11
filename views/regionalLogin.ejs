@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - CaseFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-box {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            padding: 2rem 1.8rem;
+        }
+
+        .logo {
+            width: 55px;
+            height: 55px;
+            background: #1e40af;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+        }
+
+        .dept-heading {
+            text-align: center;
+            font-size: 1.45rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.3rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.92rem;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            border-color: #1e40af;
+            outline: none;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            cursor: pointer;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 13px;
+            background: #1e40af;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-top: 0.8rem;
+            cursor: pointer;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.6rem;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 1.8rem;
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-box">
+
+
+        <!-- Department / Role Heading -->
+        <h1 id="deptHeading" class="dept-heading">Regional User Login</h1>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Username / Email</label>
+                <input type="text" id="username" placeholder="Enter username or email" required>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <div class="password-container">
+                    <input type="password" id="password" placeholder="Enter password" required>
+                    <!-- <i class="fas fa-eye toggle-password" id="togglePassword"></i> -->
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn">Sign In</button>
+        </form>
+
+        <a href="/" class="back-link">← Back to Role Selection</a>
+
+        <div class="footer">
+            © 2026 CaseFlow
+        </div>
+    </div>
+
+    <!-- <script>
+        const selectedRole = localStorage.getItem('selectedRole') || 'super-admin';
+
+        const roleData = {
+            'super-admin': "Super Admin Login",
+            'zonal-user': "Zonal User Login",
+            'branch-user': "Branch User Login",
+            'regional-admin': "Regional Admin Login"
+        };
+
+        // Set dynamic heading
+        document.getElementById('deptHeading').textContent = roleData[selectedRole] || "Login";
+
+        // Password Toggle
+        const passInput = document.getElementById('password');
+        const toggleBtn = document.getElementById('togglePassword');
+
+        toggleBtn.addEventListener('click', () => {
+            if (passInput.type === "password") {
+                passInput.type = "text";
+                toggleBtn.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                passInput.type = "password";
+                toggleBtn.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        });
+
+        // Form Submit
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert(`Login Successful as ${document.getElementById('deptHeading').textContent}`);
+        });
+    </script> -->
+</body>
+
+</html>
