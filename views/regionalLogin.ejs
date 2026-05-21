@@ -131,22 +131,19 @@
         <!-- Department / Role Heading -->
         <h1 id="deptHeading" class="dept-heading">Regional User Login</h1>
 
-        <form id="loginForm">
-            <div class="form-group">
-                <label>Username / Email</label>
-                <input type="text" id="username" placeholder="Enter username or email" required>
-            </div>
-
-            <div class="form-group">
-                <label>Password</label>
-                <div class="password-container">
-                    <input type="password" id="password" placeholder="Enter password" required>
-                    <!-- <i class="fas fa-eye toggle-password" id="togglePassword"></i> -->
-                </div>
-            </div>
-
-            <button type="submit" class="login-btn">Sign In</button>
-        </form>
+    <form action="/regional-login" method="POST">
+        <div class="form-group">
+            <label>Login ID / Email</label>
+            <input type="text" name="loginId" placeholder="Enter Login ID or Email" required>
+        </div>
+    
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Enter password" required>
+        </div>
+    
+        <button type="submit" class="login-btn">Sign In</button>
+    </form>
 
         <a href="/" class="back-link">← Back to Role Selection</a>
 

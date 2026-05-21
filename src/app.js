@@ -3,9 +3,11 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
-
+const bcrypt = require("bcrypt");
+const AdminModel = require("./models/Admin.model");
+const session = require("express-session");
 const NewCaseModel = require("../src/models/NewCase.model");
-
+const ZonalModel = require("../src/models/ZonalSignUp.model");
 const path = require('path') //REQUIRE PATH
 app.set('view engine', 'ejs') //SET VIEW ENGINE TO EJS
 app.use(express.json()) //USE JSON
@@ -13,6 +15,22 @@ app.use(express.urlencoded({ extended: true })) //USE URL ENCODED
 app.use(express.static(path.join(__dirname, 'public'))); //USE STATIC FILES
 
 app.use(express.static("public"));
+
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "your-super-secret-key-12345",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false,
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000
+    }
+  })
+);
+
+
 // Routes
 
 const Homerouter = require('./routes/home.routes')
@@ -25,6 +43,13 @@ const caseRouter = require("./routes/Admincase.routes");
 const AdminReportsrouterd = require("./routes/AdminReports.routes");
 const AdminUsersouterd = require("./routes/AdminUser.routes");
 const NewCase = require("./routes/NewCase.routes");
+const  CreateAccountRouter = require("./routes/CreateAccount.routes");
+const  AdminChangePassword = require("./routes/AdminChangePassword.routes");
+const  CreateZonal = require("./routes/CreateZonal.routes");
+const  CreateBranch = require("./routes/CreateBranch.routes");
+const  CreateRegional = require("./routes/CreateRegional.routes");
+const caseViewRouter = require("./routes/CaseView.routes");
+const AllLoginRouter = require("./routes/AllLogin.routes");
 
 
 app.use("/", Homerouter);
@@ -38,8 +63,51 @@ app.use("/admin-reports", AdminReportsrouterd);
 app.use("/admin-users", AdminUsersouterd);
 app.use("/new-case", NewCase);
 app.use('/admin-case', caseRouter);     // ← This is what we are using
+app.use("/create-accounts", CreateAccountRouter);     // ← This is what we are using
+app.use("/admin-change-password", AdminChangePassword);     // ← This is what we are using
+app.use("/create-account-zonal", CreateZonal);     // ← This is what we are using
+app.use("/create-account-branch", CreateBranch);     // ← This is what we are using
+app.use("/create-account-regional", CreateRegional);     // ← This is what we are using
+app.use("/case-view", caseViewRouter);
+app.use("/login", AllLoginRouter);
+app.use(
+  "/admin-change-password",
+  require("./routes/AdminChangePassword.routes")
+);
 
 
+
+async function initSuperAdmin() {
+  try {
+    const existing = await AdminModel.findOne({
+      username: "ADMIN"
+    });
+
+    if (existing) {
+      console.log("✅ Default Admin already exists");
+      return;
+    }
+
+    const hashed = await bcrypt.hash("Admin@12345", 12);
+
+    await AdminModel.create({
+      username: "ADMIN",
+      password: hashed,
+      fullName: "Super Admin",
+      role: "SUPER_ADMIN",
+      status: "active"
+    });
+
+    console.log("🎉 Default Super Admin Created!");
+    console.log("Username: ADMIN");
+    console.log("Password: Admin@12345");
+  } catch (err) {
+    console.error("Error creating super admin:", err.message);
+  }
+}
+
+// Run only once when server starts
+initSuperAdmin();
 
 
 

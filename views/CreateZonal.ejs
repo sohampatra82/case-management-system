@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SARFAESI Console</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .sidebar-active {
+            background-color: #1e2937;
+            border-left: 3px solid #3b82f6;
+        }
+
+        #sidebarOverlay {
+            display: none;
+        }
+
+        #sidebarOverlay.active {
+            display: block;
+        }
+
+        #sidebar {
+            transition: transform 0.25s ease;
+        }
+
+        @media (max-width: 768px) {
+            #sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                z-index: 40;
+                transform: translateX(-100%);
+            }
+
+            #sidebar.open {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 min-h-screen">
+
+    <!-- Mobile Overlay -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 md:hidden" onclick="closeSidebar()"></div>
+
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-52 bg-[#0f172a] text-white flex flex-col flex-shrink-0 md:relative md:translate-x-0">
+
+            <!-- Logo -->
+            <div class="p-4 border-b border-slate-700 flex items-center gap-2">
+                <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved text-xs"></i>
+                </div>
+                <div>
+                    <h1 class="text-sm font-semibold tracking-tight">SARFAESI</h1>
+                    <p class="text-slate-400 text-xs">Console</p>
+                </div>
+            </div>
+
+            <!-- Nav -->
+            <div class="flex-1 py-3">
+                <nav class="px-2 space-y-0.5">
+
+                    <a href="/admin-dashboard"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-gauge-high w-3.5 text-center"></i>
+                        Dashboard
+                    </a>
+
+                    <a href="/admin-case"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-briefcase w-3.5 text-center"></i>
+                        Cases
+                    </a>
+
+                    <a href="/admin-reports"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-chart-bar w-3.5 text-center"></i>
+                        Reports
+                    </a>
+
+                    <a href="/admin-users"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-users w-3.5 text-center"></i>
+                        Users
+                    </a>
+
+                </nav>
+            </div>
+
+            <!-- Logout -->
+            <div class="p-3 border-t border-slate-700">
+                <button onclick="logout()"
+                    class="w-full flex items-center justify-center gap-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 py-2 rounded-xl text-xs font-medium">
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Main -->
+        <div class="flex-1 flex flex-col min-w-0">
+
+            <!-- Topbar -->
+            <div class="bg-white border-b flex items-center justify-between px-4 md:px-5 py-2.5">
+
+                <div class="flex items-center gap-3">
+                    <button class="md:hidden text-slate-500 hover:text-slate-700" onclick="openSidebar()">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+
+                    <h2 class="text-sm font-semibold text-slate-800 hidden sm:block">
+                        Bank Legal Case Management System
+                    </h2>
+
+                    <h2 class="text-sm font-semibold text-slate-800 sm:hidden">
+                        BLCMS
+                    </h2>
+                </div>
+
+                <div class="flex items-center gap-2.5">
+                    <div class="text-right hidden sm:block">
+                        <p class="font-semibold text-slate-800 text-xs">
+                            Anita Verma
+                        </p>
+                        <p class="text-xs text-emerald-600">
+                            SUPER_ADMIN · All Zones
+                        </p>
+                    </div>
+
+                    <div
+                        class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xs cursor-pointer">
+                        AV
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE CONTENT START -->
+                    <!-- PAGE CONTENT START -->
+                            <!-- PAGE CONTENT START -->
+                        <div class="flex-1 overflow-auto p-6">
+                            <div class="max-w-2xl mx-auto">
+                        
+                                <!-- Header -->
+                                <div class="mb-6">
+                                    <h1 class="text-xl font-semibold text-slate-800">
+                                        Create Zonal User
+                                    </h1>
+                        
+                                    <p class="text-slate-500 text-sm">
+                                        Add new Zonal Admin / Manager login credentials
+                                    </p>
+                                </div>
+                        
+                                <!-- Card -->
+                                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                        
+                                    <!-- FORM -->
+                                    <form action="/create-account-zonal/create-zonal-user" method="POST" class="space-y-6">
+                        
+                                        <!-- Full Name -->
+                                        <div>
+                                            <label class="block text-xs font-medium text-slate-500 mb-1.5">
+                                                Full Name <span class="text-red-500">*</span>
+                                            </label>
+                        
+                                            <input name="fullName" type="text" required placeholder="Enter full name"
+                                                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                                        </div>
+                        
+                                        <!-- Login ID -->
+                                        <div>
+                                            <label class="block text-xs font-medium text-slate-500 mb-1.5">
+                                                Login ID <span class="text-red-500">*</span>
+                                            </label>
+                        
+                                            <input name="loginId" type="text" required placeholder="Enter unique Login ID (e.g. ZONAL001)"
+                                                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                                        </div>
+                        
+                                      
+            
+                                        <!-- Email -->
+                                        <div>
+                                            <label class="block text-xs font-medium text-slate-500 mb-1.5">
+                                                Email Address
+                                            </label>
+                        
+                                            <input name="email" type="email" placeholder="user@example.com"
+                                                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                                        </div>
+                        
+                                        <!-- Role -->
+                                        <div>
+                                            <label class="block text-xs font-medium text-slate-500 mb-1.5">
+                                                Role
+                                            </label>
+                        
+                                            <select name="role"
+                                                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                        
+                                                <option value="">Select Role</option>
+                                                <option value="zonal" selected>Zonal</option>
+                                                <option value="regional">Regional</option>
+                                                <option value="branch">Branch</option>
+                                            </select>
+                                        </div>
+                        
+                                        <!-- Access Level / Zone -->
+                                        <div>
+                                            <label class="block text-xs font-medium text-slate-500 mb-1.5">
+                                                Access Level (Zone)
+                                            </label>
+                        
+                                            <select name="zone"
+                                                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                        
+                                                <option value="">Select Zone</option>
+                                                <option value="north">North Zone</option>
+                                                <option value="south">South Zone</option>
+                                                <option value="east">East Zone</option>
+                                                <option value="west" selected>West Zone</option>
+                                                <option value="central">Central Zone</option>
+                                                <option value="all">All Zones</option>
+                                            </select>
+                                        </div>
+                        
+                                        <!-- Password -->
+                                        <div>
+                                            <label class="block text-xs font-medium text-slate-500 mb-1.5">
+                                                Password
+                                            </label>
+                        
+                                            <input name="password" type="password" required placeholder="Create strong password"
+                                                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                                        </div>
+                        
+                                        <!-- Confirm Password -->
+                                        <div>
+                                            <label class="block text-xs font-medium text-slate-500 mb-1.5">
+                                                Confirm Password
+                                            </label>
+                        
+                                            <input name="confirmPassword" type="password" required placeholder="Confirm password"
+                                                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                                        </div>
+                        
+                                        <!-- Submit Button -->
+                                        <button type="submit"
+                                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3.5 rounded-2xl text-sm transition-colors flex items-center justify-center gap-2">
+                        
+                                            <i class="fa-solid fa-user-plus"></i>
+                                            Create Zonal User
+                                        </button>
+                        
+                                    </form>
+                                </div>
+                        
+                                <!-- Change Password Button -->
+                                <div class="mt-6">
+                                    <!-- <button type="button" onclick="showChangePassword()"
+                                        class="w-full flex items-center justify-center gap-2 border border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-800 font-medium py-3.5 rounded-2xl text-sm transition-colors">
+                        <a href="/change-password-zonal">
+                                        <i class="fa-solid fa-key"></i>
+                                        Change Password for Existing User </a>
+                                    </button> -->
+                                </div>
+                        
+                                <!-- Note -->
+                                <div class="mt-6 text-xs text-slate-500 bg-slate-50 border border-slate-100 rounded-2xl p-4">
+                                    <p class="font-medium text-slate-600 mb-1">Note:</p>
+                        
+                                    <p>
+                                        • Login ID should be unique for each user.<br>
+                                        • New user will receive login credentials via email.<br>
+                                        • Password must be at least 8 characters with mix of letters,
+                                        numbers & symbols.
+                                    </p>
+                                </div>
+                        
+                            </div>
+                        </div>
+                            <!-- PAGE CONTENT END -->
+                    <!-- PAGE CONTENT END -->
+
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            if (confirm('Logout?')) window.location.href = '/';
+        }
+
+        function openSidebar() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('sidebarOverlay').classList.add('active');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+        }
+    </script>
+
+</body>
+
+</html>

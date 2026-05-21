@@ -182,7 +182,7 @@
                             <option value="">All Banks</option>
                             <option value="SBI">SBI</option>
                             <option value="Punjab National Bank">PNB</option>
-                            <option value="HDFC Bank">HDFC</option>
+                            <option value="HDFC">HDFC</option>
                             <option value="ICICI Bank">ICICI</option>
                             <option value="Axis Bank">Axis</option>
                            
@@ -243,7 +243,7 @@
         </div>
     </div>
 
-  <script>
+<script>
     let allCases = [];
 
     const zoneColor = z => ({
@@ -255,41 +255,50 @@
     }[z] || 'bg-gray-100 text-gray-600');
 
     const stageColor = s => {
-        if (s.includes('13(4)')) return 'bg-orange-100 text-orange-700';
-        if (s === 'Possession' || s.includes('possession')) return 'bg-blue-100 text-blue-700';
-        if (s.includes('13(2)')) return 'bg-amber-100 text-amber-700';
-        if (s.includes('14')) return 'bg-red-100 text-red-700';
-        if (s.includes('Sale') || s.includes('sale')) return 'bg-emerald-100 text-emerald-700';
+        if (s?.includes('13(4)')) return 'bg-orange-100 text-orange-700';
+        if (s === 'Possession' || s?.toLowerCase().includes('possession')) return 'bg-blue-100 text-blue-700';
+        if (s?.includes('13(2)')) return 'bg-amber-100 text-amber-700';
+        if (s?.includes('14')) return 'bg-red-100 text-red-700';
+        if (s?.toLowerCase().includes('sale')) return 'bg-emerald-100 text-emerald-700';
         return 'bg-gray-100 text-gray-600';
     };
 
-    const stageLabel = s => s.replace('Section ', 'Sec ');
-
     async function fetchCases() {
+        const tbody = document.getElementById('casesTableBody');
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-12">
+            <div class="animate-spin w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full mx-auto"></div>
+        </td></tr>`;
+
         try {
-         const res = await fetch('/admin-case/data');  // or your API endpoint e.g. '/api/cases'
-            if (!res.ok) throw new Error('Failed to fetch');
+            const res = await fetch('/admin-case/data');
 
-            allCases = await res.json();
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-            // Add SI number (serial)
-            allCases = allCases.map((c, i) => ({
+            const data = await res.json();
+            allCases = data.map((c, i) => ({
                 ...c,
-                si: allCases.length - i,           // newest gets highest number
-                account: c.accountName,
-                bank: c.bank,
+                si: data.length - i,                    // Fixed
+                account: c.accountName || 'N/A',
+                bank: c.bank || 'N/A',
                 branch: c.branch || '-',
-                zone: c.zone,
+                zone: c.zone || 'Unknown',
                 stage: c.currentStage || 'ALLOTMENT'
             }));
 
             renderCases(allCases);
         } catch (err) {
             console.error(err);
-            document.getElementById('casesTableBody').innerHTML = `
-                <tr><td colspan="7" class="text-center text-red-500 py-8">
-                    Failed to load cases. Please try again.
-                </td></tr>`;
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center text-red-500 py-12">
+                        Failed to load cases.<br>
+                        <small class="text-slate-500">${err.message}</small><br><br>
+                        <button onclick="fetchCases()" 
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">
+                            Retry
+                        </button>
+                    </td>
+                </tr>`;
         }
     }
 
@@ -301,7 +310,7 @@
             `${list.length} case${list.length !== 1 ? 's' : ''} found`;
 
         if (!list.length) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center text-slate-400 py-8 text-xs">No cases found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center text-slate-400 py-12">No cases found.</td></tr>`;
             return;
         }
 
@@ -313,12 +322,12 @@
                 <td class="font-semibold text-slate-800">${c.account}</td>
                 <td class="text-slate-500 hidden md:table-cell">${c.bank}</td>
                 <td class="text-slate-600">${c.branch}</td>
-                <td><span class="stage-pill ${zoneColor(c.zone)}">${c.zone}</span></td>
-                <td><span class="stage-pill ${stageColor(c.stage)}">${stageLabel(c.stage)}</span></td>
+                <td><span class="stage-pill px-3 py-1 rounded-full text-xs font-medium ${zoneColor(c.zone)}">${c.zone}</span></td>
+                <td><span class="stage-pill px-3 py-1 rounded-full text-xs font-medium ${stageColor(c.stage)}">${c.stage.replace('Section ', 'Sec ')}</span></td>
                 <td>
                     <button onclick="viewCase('${c._id}')" 
                             class="text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1 text-xs">
-                        <i class="fa-solid fa-eye text-xs"></i> View
+                        <i class="fa-solid fa-eye"></i> View
                     </button>
                 </td>`;
             tbody.appendChild(tr);
@@ -346,18 +355,18 @@
     }
 
     function resetFilters() {
-        ['searchInput', 'stageFilter', 'bankFilter', 'zoneFilter'].forEach(id => {
-            document.getElementById(id).value = '';
-        });
+        document.getElementById('searchInput').value = '';
+        document.getElementById('stageFilter').value = '';
+        document.getElementById('bankFilter').value = '';
+        document.getElementById('zoneFilter').value = '';
         renderCases(allCases);
     }
 
     function viewCase(id) {
-        window.location.href = `/case-view/${id}`;   // create this route later
-        // alert(`Viewing case ID: ${id}`);
+        window.location.href = `/case-view/${id}`;
     }
 
-    // Success message from redirect
+    // Success Message
     function showSuccessMessage() {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('success') === 'true') {
@@ -366,7 +375,6 @@
             msg.innerHTML = `✅ New case added successfully!`;
             document.querySelector('.flex-1.overflow-auto').prepend(msg);
 
-            // Remove success param from URL
             setTimeout(() => {
                 window.history.replaceState({}, '', '/admin-case');
                 msg.remove();
@@ -380,20 +388,6 @@
 
         document.getElementById('searchInput').addEventListener('input', filterCases);
     };
-
-            function logout() {
-                    if (confirm('Logout?')) window.location.href = '/';
-                }
-
-                function openSidebar() {
-                    document.getElementById('sidebar').classList.add('open');
-                    document.getElementById('sidebarOverlay').classList.add('active');
-                }
-
-                function closeSidebar() {
-                    document.getElementById('sidebar').classList.remove('open');
-                    document.getElementById('sidebarOverlay').classList.remove('active');
-                }
 </script>
 </body>
 

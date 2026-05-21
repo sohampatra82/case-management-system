@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="shortcut icon"
+    href="https://ik.imagekit.io/7de5cntkw/1692626704665-photoaidcom-cropped%20(1).jpeg?updatedAt=1738048156918"
+    type="image/x-icon">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change Password</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body,
+        html,
+        * {
+            font-family: 'Poppins', sans-serif !important;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Update Password</h2>
+        <div id="error" class="hidden text-red-500 text-sm mb-4"></div>
+        <div id="success" class="hidden text-green-500 text-sm mb-4"></div>
+        <form id="passwordForm" class="space-y-4" method="POST" action="/admin-change-password">
+            <div>
+                <label for="currentPassword" class="block text-sm font-medium text-gray-700">
+                    Current Password
+                </label>
+                <input type="password" id="currentPassword" name="currentPassword"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    required />
+            </div>
+            <div>
+                <label for="newPassword" class="block text-sm font-medium text-gray-700">
+                    New Password
+                </label>
+                <input type="password" id="newPassword" name="newPassword"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    required />
+            </div>
+            <div>
+                <label for="confirmPassword" class="block text-sm font-medium text-gray-700">
+                    Confirm New Password
+                </label>
+                <input type="password" id="confirmPassword" name="confirmPassword"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    required />
+            </div>
+            <button type="submit"
+                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                Update Password
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('passwordForm');
+        const errorDiv = document.getElementById('error');
+        const successDiv = document.getElementById('success');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorDiv.classList.add('hidden');
+            successDiv.classList.add('hidden');
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                errorDiv.textContent = 'All fields are required.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                errorDiv.textContent = 'New password and confirm password do not match.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (newPassword.length < 4) {
+                errorDiv.textContent = 'New password must be at least 4 characters long.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch('/admin-change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        currentPassword,
+                        newPassword,
+                        confirmPassword
+                    }),
+                    credentials: 'include' // Include cookies for JWT authentication
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    successDiv.textContent = 'Password updated successfully! Redirecting to login...';
+                    successDiv.classList.remove('hidden');
+                    form.reset();
+                    setTimeout(() => {
+                        window.location.href = '/adminlogin';
+                    }, 2000);
+                } else {
+                    errorDiv.textContent = data.error || 'Failed to update password.';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'An error occurred. Please try again.';
+                errorDiv.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>
