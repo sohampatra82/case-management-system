@@ -389,6 +389,22 @@
         document.getElementById('searchInput').addEventListener('input', filterCases);
     };
 </script>
+
+<script>
+    function logout() {
+        if (confirm('Logout?')) window.location.href = '/';
+    }
+
+    function openSidebar() {
+        document.getElementById('sidebar').classList.add('open');
+        document.getElementById('sidebarOverlay').classList.add('active');
+    }
+
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('active');
+    }
+</script>
 </body>
 
 </html>
