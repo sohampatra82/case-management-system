@@ -3,7 +3,11 @@ require("dotenv").config();
 
 const RegionalSchema = new mongoose.Schema(
   {
-    fullName: { type: String, required: true, trim: true },
+    fullName: {
+      type: String,
+      required: true,
+      trim: true
+    },
     loginId: {
       type: String,
       required: true,
