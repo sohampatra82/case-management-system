@@ -27,6 +27,12 @@ const BranchSchema = new mongoose.Schema(
       enum: ["north", "south", "east", "west", "central", "all"],
       required: true
     },
+
+    bank: {
+      type: String,
+      required: true,
+      trim: true
+    },
     password: { type: String, required: true },
     status: {
       type: String,

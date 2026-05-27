@@ -50,7 +50,7 @@ router.post(
         `);
       }
 
-      const { fullName, loginId, email, password, role, zone } = req.body;
+      const { fullName, loginId, email, password, role, zone, bank } = req.body;
 
       // Check if user already exists
       const existingUser = await BranchModel.findOne({
@@ -80,6 +80,7 @@ router.post(
         email: email || null,
         role: role || "branch",
         zone: zone || "west",
+        bank: bank || null,
         password: hashPassword
         // confirmPassword not needed to store
       });

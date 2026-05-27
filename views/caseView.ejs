@@ -85,9 +85,10 @@
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 md:hidden" onclick="closeSidebar()"></div>
 
     <div class="flex h-screen overflow-hidden">
-
+    
         <!-- Sidebar -->
         <div id="sidebar" class="w-52 bg-[#0f172a] text-white flex flex-col flex-shrink-0 md:relative md:translate-x-0">
+    
             <!-- Logo -->
             <div class="p-4 border-b border-slate-700 flex items-center gap-2">
                 <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -98,34 +99,39 @@
                     <p class="text-slate-400 text-xs">Console</p>
                 </div>
             </div>
-
+    
             <!-- Nav -->
             <div class="flex-1 py-3">
                 <nav class="px-2 space-y-0.5">
                     <a href="/admin-dashboard"
-                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
-                        <i class="fa-solid fa-gauge-high w-3.5 text-center"></i> Dashboard
+                        class="flex items-center gap-2 px-3 py-2 bg-slate-800 text-white rounded-lg text-xs font-medium sidebar-active">
+                        <i class="fa-solid fa-gauge-high w-3.5 text-center"></i>
+                        Dashboard
                     </a>
                     <a href="/admin-case"
-                        class="flex items-center gap-2 px-3 py-2 text-white bg-slate-800 rounded-lg text-xs font-medium sidebar-active">
-                        <i class="fa-solid fa-briefcase w-3.5 text-center"></i> Cases
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-briefcase w-3.5 text-center"></i>
+                        Cases
                     </a>
                     <a href="/admin-reports"
                         class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
-                        <i class="fa-solid fa-chart-bar w-3.5 text-center"></i> Reports
+                        <i class="fa-solid fa-chart-bar w-3.5 text-center"></i>
+                        Reports
                     </a>
                     <a href="/admin-users"
                         class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
-                        <i class="fa-solid fa-users w-3.5 text-center"></i> Users
+                        <i class="fa-solid fa-users w-3.5 text-center"></i>
+                        Users
                     </a>
                 </nav>
             </div>
-
+    
             <!-- Logout -->
             <div class="p-3 border-t border-slate-700">
                 <button onclick="logout()"
                     class="w-full flex items-center justify-center gap-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 py-2 rounded-xl text-xs font-medium">
-                    <i class="fa-solid fa-right-from-bracket text-xs"></i> Logout
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                    Logout
                 </button>
             </div>
         </div>
@@ -143,223 +149,220 @@
                     </h2>
                     <h2 class="text-sm font-semibold text-slate-800 sm:hidden">BLCMS</h2>
                 </div>
-                <div class="flex items-center gap-2.5">
-                    <div class="text-right hidden sm:block">
-                        <p class="font-semibold text-slate-800 text-xs">Anita Verma</p>
-                        <p class="text-xs text-emerald-600">SUPER_ADMIN · All Zones</p>
-                    </div>
-                    <div
-                        class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xs cursor-pointer">
-                        AV</div>
+            <div class="flex items-center gap-2.5">
+                <div class="text-right hidden sm:block">
+                    <p class="font-semibold text-slate-800 text-xs">
+                        <%= currentUser ? currentUser.fullName : 'Anita Verma' %>
+                    </p>
+                    <p class="text-xs text-emerald-600">
+                        <%= currentUser ? currentUser.role : 'SUPER_ADMIN' %>
+                            <%= currentUser && currentUser.zone ? `· ${currentUser.zone}` : '· All Zones' %>
+                    </p>
                 </div>
+            
+                <div
+                    class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xs cursor-pointer">
+                    <%= currentUser && currentUser.fullName ? currentUser.fullName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0,2) : 'AV' %>
+                            </div>
+                        </div>
             </div>
 
             <!-- ==================== PAGE CONTENT ==================== -->
-            <div class="flex-1 overflow-auto p-6">
-                <div class="max-w-6xl mx-auto">
-
-                    <a href="/admin-case"
-                        class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-800 font-medium mb-6">
-                        <i class="fa-solid fa-arrow-left"></i>
-                        <span>Back to All Cases</span>
-                    </a>
-
-                    <div class="bg-white rounded-2xl shadow border border-slate-200 overflow-hidden">
-
-                        <!-- Case Header -->
-                        <div class="px-8 py-6 border-b flex flex-wrap justify-between items-center gap-4 bg-slate-50">
-                            <div>
-                                <h2 class="text-3xl font-bold text-slate-900">
-                                    <%= caseData.accountName %>
-                                </h2>
-                                <p class="text-slate-600 mt-1">
-                                    <%= caseData.bank %> • <%= caseData.branch || '—' %> • <%= caseData.zone %> Zone
-                                </p>
-                            </div>
-                            <div>
-                                <% let stageClass='bg-slate-100 text-slate-700' ; if (caseData.currentStage==='Sale' )
-                                    stageClass='bg-emerald-100 text-emerald-700' ; else if
-                                    (caseData.currentStage==='Possession' ) stageClass='bg-blue-100 text-blue-700' ;
-                                    else if (caseData.currentStage && caseData.currentStage.includes('13(4)'))
-                                    stageClass='bg-orange-100 text-orange-700' ; else if (caseData.currentStage &&
-                                    caseData.currentStage.includes('13(2)')) stageClass='bg-amber-100 text-amber-700' ;
-                                    %>
-                                    <span class="px-5 py-2.5 rounded-full text-sm font-semibold <%= stageClass %>">
-                                        <%= caseData.currentStage %>
-                                    </span>
+        <div class="flex-1 overflow-auto p-6">
+            <div class="max-w-6xl mx-auto">
+        
+                <a href="/admin-case"
+                    class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-800 font-medium mb-6">
+                    <i class="fa-solid fa-arrow-left"></i> Back to All Cases
+                </a>
+        
+                <div class="bg-white rounded-2xl shadow border border-slate-200 overflow-hidden">
+        
+                    <!-- Header -->
+                    <div class="px-8 py-6 border-b flex flex-wrap justify-between items-center gap-4 bg-slate-50">
+                        <div>
+                            <h2 class="text-3xl font-bold text-slate-900">
+                                <%= caseData.borrowerName || caseData.accountName || 'N/A' %>
+                            </h2>
+                            <p class="text-slate-600 mt-1">
+                                <%= caseData.bank?.bankName || caseData.bank || 'N/A' %> •
+                                    <%= caseData.branch?.branchName || caseData.branch || 'N/A' %> •
+                                        <%= caseData.zone?.zoneName || caseData.zone || 'N/A' %>
+                            </p>
+                        </div>
+        
+                        <!-- ✅ Fixed Stage Badge (Server-side) -->
+                        <% let stageClass='bg-slate-100 text-slate-700' ; if (caseData.currentStage==='Sale Completed' ||
+                            caseData.currentStage==='Completed' ) { stageClass='bg-emerald-100 text-emerald-700' ; } else if
+                            (caseData.currentStage && caseData.currentStage.includes('13(4)')) {
+                            stageClass='bg-orange-100 text-orange-700' ; } else if (caseData.currentStage &&
+                            caseData.currentStage.includes('Possession')) { stageClass='bg-blue-100 text-blue-700' ; } else if
+                            (caseData.currentStage && caseData.currentStage.includes('13(2)')) {
+                            stageClass='bg-amber-100 text-amber-700' ; } else if (caseData.currentStage==='Sale' ) {
+                            stageClass='bg-emerald-100 text-emerald-700' ; } %>
+                            <span class="px-5 py-2.5 rounded-full text-sm font-semibold <%= stageClass %>">
+                                <%= caseData.currentStage || 'ALLOTMENT' %>
+                            </span>
+                    </div>
+        
+                    <div class="p-8 space-y-10">
+        
+                        <!-- Basic Information -->
+                        <div>
+                            <h3 class="section-title mb-5">Basic Information</h3>
+                            <div class="info-grid">
+                                <div>
+                                    <p class="detail-label">Bank</p>
+                                    <p class="detail-value">
+                                        <%= caseData.bank?.bankName || caseData.bank || 'N/A' %>
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="detail-label">Zone</p>
+                                    <p class="detail-value">
+                                        <%= caseData.zone?.zoneName || caseData.zone || 'N/A' %>
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="detail-label">Region</p>
+                                    <p class="detail-value">
+                                        <%= caseData.region?.regionName || caseData.region || 'N/A' %>
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="detail-label">Branch</p>
+                                    <p class="detail-value">
+                                        <%= caseData.branch?.branchName || caseData.branch || 'N/A' %>
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="detail-label">Borrower Name</p>
+                                    <p class="detail-value">
+                                        <%= caseData.borrowerName || caseData.accountName || 'N/A' %>
+                                    </p>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="p-8 space-y-10">
-
-                            <!-- Basic Information -->
-                            <div>
-                                <h3 class="section-title mb-5">Basic Information</h3>
-                                <div class="info-grid">
-                                    <div>
-                                        <p class="detail-label">Bank</p>
+        
+                        <!-- Timeline -->
+                        <div>
+                            <h3 class="section-title mb-5">Key Dates & Timeline</h3>
+                            <div class="info-grid">
+                                <% if(caseData.allotmentDate) { %>
+                                    <div class="bg-slate-50 p-5 rounded-xl">
+                                        <p class="detail-label">Allotment Date</p>
                                         <p class="detail-value">
-                                            <%= caseData.bank %>
+                                            <%= new Date(caseData.allotmentDate).toLocaleDateString('en-IN') %>
                                         </p>
                                     </div>
-                                    <div>
-                                        <p class="detail-label">Zone</p>
-                                        <p class="detail-value">
-                                            <%= caseData.zone %>
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p class="detail-label">Region</p>
-                                        <p class="detail-value">
-                                            <%= caseData.region || '—' %>
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p class="detail-label">Branch</p>
-                                        <p class="detail-value">
-                                            <%= caseData.branch || '—' %>
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p class="detail-label">Account Name</p>
-                                        <p class="detail-value">
-                                            <%= caseData.accountName %>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Timeline -->
-                            <div>
-                                <h3 class="section-title mb-5">Key Dates & Timeline</h3>
-                                <div class="info-grid">
-                                    <% if(caseData.allotmentDate) { %>
-                                        <div class="bg-slate-50 p-5 rounded-xl">
-                                            <p class="detail-label">Allotment Date</p>
-                                            <p class="detail-value mt-1">
-                                                <%= new Date(caseData.allotmentDate).toLocaleDateString('en-IN') %>
-                                            </p>
-                                        </div>
-                                        <% } %>
-                                            <% if(caseData.noticeDate13_2) { %>
-                                                <div class="bg-slate-50 p-5 rounded-xl">
-                                                    <p class="detail-label text-amber-700">Section 13(2) Notice</p>
-                                                    <p class="detail-value mt-1">
-                                                        <%= new
-                                                            Date(caseData.noticeDate13_2).toLocaleDateString('en-IN') %>
-                                                    </p>
-                                                </div>
-                                                <% } %>
-                                                    <% if(caseData.noticeDate13_4) { %>
-                                                        <div class="bg-slate-50 p-5 rounded-xl">
-                                                            <p class="detail-label text-orange-700">Section 13(4) Notice
-                                                            </p>
-                                                            <p class="detail-value mt-1">
-                                                                <%= new
-                                                                    Date(caseData.noticeDate13_4).toLocaleDateString('en-IN')
-                                                                    %>
-                                                            </p>
-                                                        </div>
-                                                        <% } %>
-                                                            <% if(caseData.hearingDate) { %>
-                                                                <div class="bg-slate-50 p-5 rounded-xl">
-                                                                    <p class="detail-label">Hearing Date</p>
-                                                                    <p class="detail-value mt-1">
-                                                                        <%= new
-                                                                            Date(caseData.hearingDate).toLocaleDateString('en-IN')
-                                                                            %>
-                                                                    </p>
-                                                                </div>
-                                                                <% } %>
-                                                                    <% if(caseData.possessionDate) { %>
-                                                                        <div class="bg-slate-50 p-5 rounded-xl">
-                                                                            <p class="detail-label text-blue-700">
-                                                                                Possession Date</p>
-                                                                            <p class="detail-value mt-1">
-                                                                                <%= new
-                                                                                    Date(caseData.possessionDate).toLocaleDateString('en-IN')
-                                                                                    %>
-                                                                            </p>
-                                                                        </div>
-                                                                        <% } %>
-                                                                            <% if(caseData.saleDate) { %>
-                                                                                <div class="bg-slate-50 p-5 rounded-xl">
-                                                                                    <p
-                                                                                        class="detail-label text-emerald-700">
-                                                                                        Sale Date</p>
-                                                                                    <p class="detail-value mt-1">
-                                                                                        <%= new
-                                                                                            Date(caseData.saleDate).toLocaleDateString('en-IN')
-                                                                                            %>
-                                                                                    </p>
-                                                                                </div>
-                                                                                <% } %>
-                                </div>
-                            </div>
-
-                            <!-- Court & Legal -->
-                            <% if(caseData.court || caseData.advocateCommissioner) { %>
-                                <div>
-                                    <h3 class="section-title mb-5">Court & Legal Details</h3>
-                                    <div class="info-grid">
-                                        <% if(caseData.court) { %>
-                                            <div>
-                                                <p class="detail-label">Court</p>
+                                    <% } %>
+                                        <% if(caseData.noticeDate13_2) { %>
+                                            <div class="bg-slate-50 p-5 rounded-xl">
+                                                <p class="detail-label">Section 13(2)</p>
                                                 <p class="detail-value">
-                                                    <%= caseData.court %>
+                                                    <%= new Date(caseData.noticeDate13_2).toLocaleDateString('en-IN') %>
                                                 </p>
                                             </div>
                                             <% } %>
-                                                <% if(caseData.advocateCommissioner) { %>
-                                                    <div>
-                                                        <p class="detail-label">Advocate Commissioner</p>
+                                                <% if(caseData.noticeDate13_4) { %>
+                                                    <div class="bg-slate-50 p-5 rounded-xl">
+                                                        <p class="detail-label">Section 13(4)</p>
                                                         <p class="detail-value">
-                                                            <%= caseData.advocateCommissioner %>
+                                                            <%= new Date(caseData.noticeDate13_4).toLocaleDateString('en-IN') %>
                                                         </p>
                                                     </div>
                                                     <% } %>
-                                    </div>
+                                                        <% if(caseData.hearingDate) { %>
+                                                            <div class="bg-slate-50 p-5 rounded-xl">
+                                                                <p class="detail-label">Hearing Date</p>
+                                                                <p class="detail-value">
+                                                                    <%= new
+                                                                        Date(caseData.hearingDate).toLocaleDateString('en-IN')
+                                                                        %>
+                                                                </p>
+                                                            </div>
+                                                            <% } %>
+                                                                <% if(caseData.possessionDate) { %>
+                                                                    <div class="bg-slate-50 p-5 rounded-xl">
+                                                                        <p class="detail-label">Possession Date</p>
+                                                                        <p class="detail-value">
+                                                                            <%= new
+                                                                                Date(caseData.possessionDate).toLocaleDateString('en-IN')
+                                                                                %>
+                                                                        </p>
+                                                                    </div>
+                                                                    <% } %>
+                                                                        <% if(caseData.saleDate) { %>
+                                                                            <div class="bg-slate-50 p-5 rounded-xl">
+                                                                                <p class="detail-label">Sale Date</p>
+                                                                                <p class="detail-value">
+                                                                                    <%= new
+                                                                                        Date(caseData.saleDate).toLocaleDateString('en-IN')
+                                                                                        %>
+                                                                                </p>
+                                                                            </div>
+                                                                            <% } %>
+                            </div>
+                        </div>
+        
+                        <!-- Remarks -->
+                        <% if(caseData.initialRemarks) { %>
+                            <div>
+                                <h3 class="section-title mb-4">Remarks</h3>
+                                <div
+                                    class="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-slate-700 whitespace-pre-wrap">
+                                    <%= caseData.initialRemarks %>
                                 </div>
-                                <% } %>
-
-                                    <!-- Remarks -->
-                      
-            <!-- Remarks -->
-            <% if(caseData.initialRemarks) { %>
-                <div>
-                    <h3 class="section-title mb-4">Remarks / Notes</h3>
-            
-                    <div
-                        class="bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-700 text-[14px] leading-6 whitespace-pre-wrap break-words overflow-hidden  m-0">
-            
-                        <%= caseData.initialRemarks.trim() %>
-            
+                            </div>
+                            <% } %>
+        
                     </div>
+        
+                    <!-- Action Buttons -->
+                <!-- Action Buttons - Improved -->
+                <div class="border-t bg-slate-50 px-8 py-6">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                
+                        <!-- Edit Button -->
+                        <a href="/case-view/edit/<%= caseData._id %>"
+                            class="flex-1 flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white py-4 px-6 rounded-2xl font-semibold transition-all duration-200 shadow-sm hover:shadow">
+                            <i class="fa-solid fa-pen-to-square text-lg"></i>
+                            <span>Edit Case Details</span>
+                        </a>
+                
+                        <!-- Delete Button -->
+                        <form action="/case-view/delete/<%= caseData._id %>" method="POST" class="flex-1"
+                            onsubmit="return confirm('⚠️ Are you sure you want to permanently delete this case?\n\nThis action cannot be undone!')">
+                
+                            <button type="submit"
+                                class="w-full flex items-center justify-center gap-3 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white py-4 px-6 rounded-2xl font-semibold transition-all duration-200 shadow-sm hover:shadow">
+                                <i class="fa-solid fa-trash-can text-lg"></i>
+                                <span>Delete This Case</span>
+                            </button>
+                        </form>
+                    </div>
+                
+                    <!-- Optional: Small warning text -->
+                    <p class="text-center text-xs text-slate-500 mt-4">
+                        Deleting a case is permanent and cannot be recovered
+                    </p>
                 </div>
-                <% } %>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="border-t bg-slate-50 px-8 py-6 flex flex-wrap gap-4">
-                            <a href="/case-view/edit/<%= caseData._id %>"
-                                class="flex-1 md:flex-none bg-blue-700 hover:bg-blue-800 text-white px-8 py-4 rounded-xl font-semibold flex items-center justify-center gap-3 transition text-[14px]">
-                                <i class="fa-solid fa-pen-to-square"></i> Edit Case
-                            </a>
-
-                            <form action="/case-view/delete/<%= caseData._id %>" method="POST"
-                                class="flex-1 md:flex-none"
-                                onsubmit="return confirm('Are you sure you want to permanently delete this case?')">
-                                <button type="submit"
-                                    class="w-full md:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-xl font-semibold flex items-center justify-center gap-3 transition text-[14px]">
-                                    <i class="fa-solid fa-trash"></i> Delete Case
-                                </button>
-                            </form>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
+        </div>
     </div>
+
+<script>
+    function getStageClass(stage) {
+        if (!stage) return 'bg-slate-100 text-slate-700';
+        if (stage === 'Sale Completed' || stage === 'Completed') return 'bg-emerald-100 text-emerald-700';
+        if (stage.includes('13(4)')) return 'bg-orange-100 text-orange-700';
+        if (stage.includes('Possession')) return 'bg-blue-100 text-blue-700';
+        if (stage.includes('13(2)')) return 'bg-amber-100 text-amber-700';
+        return 'bg-slate-100 text-slate-700';
+    }
+</script>
 
     <script>
         function logout() {

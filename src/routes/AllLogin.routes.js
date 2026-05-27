@@ -30,19 +30,11 @@ router.post("/", async (req, res) => {
 if (role === "super-admin") {
     
     const loginIdUpper = loginId.toUpperCase().trim();
-    console.log(`Login Attempt - Role: super-admin | LoginID: ${loginIdUpper}`);
 
     user = await AdminModel.findOne({ username: loginIdUpper });
 
     if (!user) {
-   
-        return res.send(getErrorHTML(`
-           Invalid Login ID for selected role
-        `));
-    }
-
-    if (!user.password) {
-        return res.send(getErrorHTML("Password not set in database"));
+        return res.send(getErrorHTML("Invalid Login ID for selected role"));
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -54,11 +46,13 @@ if (role === "super-admin") {
     fullName = user.fullName || "Super Admin";
     redirectPath = "/admin-dashboard";
 
+    // ✅ Consistent session key
     req.session.user = {
         id: user._id,
         username: user.username,
         fullName: fullName,
-        role: "super-admin"
+        role: "SUPER_ADMIN",           // Changed to uppercase for consistency
+        zone: "All Zones"
     };
 
     return res.send(getSuccessHTML(fullName, redirectPath));

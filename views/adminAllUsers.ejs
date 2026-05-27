@@ -146,279 +146,209 @@
                 <div class="flex items-center gap-2.5">
                     <div class="text-right hidden sm:block">
                         <p class="font-semibold text-slate-800 text-xs">
-                            Anita Verma
+                            <%= currentUser ? currentUser.fullName : 'Anita Verma' %>
                         </p>
                         <p class="text-xs text-emerald-600">
-                            SUPER_ADMIN · All Zones
+                            <%= currentUser ? currentUser.role : 'SUPER_ADMIN' %>
+                                <%= currentUser && currentUser.zone ? `· ${currentUser.zone}` : '· All Zones' %>
                         </p>
                     </div>
 
                     <div
                         class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xs cursor-pointer">
-                        AV
-                    </div>
-                </div>
+                        <%= currentUser && currentUser.fullName ? currentUser.fullName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0,2) : 'AV' %>
+                            </div>
+                        </div>
             </div>
 
             <!-- PAGE CONTENT START -->
-            <div class="flex-1 overflow-auto p-6 bg-slate-50 text-sm">
-                <div class="max-w-6xl mx-auto">
-            
-                    <!-- Header -->
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <h1 class="text-sm font-semibold text-slate-900">
-                                System Users
-                            </h1>
-            
-                            <p class="text-sm text-slate-600 mt-1">
-                                Manage platform access and role scopes.
-                            </p>
-                        </div>
-            
-                        <a href="/create-accounts"
-                            class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors">
-                            <i class="fa-solid fa-plus text-sm"></i>
-                            Create Account
-                        </a>
+        <div class=" flex-1 overflow-auto p-6 bg-slate-50 text-sm">
+                            <div class="max-w-6xl mx-auto">
+
+                                <!-- Header -->
+                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
+
+                                    <!-- Left Section -->
+                                    <div>
+                                        <h1 class="text-sm font-semibold text-slate-900">
+                                            System Users
+                                        </h1>
+
+                                        <p class="text-sm text-slate-600 mt-1">
+                                            Manage platform access and role scopes.
+                                        </p>
+                                    </div>
+
+                                    <!-- Right Section -->
+                                    <a href="/create-accounts"
+                                        class="w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors">
+                                        <i class="fa-solid fa-plus text-sm"></i>
+                                        Create Account
+                                    </a>
+
+                                </div>
+
+                                <!-- Active Accounts Card -->
+                                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+
+                                    <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center">
+                                        <div>
+                                            <h2 class="font-semibold text-sm text-slate-900">Active Accounts</h2>
+                                            <p class="text-sm text-slate-500">
+                                                <%= totalUsers %> total users in the system
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-sm">
+                                            <thead>
+                                                <tr class="border-b border-slate-200 bg-slate-50">
+                                                    <th
+                                                        class="px-6 py-4 text-left font-medium text-slate-500 uppercase tracking-wider">
+                                                        User
+                                                    </th>
+                                                    <th
+                                                        class="px-6 py-4 text-left font-medium text-slate-500 uppercase tracking-wider">
+                                                        Username
+                                                    </th>
+                                                    <th
+                                                        class="px-6 py-4 text-left font-medium text-slate-500 uppercase tracking-wider">
+                                                        Role
+                                                    </th>
+                                                    <th
+                                                        class="px-6 py-4 text-left font-medium text-slate-500 uppercase tracking-wider">
+                                                        Scope /
+                                                        Access Level</th>
+                                                    <th
+                                                        class="px-6 py-4 text-center font-medium text-slate-500 uppercase tracking-wider">
+                                                        Actions</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody class="divide-y divide-slate-100">
+                                                <% users.forEach(user=> { %>
+                                                    <tr class="hover:bg-slate-50 transition-colors">
+
+                                                        <!-- User Info -->
+                                                        <td class="px-6 py-4">
+                                                            <div class="flex items-center gap-3">
+                                                                <div
+                                                                    class="user-circle bg-<%= user.color %>-100 text-<%= user.color %>-700 text-sm">
+                                                                    <%= user.initials %>
+                                                                </div>
+                                                                <div>
+                                                                    <p class="font-medium text-slate-900">
+                                                                        <%= user.fullName %>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+
+                                                        <!-- Username -->
+                                                        <td class="px-6 py-4">
+                                                            <span class="font-mono text-sm text-slate-600">
+                                                                <%= user.username %>
+                                                            </span>
+                                                        </td>
+
+                                                        <!-- Role -->
+                                                        <td class="px-6 py-4">
+                                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold
+                                            <%= user.role === 'SUPER_ADMIN' ? 'bg-blue-100 text-blue-700' : 
+                                               user.role === 'ZONAL' ? 'bg-violet-100 text-violet-700' : 
+                                               user.role === 'REGIONAL' ? 'bg-emerald-100 text-emerald-700' : 
+                                               'bg-amber-100 text-amber-700' %>">
+                                                                <%= user.role %>
+                                                            </span>
+                                                        </td>
+
+                                                        <!-- Scope -->
+                                                        <td class="px-6 py-4">
+                                                            <div
+                                                                class="flex items-center gap-1.5 text-slate-600 text-sm">
+                                                                <i
+                                                                    class="fa-solid <%= user.type === 'ADMIN' ? 'fa-globe text-emerald-500' : 'fa-map-marker-alt text-amber-500' %>"></i>
+                                                                <span>
+                                                                    <%= user.scope %>
+                                                                </span>
+                                                            </div>
+                                                        </td>
+
+                                                        <!-- Actions -->
+                                                        <td class="px-6 py-4 text-center">
+                                                            <div class="flex items-center justify-center gap-2">
+                                                                <!-- Edit Button -->
+                                                                <a href="/admin-users/edit/<%= user.model %>/<%= user.id %>"
+                                                                    class="px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-colors">
+                                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                                    <span>Edit</span>
+                                                                </a>
+
+                                                                <!-- Delete Button -->
+                                                                <button
+                                                                    onclick="deleteUser('<%= user.model %>', '<%= user.id %>', '<%= user.fullName %>')"
+                                                                    class="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-colors">
+                                                                    <i class="fa-solid fa-trash"></i>
+                                                                    <span>Delete</span>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+
+                                                    </tr>
+                                                    <% }); %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                     </div>
-            
-                    <!-- Active Accounts Card -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            
-                        <div class="px-6 py-5 border-b border-slate-100">
-                            <h2 class="font-semibold text-sm text-slate-900">
-                                Active Accounts
-                            </h2>
-            
-                            <p class="text-sm text-slate-500">
-                                All seeded test accounts in the system.
-                            </p>
-                        </div>
-            
-                        <!-- Table -->
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-            
-                                <thead>
-                                    <tr class="border-b border-slate-200 bg-slate-50">
-            
-                                        <th class="px-6 py-4 text-left text-sm font-medium text-slate-500 uppercase tracking-wider">
-                                            User
-                                        </th>
-            
-                                        <th class="px-6 py-4 text-left text-sm font-medium text-slate-500 uppercase tracking-wider">
-                                            Username
-                                        </th>
-            
-                                        <th class="px-6 py-4 text-left text-sm font-medium text-slate-500 uppercase tracking-wider">
-                                            Role
-                                        </th>
-            
-                                        <th class="px-6 py-4 text-left text-sm font-medium text-slate-500 uppercase tracking-wider">
-                                            Scope / Access Level
-                                        </th>
-            
-                                    </tr>
-                                </thead>
-            
-                                <tbody class="divide-y divide-slate-100">
-            
-                                    <!-- Anita -->
-                                    <tr class="hover:bg-slate-50 transition-colors">
-            
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-3">
-            
-                                                <div class="user-circle bg-blue-100 text-blue-700 text-sm">
-                                                    AN
-                                                </div>
-            
-                                                <div>
-                                                    <p class="font-medium text-slate-900 text-sm">
-                                                        Anita Verma
-                                                    </p>
-                                                </div>
-            
-                                            </div>
-                                        </td>
-            
-                                        <td class="px-6 py-4">
-                                            <span class="font-mono text-sm text-slate-600">
-                                                superadmin
-                                            </span>
-                                        </td>
-            
-                                        <td class="px-6 py-4">
-                                            <span
-                                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-700">
-            
-                                                <i class="fa-solid fa-shield-halved mr-1 text-sm"></i>
-            
-                                                SUPER ADMIN
-                                            </span>
-                                        </td>
-            
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-1.5 text-slate-600 text-sm">
-                                                <i class="fa-solid fa-globe text-emerald-500 text-sm"></i>
-                                                <span>All Zones (Global)</span>
-                                            </div>
-                                        </td>
-            
-                                    </tr>
-            
-                                    <!-- Rakesh -->
-                                    <tr class="hover:bg-slate-50 transition-colors">
-            
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-3">
-            
-                                                <div class="user-circle bg-purple-100 text-purple-700 text-sm">
-                                                    RA
-                                                </div>
-            
-                                                <div>
-                                                    <p class="font-medium text-slate-900 text-sm">
-                                                        Rakesh Mehta
-                                                    </p>
-                                                </div>
-            
-                                            </div>
-                                        </td>
-            
-                                        <td class="px-6 py-4">
-                                            <span class="font-mono text-sm text-slate-600">
-                                                zonal.north
-                                            </span>
-                                        </td>
-            
-                                        <td class="px-6 py-4">
-                                            <span
-                                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-violet-100 text-violet-700">
-                                                ZONAL
-                                            </span>
-                                        </td>
-            
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-1.5 text-slate-600 text-sm">
-                                                <i class="fa-solid fa-map-marker-alt text-amber-500 text-sm"></i>
-                                                <span>Zone: North</span>
-                                            </div>
-                                        </td>
-            
-                                    </tr>
-            
-                                    <!-- Priya -->
-                                    <tr class="hover:bg-slate-50 transition-colors">
-            
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-3">
-            
-                                                <div class="user-circle bg-pink-100 text-pink-700 text-sm">
-                                                    PR
-                                                </div>
-            
-                                                <div>
-                                                    <p class="font-medium text-slate-900 text-sm">
-                                                        Priya Sharma
-                                                    </p>
-                                                </div>
-            
-                                            </div>
-                                        </td>
-            
-                                        <td class="px-6 py-4">
-                                            <span class="font-mono text-sm text-slate-600">
-                                                regional.delhi
-                                            </span>
-                                        </td>
-            
-                                        <td class="px-6 py-4">
-                                            <span
-                                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-emerald-100 text-emerald-700">
-                                                REGIONAL
-                                            </span>
-                                        </td>
-            
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-1.5 text-slate-600 text-sm">
-                                                <i class="fa-solid fa-map-marker-alt text-amber-500 text-sm"></i>
-                                                <span>Region: Delhi</span>
-                                            </div>
-                                        </td>
-            
-                                    </tr>
-            
-                                    <!-- Vikram -->
-                                    <tr class="hover:bg-slate-50 transition-colors">
-            
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-3">
-            
-                                                <div class="user-circle bg-orange-100 text-orange-700 text-sm">
-                                                    VI
-                                                </div>
-            
-                                                <div>
-                                                    <p class="font-medium text-slate-900 text-sm">
-                                                        Vikram Singh
-                                                    </p>
-                                                </div>
-            
-                                            </div>
-                                        </td>
-            
-                                        <td class="px-6 py-4">
-                                            <span class="font-mono text-sm text-slate-600">
-                                                branch.cp
-                                            </span>
-                                        </td>
-            
-                                        <td class="px-6 py-4">
-                                            <span
-                                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-amber-100 text-amber-700">
-                                                BRANCH
-                                            </span>
-                                        </td>
-            
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-1.5 text-slate-600 text-sm">
-                                                <i class="fa-solid fa-building text-amber-500 text-sm"></i>
-                                                <span>Branch: Connaught Place</span>
-                                            </div>
-                                        </td>
-            
-                                    </tr>
-            
-                                </tbody>
-            
-                            </table>
-                        </div>
-                    </div>
+                    <!-- PAGE CONTENT END -->
+
                 </div>
             </div>
-            <!-- PAGE CONTENT END -->
 
-        </div>
-    </div>
+            <script>
+                function logout() {
+                    if (confirm('Logout?')) window.location.href = '/';
+                }
 
-    <script>
-        function logout() {
-            if (confirm('Logout?')) window.location.href = '/';
-        }
+                function openSidebar() {
+                    document.getElementById('sidebar').classList.add('open');
+                    document.getElementById('sidebarOverlay').classList.add('active');
+                }
 
-        function openSidebar() {
-            document.getElementById('sidebar').classList.add('open');
-            document.getElementById('sidebarOverlay').classList.add('active');
-        }
+                function closeSidebar() {
+                    document.getElementById('sidebar').classList.remove('open');
+                    document.getElementById('sidebarOverlay').classList.remove('active');
+                }
+            </script>
+            <script>
+                async function deleteUser(model, id, name) {
+                    if (!confirm(`⚠️ Are you sure you want to permanently delete "${name}"?`)) {
+                        return;
+                    }
 
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('sidebarOverlay').classList.remove('active');
-        }
-    </script>
+                    try {
+                        const response = await fetch(`/admin-users/delete/${model}/${id}`, {
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
 
+                        const data = await response.json();
+
+                        if (data.success) {
+                            alert("✅ User deleted successfully!");
+                            window.location.reload();
+                        } else {
+                            alert("❌ " + (data.message || "Failed to delete user"));
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        alert("❌ Server error while deleting user");
+                    }
+                }
+            </script>
 </body>
 
 </html>

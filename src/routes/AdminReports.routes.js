@@ -6,36 +6,42 @@ const NewCaseModel = require("../models/NewCase.model");
 router.get("/", (req, res) => res.render("adminReports"));
 
 // ==================== CSV DOWNLOAD - FIXED ====================
+
 router.get("/download/csv", async (req, res) => {
   try {
-    const cases = await NewCaseModel.find({}).lean().sort({ createdAt: -1 });
+    const cases = await NewCaseModel.find({})
+      .lean()
+      .populate('bank', 'bankName')        // Adjust field names as per your schema
+      .populate('zone', 'zoneName')        // Example: if zone is a reference
+      .populate('region', 'regionName')
+      .populate('branch', 'branchName')
+      .sort({ createdAt: -1 });
 
-    let csv =
+    let csv = 
       "SI No,Bank,Zone,Region,Branch,Account Name,Stage,Allotment Date,13(2) Date,13(4) Date,Possession Date,Created At\n";
 
-cases.forEach((c, i) => {
-  const formatDate = dateField => {
-    if (!dateField) return "";
-    const date = new Date(dateField);
-    return isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0];
-  };
+    cases.forEach((c, i) => {
+      const formatDate = (dateField) => {
+        if (!dateField) return "";
+        const date = new Date(dateField);
+        return isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0];
+      };
 
-  csv +=
-    `${i + 1},"${c.bank || ""}","${c.zone || ""}","${c.region ||
-      ""}","${c.branch || ""}","${(c.accountName || "")
-      .replace(/"/g, '""')}","${c.currentStage || ""}",` +
-    `"${formatDate(c.allotmentDate)}","${formatDate(
-      c.noticeDate13_2
-    )}","${formatDate(c.noticeDate13_4)}","${formatDate(
-      c.possessionDate
-    )}","${formatDate(c.createdAt)}"\n`;
-});
+      const bankName = c.bank?.bankName || c.bank || "";
+      const zoneName = c.zone?.zoneName || c.zone || "";
+      const regionName = c.region?.regionName || c.region || "";
+      const branchName = c.branch?.branchName || c.branch || "";
+
+      csv += 
+        `${i + 1},"${bankName}","${zoneName}","${regionName}","${branchName}",` +
+        `"${(c.accountName || "").replace(/"/g, '""')}","${c.currentStage || ""}",` +
+        `"${formatDate(c.allotmentDate)}","${formatDate(c.noticeDate13_2)}",` +
+        `"${formatDate(c.noticeDate13_4)}","${formatDate(c.possessionDate)}",` +
+        `"${formatDate(c.createdAt)}"\n`;
+    });
 
     res.setHeader("Content-Type", "text/csv");
-    res.setHeader(
-      "Content-Disposition",
-      "attachment; filename=SARFAESI_Report.csv"
-    );
+    res.setHeader("Content-Disposition", "attachment; filename=SARFAESI_Report.csv");
     res.send(csv);
   } catch (error) {
     console.error("CSV Download Error:", error);

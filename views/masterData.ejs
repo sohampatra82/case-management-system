@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SARFAESI Console</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .sidebar-active {
+            background-color: #1e2937;
+            border-left: 3px solid #3b82f6;
+        }
+
+        #sidebarOverlay {
+            display: none;
+        }
+
+        #sidebarOverlay.active {
+            display: block;
+        }
+
+        #sidebar {
+            transition: transform 0.25s ease;
+        }
+
+        @media (max-width: 768px) {
+            #sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                z-index: 40;
+                transform: translateX(-100%);
+            }
+
+            #sidebar.open {
+                transform: translateX(0);
+            }
+        }
+
+        .user-circle {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 min-h-screen">
+
+    <!-- Mobile Overlay -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 md:hidden" onclick="closeSidebar()"></div>
+
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-52 bg-[#0f172a] text-white flex flex-col flex-shrink-0 md:relative md:translate-x-0">
+
+            <!-- Logo -->
+            <div class="p-4 border-b border-slate-700 flex items-center gap-2">
+                <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved text-xs"></i>
+                </div>
+                <div>
+                    <h1 class="text-sm font-semibold tracking-tight">SARFAESI</h1>
+                    <p class="text-slate-400 text-xs">Console</p>
+                </div>
+            </div>
+
+            <!-- Nav -->
+            <div class="flex-1 py-3">
+                <nav class="px-2 space-y-0.5">
+
+                    <a href="/admin-dashboard"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-gauge-high w-3.5 text-center"></i>
+                        Dashboard
+                    </a>
+
+                    <a href="/admin-case"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-briefcase w-3.5 text-center"></i>
+                        Cases
+                    </a>
+
+                    <a href="/admin-reports"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-chart-bar w-3.5 text-center"></i>
+                        Reports
+                    </a>
+
+                    <a href="/admin-users"
+                        class="sidebar-active flex items-center gap-2 px-3 py-2 text-white hover:bg-slate-800 rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-users w-3.5 text-center"></i>
+                        Users
+                    </a>
+
+                </nav>
+            </div>
+
+            <!-- Logout -->
+            <div class="p-3 border-t border-slate-700">
+                <button onclick="logout()"
+                    class="w-full flex items-center justify-center gap-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 py-2 rounded-xl text-xs font-medium">
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Main -->
+        <div class="flex-1 flex flex-col min-w-0">
+
+            <!-- Topbar -->
+        <div class="bg-white border-b flex items-center justify-between px-4 md:px-5 py-2.5">
+            <div class="flex items-center gap-3">
+                <button class="md:hidden text-slate-500" onclick="openSidebar()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h2 class="text-sm font-semibold text-slate-800 hidden sm:block">
+                    Bank Legal Case Management System
+                </h2>
+                <h2 class="text-sm font-semibold sm:hidden">BLCMS</h2>
+            </div>
+            <div class="flex items-center gap-2.5">
+                <div class="text-right hidden sm:block">
+                    <p class="font-semibold text-slate-800 text-xs">
+                        <%= currentUser ? currentUser.fullName : 'Anita Verma' %>
+                    </p>
+                    <p class="text-xs text-emerald-600">
+                        <%= currentUser ? currentUser.role : 'SUPER_ADMIN' %>
+                            <%= currentUser && currentUser.zone ? `· ${currentUser.zone}` : '· All Zones' %>
+                    </p>
+                </div>
+        
+                <div
+                    class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xs cursor-pointer">
+                    <%= currentUser && currentUser.fullName ? currentUser.fullName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0,2) : 'AV' %>
+                        </div>
+                    </div>
+                    </div>
+
+                    <!-- main content -->
+
+<!-- PAGE CONTENT START -->
+<!-- PAGE CONTENT START -->
+<!-- PAGE CONTENT START -->
+<div class="flex-1 overflow-auto p-4">
+
+    <div class="max-w-7xl mx-auto">
+
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-800">Master Data Management</h1>
+            <a href="/new-case"
+                class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl flex items-center justify-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i> Back to New Case
+            </a>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex gap-2 mb-6 border-b border-slate-200">
+            <button onclick="showTab(0)" class="tab-button active px-6 py-3 font-medium text-sm"
+                data-tab="0">Banks</button>
+            <button onclick="showTab(1)" class="tab-button px-6 py-3 font-medium text-sm" data-tab="1">Zones</button>
+            <button onclick="showTab(2)" class="tab-button px-6 py-3 font-medium text-sm" data-tab="2">Regions</button>
+            <button onclick="showTab(3)" class="tab-button px-6 py-3 font-medium text-sm" data-tab="3">Branches</button>
+        </div>
+
+        <!-- Banks Tab -->
+        <div id="tab-0" class="tab-content">
+            <div class="bg-white rounded-3xl shadow p-6">
+                <h2 class="text-lg font-semibold mb-4">Add Bank</h2>
+                <form onsubmit="addBank(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input id="bankName" type="text" placeholder="Enter Bank Name" required
+                        class="px-4 py-3 border border-slate-300 rounded-2xl">
+                    <button type="submit"
+                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-2xl font-medium">Add
+                        Bank</button>
+                </form>
+                <table class="w-full mt-8">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="text-left py-4">Bank Name</th>
+                            <th class="text-center w-24">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bankTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Zones Tab -->
+        <div id="tab-1" class="tab-content hidden">
+            <div class="bg-white rounded-3xl shadow p-6">
+                <h2 class="text-lg font-semibold mb-4">Add Zone</h2>
+                <form onsubmit="addZone(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <select id="zoneBankSelect" required class="px-4 py-3 border border-slate-300 rounded-2xl"></select>
+                    <input id="zoneName" type="text" placeholder="Zone Name" required
+                        class="px-4 py-3 border border-slate-300 rounded-2xl">
+                    <button type="submit"
+                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-2xl font-medium">Add
+                        Zone</button>
+                </form>
+                <table class="w-full mt-8">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="text-left py-4">Bank</th>
+                            <th class="text-left py-4">Zone Name</th>
+                            <th class="text-center w-24">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="zoneTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Regions Tab -->
+        <div id="tab-2" class="tab-content hidden">
+            <div class="bg-white rounded-3xl shadow p-6">
+                <h2 class="text-lg font-semibold mb-4">Add Region</h2>
+                <form onsubmit="addRegion(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <select id="regionBankSelect" onchange="loadZonesForRegion()" required
+                        class="px-4 py-3 border border-slate-300 rounded-2xl"></select>
+                    <select id="regionZoneSelect" required
+                        class="px-4 py-3 border border-slate-300 rounded-2xl"></select>
+                    <input id="regionName" type="text" placeholder="Region Name" required
+                        class="px-4 py-3 border border-slate-300 rounded-2xl">
+                    <button type="submit"
+                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-2xl font-medium">Add
+                        Region</button>
+                </form>
+                <table class="w-full mt-8">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="text-left py-4">Zone</th>
+                            <th class="text-left py-4">Region Name</th>
+                            <th class="text-center w-24">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="regionTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Branches Tab -->
+        <div id="tab-3" class="tab-content hidden">
+            <div class="bg-white rounded-3xl shadow p-6">
+                <h2 class="text-lg font-semibold mb-4">Add Branch</h2>
+                <form onsubmit="addBranch(event)" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <select id="branchBankSelect" onchange="loadZonesForBranch()" required
+                        class="px-4 py-3 border border-slate-300 rounded-2xl"></select>
+                    <select id="branchZoneSelect" onchange="loadRegionsForBranch()" required
+                        class="px-4 py-3 border border-slate-300 rounded-2xl"></select>
+                    <select id="branchRegionSelect" required
+                        class="px-4 py-3 border border-slate-300 rounded-2xl"></select>
+                    <input id="branchName" type="text" placeholder="Branch Name" required
+                        class="px-4 py-3 border border-slate-300 rounded-2xl">
+                    <button type="submit"
+                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-2xl font-medium">Add
+                        Branch</button>
+                </form>
+                <table class="w-full mt-8">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="text-left py-4">Region</th>
+                            <th class="text-left py-4">Branch Name</th>
+                            <th class="text-center w-24">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="branchTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- PAGE CONTENT END -->
+
+<script>
+    // Tab Switching
+    function showTab(n) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+
+        document.getElementById(`tab-${n}`).classList.remove('hidden');
+        document.querySelector(`[data-tab="${n}"]`).classList.add('active');
+
+        if (n === 0) loadBanks();
+        if (n === 1) { loadBankDropdowns(); loadZones(); }
+        if (n === 2) { loadBankDropdowns(); loadRegions(); }
+        if (n === 3) { loadBankDropdowns(); loadBranches(); }   // ← Fixed
+    }
+    // ====================== BANKS ======================
+    async function addBank(e) {
+        e.preventDefault();
+        const bankName = document.getElementById('bankName').value.trim();
+        if (!bankName) return alert("Bank name is required");
+
+        const res = await fetch('/master-data/banks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bankName })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert("Bank added successfully!");
+            document.getElementById('bankName').value = '';
+            loadBanks();
+        }
+    }
+
+    async function loadBanks() {
+        const res = await fetch('/master-data/banks');
+        const banks = await res.json();
+        document.getElementById('bankTable').innerHTML = banks.map(b => `
+        <tr class="border-b hover:bg-slate-50">
+            <td class="py-4">${b.bankName}</td>
+            <td class="py-4 text-center"><button onclick="deleteItem('banks','${b._id}')" class="text-red-600">🗑</button></td>
+        </tr>
+    `).join('');
+    }
+
+    // ====================== COMMON DROPDOWN LOADER ======================
+    async function loadBankDropdowns() {
+        const res = await fetch('/master-data/banks');
+        const banks = await res.json();
+
+        document.getElementById('zoneBankSelect').innerHTML = '<option value="">Select Bank</option>' +
+            banks.map(b => `<option value="${b._id}">${b.bankName}</option>`).join('');
+
+        document.getElementById('regionBankSelect').innerHTML = '<option value="">Select Bank</option>' +
+            banks.map(b => `<option value="${b._id}">${b.bankName}</option>`).join('');
+
+        document.getElementById('branchBankSelect').innerHTML = '<option value="">Select Bank</option>' +
+            banks.map(b => `<option value="${b._id}">${b.bankName}</option>`).join('');
+    }
+
+    // ====================== ZONES ======================
+    async function addZone(e) {
+        e.preventDefault();
+        const bank = document.getElementById('zoneBankSelect').value;
+        const zoneName = document.getElementById('zoneName').value.trim();
+        if (!bank || !zoneName) return alert("Please select bank and enter zone name");
+
+        await fetch('/master-data/zones', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ zoneName, bank })
+        });
+        alert("Zone added successfully!");
+        document.getElementById('zoneName').value = '';
+        loadZones();
+    }
+
+    async function loadZones() {
+        const res = await fetch('/master-data/zones');
+        const zones = await res.json();
+        document.getElementById('zoneTable').innerHTML = zones.map(z => `
+        <tr class="border-b hover:bg-slate-50">
+            <td class="py-4">${z.bank?.bankName || 'N/A'}</td>
+            <td class="py-4">${z.zoneName}</td>
+            <td class="py-4 text-center"><button onclick="deleteItem('zones','${z._id}')" class="text-red-600">🗑</button></td>
+        </tr>
+    `).join('');
+    }
+
+    // ====================== REGIONS ======================
+    async function loadZonesForRegion() {
+        const bankId = document.getElementById('regionBankSelect').value;
+        if (!bankId) return;
+        const res = await fetch(`/master-data/zones?bankId=${bankId}`);
+        const zones = await res.json();
+        document.getElementById('regionZoneSelect').innerHTML = '<option value="">Select Zone</option>' +
+            zones.map(z => `<option value="${z._id}">${z.zoneName}</option>`).join('');
+    }
+
+ async function addRegion(e) {
+        e.preventDefault();
+
+        const bank = document.getElementById('regionBankSelect').value;
+        const zone = document.getElementById('regionZoneSelect').value;
+        const regionName = document.getElementById('regionName').value.trim();
+
+        if (!bank || !zone || !regionName) {
+            return alert("Please select Bank, Zone and enter Region Name");
+        }
+
+        try {
+            const res = await fetch('/master-data/regions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    regionName,
+                    bank,      // ← Added this
+                    zone
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                alert("✅ Region added successfully!");
+                document.getElementById('regionName').value = '';
+                loadRegions();           // Refresh table
+            } else {
+                alert("❌ Error: " + (data.message || "Failed to add region"));
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Network error while adding region");
+        }
+    }
+
+
+    async function loadRegions() {
+            try {
+                const res = await fetch('/master-data/regions');
+                const regions = await res.json();
+
+                document.getElementById('regionTable').innerHTML = regions.map(r => `
+            <tr class="border-b hover:bg-slate-50">
+                <td class="py-4">${r.zone?.zoneName || 'N/A'}</td>
+                <td class="py-4">${r.regionName}</td>
+                <td class="py-4 text-center">
+                    <button onclick="deleteItem('regions','${r._id}')" class="text-red-600">🗑</button>
+                </td>
+            </tr>
+        `).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    // ====================== BRANCHES ======================
+    async function loadZonesForBranch() {
+        const bankId = document.getElementById('branchBankSelect').value;
+        if (!bankId) return;
+        const res = await fetch(`/master-data/zones?bankId=${bankId}`);
+        const zones = await res.json();
+        document.getElementById('branchZoneSelect').innerHTML = '<option value="">Select Zone</option>' + zones.map(z => `<option value="${z._id}">${z.zoneName}</option>`).join('');
+    }
+
+    async function loadRegionsForBranch() {
+        const zoneId = document.getElementById('branchZoneSelect').value;
+        if (!zoneId) return;
+        const res = await fetch(`/master-data/regions?zoneId=${zoneId}`);
+        const regions = await res.json();
+        document.getElementById('branchRegionSelect').innerHTML = '<option value="">Select Region</option>' + regions.map(r => `<option value="${r._id}">${r.regionName}</option>`).join('');
+    }
+
+ async function addBranch(e) {
+        e.preventDefault();
+
+        const bank = document.getElementById('branchBankSelect').value;
+        const zone = document.getElementById('branchZoneSelect').value;
+        const region = document.getElementById('branchRegionSelect').value;
+        const branchName = document.getElementById('branchName').value.trim();
+
+        if (!bank || !zone || !region || !branchName) {
+            return alert("Please select Bank, Zone, Region and enter Branch Name");
+        }
+
+        try {
+            const res = await fetch('/master-data/branches', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    branchName,
+                    bank,      // ← Added
+                    zone,      // ← Added
+                    region
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                alert("✅ Branch added successfully!");
+                document.getElementById('branchName').value = '';
+                loadBranches();           // Refresh table
+            } else {
+                alert("❌ Error: " + (data.message || "Failed to add branch"));
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Network error while adding branch");
+        }
+    }
+    async function loadBranches() {
+            try {
+                const res = await fetch('/master-data/branches');
+                const branches = await res.json();
+
+                document.getElementById('branchTable').innerHTML = branches.map(b => `
+            <tr class="border-b hover:bg-slate-50">
+                <td class="py-4">${b.region?.regionName || 'N/A'}</td>
+                <td class="py-4">${b.branchName}</td>
+                <td class="py-4 text-center">
+                    <button onclick="deleteItem('branches','${b._id}')" class="text-red-600">🗑</button>
+                </td>
+            </tr>
+        `).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+    // Delete Function
+    function deleteItem(type, id) {
+        if (confirm("Delete this item?")) {
+            alert("Delete API will be added soon.");
+        }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        showTab(0);
+    });
+</script>
+
+<style>
+    .tab-button.active {
+        border-bottom: 3px solid #2563eb;
+        color: #2563eb;
+        font-weight: 600;
+    }
+</style>
+
+
+
+                <script>
+                    function logout() {
+                        if (confirm('Logout?')) window.location.href = '/';
+                    }
+
+                    function openSidebar() {
+                        document.getElementById('sidebar').classList.add('open');
+                        document.getElementById('sidebarOverlay').classList.add('active');
+                    }
+
+                    function closeSidebar() {
+                        document.getElementById('sidebar').classList.remove('open');
+                        document.getElementById('sidebarOverlay').classList.remove('active');
+                    }
+                </script>
+                
+                </body>
+                
+                </html>

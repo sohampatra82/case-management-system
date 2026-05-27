@@ -50,7 +50,10 @@ const  CreateBranch = require("./routes/CreateBranch.routes");
 const  CreateRegional = require("./routes/CreateRegional.routes");
 const caseViewRouter = require("./routes/CaseView.routes");
 const AllLoginRouter = require("./routes/AllLogin.routes");
+const MasterDataRouter = require("./routes/MasterData.routes");
 
+const currentUserMiddleware = require("./middleware/authMiddleware");
+app.use(currentUserMiddleware);
 
 app.use("/", Homerouter);
 app.use("/admin-login", AdminLoginrouter);
@@ -74,6 +77,13 @@ app.use(
   "/admin-change-password",
   require("./routes/AdminChangePassword.routes")
 );
+app.use("/master-data", MasterDataRouter); 
+
+// Make sure this is at the bottom (before module.exports)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ success: false, message: "Something went wrong!" });
+});
 
 
 

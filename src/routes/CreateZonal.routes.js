@@ -49,7 +49,7 @@ router.post(
         `);
       }
 
-      const { fullName, loginId, email, password, role, zone } = req.body;
+      const { fullName, loginId, email, password, role, zone, bank   } = req.body;
 
       // Check if user already exists
       const existingUser = await ZonalModel.findOne({
@@ -79,6 +79,7 @@ router.post(
         email: email || null,
         role: role || "zonal",
         zone: zone || "west",
+        bank: bank || null,
         password: hashPassword
         // confirmPassword not needed to store
       });

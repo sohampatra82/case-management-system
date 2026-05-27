@@ -119,502 +119,373 @@
                     </h2>
                     <h2 class="text-sm font-semibold sm:hidden">BLCMS</h2>
                 </div>
-
                 <div class="flex items-center gap-2.5">
                     <div class="text-right hidden sm:block">
-                        <p class="font-semibold text-slate-800 text-xs">Anita Verma</p>
-                        <p class="text-xs text-emerald-600">SUPER_ADMIN</p>
+                        <p class="font-semibold text-slate-800 text-xs">
+                            <%= currentUser ? currentUser.fullName : 'Anita Verma' %>
+                        </p>
+                        <p class="text-xs text-emerald-600">
+                            <%= currentUser ? currentUser.role : 'SUPER_ADMIN' %>
+                                <%= currentUser && currentUser.zone ? `· ${currentUser.zone}` : '· All Zones' %>
+                        </p>
                     </div>
+
                     <div
-                        class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xs">
-                        AV
+                        class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xs cursor-pointer">
+                        <%= currentUser && currentUser.fullName ? currentUser.fullName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0,2) : 'AV' %>
+                </div>
+            </div>
+            </div>
+
+            <!-- Content -->
+<div class=" flex-1 overflow-auto p-4 md:p-6 space-y-4">
+
+                            <form action="/new-case" method="POST" class="max-w-5xl mx-auto text-sm">
+
+                                <!-- Header -->
+                                <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+
+                                    <!-- Left Section -->
+                                    <div>
+                                        <h1 class="text-lg font-semibold text-slate-800">
+                                            Create New Case
+                                        </h1>
+                                        <p class="text-sm text-slate-500 mt-1">
+                                            Fill all mandatory fields to register a new SARFAESI case
+                                        </p>
+                                    </div>
+
+                                    <!-- Right Section -->
+                                    <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                                        <button type="button" onclick="window.location.href='/master-data'"
+                                            class="w-full sm:w-auto bg-slate-600 hover:bg-slate-700 text-white px-5 py-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2 shadow-sm transition">
+                                            <i class="fa-solid fa-database"></i>
+                                            Master Data
+                                        </button>
+
+                                        <button type="submit"
+                                            class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2 shadow-sm transition">
+                                            <i class="fa-solid fa-floppy-disk"></i>
+                                            Save Case
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                                <!-- Step 1: Identity & Assignment -->
+                                <div class="bg-white rounded-3xl shadow p-6 mb-6">
+
+                                    <h2 class="text-base font-semibold text-blue-600 mb-5 flex items-center gap-2">
+                                        <i class="fa-solid fa-user text-sm"></i>
+                                        Identity & Assignment
+                                    </h2>
+
+                                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">
+                                                Borrower Name <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" name="borrowerName" required
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:border-blue-500 outline-none"
+                                                placeholder="Full borrower name">
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">
+                                                Bank <span class="text-red-500">*</span>
+                                            </label>
+                                            <select id="bankSelect" name="bank" required onchange="loadZones()"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                                <option value="">Select Bank</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">
+                                                Zone <span class="text-red-500">*</span>
+                                            </label>
+                                            <select id="zoneSelect" name="zone" required onchange="loadRegions()"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                                <option value="">Select Zone</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">
+                                                Region <span class="text-red-500">*</span>
+                                            </label>
+                                            <select id="regionSelect" name="region" required onchange="loadBranches()"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                                <option value="">Select Region</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">
+                                                Branch <span class="text-red-500">*</span>
+                                            </label>
+                                            <select id="branchSelect" name="branch" required
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                                <option value="">Select Branch</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- <div>
+                                            <label class="block text-slate-700 font-medium mb-2">
+                                                Loan Account Number <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" name="loanAccountNumber" required
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div> -->
+
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">
+                                                Current Stage
+                                            </label>
+                                        <select name="currentStage"
+                                            class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-blue-500">
+                                        
+                                            <option value="ALLOTMENT">ALLOTMENT</option>
+                                            <option value="Section 13(2)">Section 13(2)</option>
+                                            <option value="Section 13(4)">Section 13(4)</option>
+                                            <option value="Section 14">Section 14</option>
+                                            <option value="Possession">Possession</option>
+                                            <option value="Sale">Sale</option>
+                                        
+                                            <!-- ✅ Added these two important stages -->
+                                            <option value="Sale Completed">Sale Completed</option>
+                                            <option value="Completed">Completed</option>
+                                        
+                                            <option value="Close">Close</option>
+                                        </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <!-- Step 2: Legal Timeline -->
+                                <div class="bg-white rounded-3xl shadow p-6 mb-6">
+
+                                    <h2 class="text-base font-semibold text-blue-600 mb-5">
+                                        Legal Timeline
+                                    </h2>
+
+                                    <div class="grid md:grid-cols-3 gap-5">
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">Allotment Date</label>
+                                            <input type="date" name="allotmentDate"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">13(2) Notice
+                                                Date</label>
+                                            <input type="date" name="noticeDate13_2"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">Ack Date</label>
+                                            <input type="date" name="ackDate"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">13(4) Notice
+                                                Date</label>
+                                            <input type="date" name="noticeDate13_4"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">Publication
+                                                Date</label>
+                                            <input type="date" name="publicationDate"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 3: Court Proceedings -->
+                                <div class="bg-white rounded-3xl shadow p-6 mb-6">
+
+                                    <h2 class="text-base font-semibold text-blue-600 mb-5">
+                                        Section 14 & Court Proceedings
+                                    </h2>
+
+                                    <div class="grid md:grid-cols-3 gap-5">
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">Court</label>
+                                            <input type="text" name="court"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">Filed By</label>
+                                            <input type="text" name="filedBy"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">Application
+                                                Date</label>
+                                            <input type="date" name="applicationDate"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">Filing Date</label>
+                                            <input type="date" name="filingDate"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">Hearing Date</label>
+                                            <input type="date" name="hearingDate"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">Order Date</label>
+                                            <input type="date" name="orderDate"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                        <div class="md:col-span-3">
+                                            <label class="block text-slate-700 font-medium mb-2">Advocate
+                                                Commissioner</label>
+                                            <input type="text" name="advocateCommissioner"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 4: Police, Possession & Sale -->
+                                <div class="bg-white rounded-3xl shadow p-6 mb-6">
+
+                                    <h2 class="text-base font-semibold text-blue-600 mb-5">
+                                        Police, Possession & Sale
+                                    </h2>
+
+                                    <div class="grid md:grid-cols-3 gap-5">
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">Police Letter
+                                                Date</label>
+                                            <input type="date" name="policeLetterDate"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">Cost Receive
+                                                Date</label>
+                                            <input type="date" name="costReceiveDate"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">Cost Deposit
+                                                Date</label>
+                                            <input type="date" name="costDepositDate"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">Pre-Intimation
+                                                Date</label>
+                                            <input type="date" name="preIntimationDate"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">Possession Date</label>
+                                            <input type="date" name="possessionDate"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-700 font-medium mb-2">Sale Date</label>
+                                            <input type="date" name="saleDate"
+                                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Remarks -->
+                                <div class="bg-white rounded-3xl shadow p-6">
+
+                                    <h2 class="text-base font-semibold text-blue-600 mb-4">
+                                        Initial Remarks
+                                    </h2>
+
+                                    <textarea name="initialRemarks" rows="5"
+                                        placeholder="Add important observations, instructions or notes..."
+                                        class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl resize-y outline-none"></textarea>
+
+                                </div>
+
+                            </form>
                     </div>
                 </div>
             </div>
 
-            <!-- Content -->
-            <div class="flex-1 overflow-auto p-4 md:p-6 space-y-4">
-            
-                <!-- Header -->
-                <!-- <div class="flex justify-between items-center">
-                    <div>
-                        <h1 class="text-lg font-bold text-slate-800">Create New Case</h1>
-                        <p class="text-sm text-slate-500">Enter basic details first, then update legal stages</p>
-                    </div>
-            
-                    <button type="submit" id="submitBtn"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-sm">
-                        <i class="fa-solid fa-floppy-disk"></i>
-                        Save Case
-                    </button>
-                </div> -->
-            
-                <!-- Step 1 -->
-   <!-- JUST CHANGE THIS -->
-<form action="/new-case" method="POST" class="max-w-5xl mx-auto text-sm">
-
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-
-        <div>
-            <h1 class="text-lg font-semibold text-slate-800">
-                Create New Case
-            </h1>
-
-            <p class="text-sm text-slate-500 mt-1">
-                Fill all mandatory fields to register a new SARFAESI case
-            </p>
-        </div>
-
-        <button type="submit"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm transition">
-            <i class="fa-solid fa-floppy-disk text-sm"></i>
-            Save Case
-        </button>
-
-    </div>
-
-    <!-- Step 1 -->
-    <div class="bg-white rounded-3xl shadow p-6 mb-6">
-
-        <h2 class="text-base font-semibold text-blue-600 mb-5 flex items-center gap-2">
-            <i class="fa-solid fa-user text-sm"></i>
-            Identity & Assignment
-        </h2>
-
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Account Name
-                    <span class="text-red-500">*</span>
-                </label>
-
-                <input type="text" name="accountName" required placeholder="e.g. ACME Corp"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:border-blue-500 outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Bank
-                    <span class="text-red-500">*</span>
-                </label>
-
-                <select name="bank" required
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-                    <option value="">Select Bank</option>
-                    <option>Punjab National Bank</option>
-                    <option>SBI</option>
-                    <option>HDFC</option>
-                    <option>ICICI</option>
-                    <option>Axis Bank</option>
-                    <option>Bank of Baroda</option>
-                    <option>Canara Bank</option>
-                    <option>Union Bank</option>
-                    <option>Bank of India</option>
-                    <option>Indian Bank</option>
-                    <option>Central Bank of India</option>
-                    <option>Yes Bank</option>
-                  <option>Bank of India</option>
-             
-                   
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Zone
-                    <span class="text-red-500">*</span>
-                </label>
-
-                <select name="zone" required
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-                    <option value="">Select Zone</option>
-                    <option>North</option>
-                    <option>South</option>
-                    <option>East</option>
-                    <option>West</option>
-                    <option>Central</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Region
-                </label>
-
-                <input type="text" name="region" placeholder="Delhi"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Branch
-                </label>
-
-                <input type="text" name="branch" placeholder="Connaught Place"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Current Stage
-                </label>
-
-                <select name="currentStage"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-                    <option>ALLOTMENT</option>
-                    <option>Section 13(2)</option>
-                    <option>Section 13(4)</option>
-                    <option>Section 14</option>
-                    <option>Possession</option>
-                    <option>Sale</option>
-                    <option>Close</option>
-                </select>
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- Step 2 -->
-    <div class="bg-white rounded-3xl shadow p-6 mb-6">
-
-        <h2 class="text-base font-semibold text-blue-600 mb-5">
-            Legal Timeline
-        </h2>
-
-        <div class="grid md:grid-cols-3 gap-5">
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Allotment Date
-                </label>
-
-                <input type="date" name="allotmentDate"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    13(2) Notice Date
-                </label>
-
-                <input type="date" name="noticeDate13_2"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Ack Date
-                </label>
-
-                <input type="date" name="ackDate"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    13(4) Notice Date
-                </label>
-
-                <input type="date" name="noticeDate13_4"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Publication Date
-                </label>
-
-                <input type="date" name="publicationDate"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- Step 3 -->
-    <div class="bg-white rounded-3xl shadow p-6 mb-6">
-
-        <h2 class="text-base font-semibold text-blue-600 mb-5">
-            Section 14 & Court Proceedings
-        </h2>
-
-        <div class="grid md:grid-cols-3 gap-5">
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Court
-                </label>
-
-                <input type="text" name="court"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Filed By
-                </label>
-
-                <input type="text" name="filedBy"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Application Date
-                </label>
-
-                <input type="date" name="applicationDate"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Filing Date
-                </label>
-
-                <input type="date" name="filingDate"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Hearing Date
-                </label>
-
-                <input type="date" name="hearingDate"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Order Date
-                </label>
-
-                <input type="date" name="orderDate"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div class="md:col-span-3">
-                <label class="block text-slate-700 font-medium mb-2">
-                    Advocate Commissioner
-                </label>
-
-                <input type="text" name="advocateCommissioner"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- Step 4 -->
-    <div class="bg-white rounded-3xl shadow p-6 mb-6">
-
-        <h2 class="text-base font-semibold text-blue-600 mb-5">
-            Police, Possession & Sale
-        </h2>
-
-        <div class="grid md:grid-cols-3 gap-5">
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Police Letter Date
-                </label>
-
-                <input type="date" name="policeLetterDate"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Cost Receive Date
-                </label>
-
-                <input type="date" name="costReceiveDate"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Cost Deposit Date
-                </label>
-
-                <input type="date" name="costDepositDate"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Pre-Intimation Date
-                </label>
-
-                <input type="date" name="preIntimationDate"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Possession Date
-                </label>
-
-                <input type="date" name="possessionDate"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-            <div>
-                <label class="block text-slate-700 font-medium mb-2">
-                    Sale Date
-                </label>
-
-                <input type="date" name="saleDate"
-                    class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl outline-none">
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- Remarks -->
-    <div class="bg-white rounded-3xl shadow p-6">
-
-        <h2 class="text-base font-semibold text-blue-600 mb-4">
-            Initial Remarks
-        </h2>
-
-        <textarea name="initialRemarks" rows="5" placeholder="Add important notes or case remarks..."
-            class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl resize-y outline-none"></textarea>
-
-    </div>
-
-</form>
-            </div>
-        </div>
-    </div>
-
-  <script>
-    let allCases = [];
-
-    // Color & Label Helpers
-    const zoneColor = z => ({ North: 'bg-sky-100 text-sky-700', South: 'bg-teal-100 text-teal-700', East: 'bg-violet-100 text-violet-700', West: 'bg-pink-100 text-pink-700', Central: 'bg-slate-200 text-slate-600' }[z] || 'bg-gray-100 text-gray-600');
-
-    const stageColor = s => {
-        if (!s) return 'bg-gray-100 text-gray-600';
-        if (s.includes('13(4)')) return 'bg-orange-100 text-orange-700';
-        if (s.includes('13(2)')) return 'bg-amber-100 text-amber-700';
-        if (s.includes('Possession')) return 'bg-blue-100 text-blue-700';
-        if (s.includes('14')) return 'bg-red-100 text-red-700';
-        if (s.includes('Sale')) return 'bg-emerald-100 text-emerald-700';
-        return 'bg-gray-100 text-gray-600';
-    };
-
-    async function fetchCases() {
-        const tbody = document.getElementById('casesTableBody');
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-12"><i class="fa-solid fa-spinner fa-spin text-blue-500 text-xl"></i></td></tr>`;
-
-        try {
-            const response = await fetch('/admin-case');   // Change to '/api/cases' if needed
-
-            if (!response.ok) throw new Error('Server error');
-
-            const data = await response.json();
-            console.log("📥 Cases received from backend:", data);
-
-            allCases = data.map((c, index) => ({
-                ...c,
-                si: data.length - index,
-                account: c.accountName || 'N/A',
-                bank: c.bank || 'N/A',
-                branch: c.branch || '-',
-                zone: c.zone || 'N/A',
-                stage: c.currentStage || 'ALLOTMENT'
-            }));
-
-            renderCases(allCases);
-
-        } catch (error) {
-            console.error("Fetch error:", error);
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center text-red-500 py-12 text-sm">
-                        ❌ Failed to load cases<br>
-                        <small>Check console (F12) and make sure backend is running</small>
-                    </td>
-                </tr>`;
-        }
-    }
-
-    function renderCases(list) {
-        const tbody = document.getElementById('casesTableBody');
-        tbody.innerHTML = '';
-
-        document.getElementById('caseCount').textContent = `${list.length} case${list.length !== 1 ? 's' : ''} found`;
-
-        if (list.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center text-slate-400 py-12">No cases found</td></tr>`;
-            return;
-        }
-
-        list.forEach(c => {
-            const tr = document.createElement('tr');
-            tr.className = 'hover:bg-slate-50';
-            tr.innerHTML = `
-                <td class="font-medium text-slate-400">${c.si}</td>
-                <td class="font-semibold text-slate-800">${c.account}</td>
-                <td class="text-slate-500 hidden md:table-cell">${c.bank}</td>
-                <td class="text-slate-600">${c.branch}</td>
-                <td><span class="stage-pill ${zoneColor(c.zone)}">${c.zone}</span></td>
-                <td><span class="stage-pill ${stageColor(c.stage)}">${c.stage}</span></td>
-                <td>
-                    <button onclick="viewCase('${c._id}')" class="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 text-xs">
-                        <i class="fa-solid fa-eye"></i> View
-                    </button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    function filterCases() {
-        const q = document.getElementById('searchInput').value.toLowerCase().trim();
-        const filtered = allCases.filter(c =>
-            !q ||
-            c.account.toLowerCase().includes(q) ||
-            (c.branch && c.branch.toLowerCase().includes(q))
-        );
-        renderCases(filtered);
-    }
-
-    function viewCase(id) {
-        if (id) window.location.href = `/case-view/${id}`;
-        else alert("Case ID not found");
-    }
-
-    // Show success message
-    function checkSuccess() {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('success') === 'true') {
-            const div = document.createElement('div');
-            div.className = "bg-green-50 border border-green-300 text-green-700 px-4 py-3 rounded-2xl mb-4 text-sm";
-            div.textContent = "✅ New case created successfully!";
-            document.querySelector('.flex-1.overflow-auto').prepend(div);
-
-            setTimeout(() => div.remove(), 5000);
-            window.history.replaceState({}, '', '/admin-case');
-        }
-    }
-
-    // Initialize
-    window.onload = () => {
-        fetchCases();
-        checkSuccess();
-        document.getElementById('searchInput').addEventListener('input', filterCases);
-    };
-
-            function logout() {
+            <script>
+                // ==================== MASTER DATA CASCADING DROPDOWNS ====================
+                async function loadBanks() {
+                    try {
+                        const res = await fetch('/master-data/banks');
+                        const banks = await res.json();
+                        const select = document.getElementById('bankSelect');
+                        select.innerHTML = '<option value="">Select Bank</option>' +
+                            banks.map(b => `<option value="${b._id}">${b.bankName}</option>`).join('');
+                    } catch (e) {
+                        console.error("Error loading banks", e);
+                    }
+                }
+
+                async function loadZones() {
+                    const bankId = document.getElementById('bankSelect').value;
+                    const zoneSelect = document.getElementById('zoneSelect');
+                    zoneSelect.innerHTML = '<option value="">Select Zone</option>';
+
+                    if (!bankId) return;
+
+                    try {
+                        const res = await fetch(`/master-data/zones?bankId=${bankId}`);
+                        const zones = await res.json();
+                        zoneSelect.innerHTML = '<option value="">Select Zone</option>' +
+                            zones.map(z => `<option value="${z._id}">${z.zoneName}</option>`).join('');
+                    } catch (e) {
+                        console.error("Error loading zones", e);
+                    }
+                }
+
+                async function loadRegions() {
+                    const zoneId = document.getElementById('zoneSelect').value;
+                    const regionSelect = document.getElementById('regionSelect');
+                    regionSelect.innerHTML = '<option value="">Select Region</option>';
+
+                    if (!zoneId) return;
+
+                    try {
+                        const res = await fetch(`/master-data/regions?zoneId=${zoneId}`);
+                        const regions = await res.json();
+                        regionSelect.innerHTML = '<option value="">Select Region</option>' +
+                            regions.map(r => `<option value="${r._id}">${r.regionName}</option>`).join('');
+                    } catch (e) {
+                        console.error("Error loading regions", e);
+                    }
+                }
+
+                async function loadBranches() {
+                    const regionId = document.getElementById('regionSelect').value;
+                    const branchSelect = document.getElementById('branchSelect');
+                    branchSelect.innerHTML = '<option value="">Select Branch</option>';
+
+                    if (!regionId) return;
+
+                    try {
+                        const res = await fetch(`/master-data/branches?regionId=${regionId}`);
+                        const branches = await res.json();
+                        branchSelect.innerHTML = '<option value="">Select Branch</option>' +
+                            branches.map(b => `<option value="${b._id}">${b.branchName}</option>`).join('');
+                    } catch (e) {
+                        console.error("Error loading branches", e);
+                    }
+                }
+
+                // Initialize on page load
+                window.onload = () => {
+                    loadBanks();
+                };
+
+                // Sidebar Functions
+                function logout() {
                     if (confirm('Logout?')) window.location.href = '/';
                 }
 
@@ -627,7 +498,7 @@
                     document.getElementById('sidebar').classList.remove('open');
                     document.getElementById('sidebarOverlay').classList.remove('active');
                 }
-</script>
+            </script>
 
 </body>
 

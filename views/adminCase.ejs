@@ -132,15 +132,22 @@
                     </h2>
                     <h2 class="text-sm font-semibold text-slate-800 sm:hidden">BLCMS</h2>
                 </div>
-                <div class="flex items-center gap-2.5">
-                    <div class="text-right hidden sm:block">
-                        <p class="font-semibold text-slate-800 text-xs">Anita Verma</p>
-                        <p class="text-xs text-emerald-600">SUPER_ADMIN · All Zones</p>
-                    </div>
-                    <div
-                        class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xs cursor-pointer">
-                        AV</div>
+            <div class="flex items-center gap-2.5">
+                <div class="text-right hidden sm:block">
+                    <p class="font-semibold text-slate-800 text-xs">
+                        <%= currentUser ? currentUser.fullName : 'Anita Verma' %>
+                    </p>
+                    <p class="text-xs text-emerald-600">
+                        <%= currentUser ? currentUser.role : 'SUPER_ADMIN' %>
+                            <%= currentUser && currentUser.zone ? `· ${currentUser.zone}` : '· All Zones' %>
+                    </p>
                 </div>
+            
+                <div
+                    class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xs cursor-pointer">
+                    <%= currentUser && currentUser.fullName ? currentUser.fullName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0,2) : 'AV' %>
+                            </div>
+                        </div>
             </div>
 
             <!-- Content -->
@@ -157,61 +164,50 @@
                 </div>
 
                 <!-- Filters -->
-                <div class="bg-white rounded-2xl shadow-sm p-3 mb-3.5">
-                    <div class="flex flex-wrap gap-2 items-center">
-                        <div class="flex-1 min-w-[150px]">
-                            <div class="relative">
-                                <input id="searchInput" type="text" placeholder="Search account, branch..."
-                                    class="w-full pl-7 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 text-xs">
-                                <i
-                                    class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-slate-400 text-xs"></i>
-                            </div>
+            <!-- Filters -->
+            <div class="bg-white rounded-2xl shadow-sm p-3 mb-3.5">
+                <div class="flex flex-wrap gap-2 items-center">
+                    <div class="flex-1 min-w-[150px]">
+                        <div class="relative">
+                            <input id="searchInput" type="text" placeholder="Search account, branch..."
+                                class="w-full pl-7 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 text-xs">
+                            <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-slate-400 text-xs"></i>
                         </div>
-                        <select id="stageFilter" onchange="filterCases()"
-                            class="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none">
-                            <option value="">All Stages</option>
-                            <option value="Section 13(2)">Sec 13(2)</option>
-                            <option value="Section 13(4)">Sec 13(4)</option>
-                            <option value="Possession">Possession</option>
-                            <option value="Section 14">Section 14</option>
-                            <option value="Sale">Sale</option>
-                            <option value="Close">Close</option>
-                        </select>
-                        <select id="bankFilter" onchange="filterCases()"
-                            class="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none">
-                            <option value="">All Banks</option>
-                            <option value="SBI">SBI</option>
-                            <option value="Punjab National Bank">PNB</option>
-                            <option value="HDFC">HDFC</option>
-                            <option value="ICICI Bank">ICICI</option>
-                            <option value="Axis Bank">Axis</option>
-                           
-                            <option value="IndusInd Bank">IndusInd</option>
-                            <option value="Bank of Baroda">Bank of Baroda</option>
-                            <option value="Canara Bank">Canara Bank</option>
-                            <option value="Union Bank">Union Bank</option>
-                            <option value="Bank of India">Bank of India</option>
-                            <option value="Indian Bank">Indian Bank</option>
-                            <option value="Central Bank of India">Central Bank of India</option>
-                            <option value="Yes Bank">Yes Bank</option>
-                           
-                             
-                        </select>
-                        <select id="zoneFilter" onchange="filterCases()"
-                            class="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none">
-                            <option value="">All Zones</option>
-                            <option value="North">North</option>
-                            <option value="South">South</option>
-                            <option value="East">East</option>
-                            <option value="West">West</option>
-                            <option value="Central">Central</option>
-                        </select>
-                        <button onclick="resetFilters()" title="Reset"
-                            class="px-2.5 py-1.5 text-slate-500 hover:text-slate-700 border border-slate-200 rounded-lg hover:bg-slate-50 text-xs">
-                            <i class="fa-solid fa-rotate"></i>
-                        </button>
                     </div>
+            
+                    <!-- Stage Filter (Static - Okay to keep) -->
+                    <select id="stageFilter" onchange="filterCases()"
+                        class="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none">
+                        <option value="">All Stages</option>
+                        <option value="ALLOTMENT">ALLOTMENT</option>
+                        <option value="Section 13(2)">Section 13(2)</option>
+                        <option value="Section 13(4)">Section 13(4)</option>
+                        <option value="Section 14">Section 14</option>
+                        <option value="Possession">Possession</option>
+                        <option value="Sale">Sale</option>
+                        <option value="Sale Completed">Sale Completed</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Close">Close</option>
+                    </select>
+            
+                    <!-- Dynamic Bank Filter -->
+                    <select id="bankFilter" onchange="filterCases()"
+                        class="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none">
+                        <option value="">All Banks</option>
+                    </select>
+            
+                    <!-- Dynamic Zone Filter -->
+                    <select id="zoneFilter" onchange="filterCases()"
+                        class="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none">
+                        <option value="">All Zones</option>
+                    </select>
+            
+                    <button onclick="resetFilters()" title="Reset"
+                        class="px-2.5 py-1.5 text-slate-500 hover:text-slate-700 border border-slate-200 rounded-lg hover:bg-slate-50 text-xs">
+                        <i class="fa-solid fa-rotate"></i>
+                    </button>
                 </div>
+            </div>
 
                 <!-- Table -->
                 <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -263,42 +259,39 @@
         return 'bg-gray-100 text-gray-600';
     };
 
-    async function fetchCases() {
+   async function fetchCases() {
         const tbody = document.getElementById('casesTableBody');
         tbody.innerHTML = `<tr><td colspan="7" class="text-center py-12">
-            <div class="animate-spin w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full mx-auto"></div>
-        </td></tr>`;
+        <div class="animate-spin w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full mx-auto"></div>
+    </td></tr>`;
 
         try {
             const res = await fetch('/admin-case/data');
-
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
             const data = await res.json();
+
             allCases = data.map((c, i) => ({
                 ...c,
-                si: data.length - i,                    // Fixed
-                account: c.accountName || 'N/A',
+                si: data.length - i,
+                account: c.borrower || 'N/A',           // Use borrower name
                 bank: c.bank || 'N/A',
                 branch: c.branch || '-',
                 zone: c.zone || 'Unknown',
-                stage: c.currentStage || 'ALLOTMENT'
+                stage: c.stage || 'ALLOTMENT'
             }));
 
             renderCases(allCases);
         } catch (err) {
             console.error(err);
             tbody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center text-red-500 py-12">
-                        Failed to load cases.<br>
-                        <small class="text-slate-500">${err.message}</small><br><br>
-                        <button onclick="fetchCases()" 
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">
-                            Retry
-                        </button>
-                    </td>
-                </tr>`;
+            <tr>
+                <td colspan="7" class="text-center text-red-500 py-12">
+                    Failed to load cases.<br>
+                    <small class="text-slate-500">${err.message}</small><br><br>
+                    <button onclick="fetchCases()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">
+                        Retry
+                    </button>
+                </td>
+            </tr>`;
         }
     }
 
@@ -388,6 +381,51 @@
 
         document.getElementById('searchInput').addEventListener('input', filterCases);
     };
+
+
+    // Load Banks and Zones dynamically
+        async function loadMasterData() {
+            try {
+                // Load Banks
+                const bankRes = await fetch('/master-data/banks');
+                const banks = await bankRes.json();
+
+                const bankSelect = document.getElementById('bankFilter');
+                banks.forEach(bank => {
+                    const opt = document.createElement('option');
+                    opt.value = bank.bankName;
+                    opt.textContent = bank.bankName;
+                    bankSelect.appendChild(opt);
+                });
+
+                // Load Zones
+                const zoneRes = await fetch('/master-data/zones');
+                const zones = await zoneRes.json();
+
+                const zoneSelect = document.getElementById('zoneFilter');
+                // Get unique zone names
+                const uniqueZones = [...new Set(zones.map(z => z.zoneName))];
+
+                uniqueZones.forEach(zoneName => {
+                    const opt = document.createElement('option');
+                    opt.value = zoneName;
+                    opt.textContent = zoneName;
+                    zoneSelect.appendChild(opt);
+                });
+
+            } catch (err) {
+                console.error("Failed to load master data for filters:", err);
+            }
+        }
+
+        // Call this when page loads
+        window.onload = () => {
+            fetchCases();
+            loadMasterData();           // ← Added this
+            showSuccessMessage();
+
+            document.getElementById('searchInput').addEventListener('input', filterCases);
+        };
 </script>
 
 <script>

@@ -1,45 +1,46 @@
+// src/routes/Admindashboard.routes.js
 const express = require("express");
 const router = express.Router();
-
 const NewCaseModel = require("../models/NewCase.model");
 
-// GET Admin Dashboard
 router.get("/", async (req, res) => {
   try {
-    // Basic Counts
     const totalCases = await NewCaseModel.countDocuments();
 
     const pendingCases = await NewCaseModel.countDocuments({
-      currentStage: { $nin: ["Completed", "Sale Completed"] }
+      currentStage: { $nin: ["Completed", "Sale Completed", "Close"] }
     });
 
     const completedCases = await NewCaseModel.countDocuments({
-      currentStage: { $in: ["Completed", "Sale Completed"] }
-    });
-
-    const possessionTaken = await NewCaseModel.countDocuments({
-      possessionDate: { $exists: true, $ne: null }
+      currentStage: { $in: ["Completed", "Sale Completed", "Close"] }
     });
 
     const salesCompleted = await NewCaseModel.countDocuments({
       currentStage: "Sale Completed"
     });
 
-    // Upcoming Hearings
+    // Possession Taken
+    const possessionTaken = await NewCaseModel.countDocuments({
+      possessionDate: { $exists: true, $ne: null }
+    });
+
+    // Upcoming Hearings (Fixed + Safe)
     const upcomingHearings = await NewCaseModel.find({
       hearingDate: {
         $gte: new Date(),
         $lte: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
       }
     })
+      .populate("bank", "bankName")
       .sort({ hearingDate: 1 })
       .lean();
 
     // Recent Activity
     const recentActivity = await NewCaseModel.find({})
+      .populate("bank", "bankName")
+      .populate("zone", "zoneName")
       .sort({ updatedAt: -1 })
       .limit(8)
-      .select("accountName bank zone currentStage updatedAt")
       .lean();
 
     // Stage Wise
@@ -48,9 +49,24 @@ router.get("/", async (req, res) => {
       { $sort: { count: -1 } }
     ]);
 
-    // Zone Wise
+    // Zone Wise (Fixed)
     const zoneWise = await NewCaseModel.aggregate([
-      { $group: { _id: "$zone", count: { $sum: 1 } } }
+      {
+        $lookup: {
+          from: "zones",
+          localField: "zone",
+          foreignField: "_id",
+          as: "zoneInfo"
+        }
+      },
+      { $unwind: { path: "$zoneInfo", preserveNullAndEmptyArrays: true } },
+      {
+        $group: {
+          _id: { $ifNull: ["$zoneInfo.zoneName", "Unknown"] },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { count: -1 } }
     ]);
 
     res.render("adminDashboard", {
@@ -59,10 +75,10 @@ router.get("/", async (req, res) => {
       completedCases,
       possessionTaken,
       salesCompleted,
-      upcomingHearings,
-      recentActivity,
-      stageWise,
-      zoneWise
+      upcomingHearings: upcomingHearings || [],
+      recentActivity: recentActivity || [],
+      stageWise: stageWise || [],
+      zoneWise: zoneWise || []
     });
   } catch (error) {
     console.error("Dashboard Error:", error);

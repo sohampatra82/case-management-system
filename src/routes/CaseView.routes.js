@@ -2,80 +2,99 @@
 const express = require("express");
 const router = express.Router();
 const NewCaseModel = require("../models/NewCase.model");
+const mongoose = require("mongoose");
 
 // GET - View Case
 router.get("/:id", async (req, res) => {
     try {
-        const caseData = await NewCaseModel.findById(req.params.id).lean();
+        const caseData = await NewCaseModel.findById(req.params.id)
+            .populate("bank", "bankName")
+            .populate("zone", "zoneName")
+            .populate("region", "regionName")
+            .populate("branch", "branchName")
+            .lean();
+
         if (!caseData) return res.status(404).send("Case Not Found");
 
         res.render("caseView", { caseData });
     } catch (error) {
-        console.error(error);
-        res.status(500).send("Server Error");
+        console.error("Case View Error:", error);
+        res.status(500).send(`Server Error: ${error.message}`);
     }
 });
 
 // GET - Edit Form
 router.get("/edit/:id", async (req, res) => {
     try {
-        const caseData = await NewCaseModel.findById(req.params.id).lean();
+        const caseData = await NewCaseModel.findById(req.params.id)
+            .populate("bank", "bankName")
+            .populate("zone", "zoneName")
+            .populate("region", "regionName")
+            .populate("branch", "branchName")
+            .lean();
+
         if (!caseData) return res.status(404).send("Case Not Found");
 
         res.render("caseEdit", { caseData });
     } catch (error) {
-        console.error(error);
+        console.error("Edit Form Error:", error);
         res.status(500).send("Server Error");
     }
 });
 
-// POST - Update Case
+// POST - Update Case (Improved)
 router.post("/edit/:id", async (req, res) => {
     try {
         const {
-            accountName, bank, zone, region, branch, currentStage,
-            allotmentDate, noticeDate13_2, ackDate, noticeDate13_4, publicationDate,
-            court, filedBy, applicationDate, filingDate, hearingDate, orderDate, advocateCommissioner,
-            policeLetterDate, costReceiveDate, costDepositDate, preIntimationDate,
+            borrowerName, bank, zone, region, branch, currentStage,
+            allotmentDate, noticeDate13_2, noticeDate13_4, hearingDate,
             possessionDate, saleDate, initialRemarks
         } = req.body;
 
-        await NewCaseModel.findByIdAndUpdate(req.params.id, {
-            accountName: accountName?.trim(),
-            bank,
-            zone,
-            region: region?.trim(),
-            branch: branch?.trim(),
+        const updateData = {
+            borrowerName: borrowerName?.trim(),
             currentStage,
-
+            initialRemarks: initialRemarks?.trim(),
             allotmentDate: allotmentDate ? new Date(allotmentDate) : null,
             noticeDate13_2: noticeDate13_2 ? new Date(noticeDate13_2) : null,
-            ackDate: ackDate ? new Date(ackDate) : null,
             noticeDate13_4: noticeDate13_4 ? new Date(noticeDate13_4) : null,
-            publicationDate: publicationDate ? new Date(publicationDate) : null,
-
-            court: court?.trim(),
-            filedBy: filedBy?.trim(),
-            applicationDate: applicationDate ? new Date(applicationDate) : null,
-            filingDate: filingDate ? new Date(filingDate) : null,
             hearingDate: hearingDate ? new Date(hearingDate) : null,
-            orderDate: orderDate ? new Date(orderDate) : null,
-            advocateCommissioner: advocateCommissioner?.trim(),
-
-            policeLetterDate: policeLetterDate ? new Date(policeLetterDate) : null,
-            costReceiveDate: costReceiveDate ? new Date(costReceiveDate) : null,
-            costDepositDate: costDepositDate ? new Date(costDepositDate) : null,
-            preIntimationDate: preIntimationDate ? new Date(preIntimationDate) : null,
             possessionDate: possessionDate ? new Date(possessionDate) : null,
             saleDate: saleDate ? new Date(saleDate) : null,
+        };
 
-            initialRemarks: initialRemarks?.trim()
-        });
+        // Handle both ObjectId and Name inputs
+        if (bank) {
+            if (mongoose.Types.ObjectId.isValid(bank)) {
+                updateData.bank = bank;
+            } else {
+                // Optional: You can add logic to find bank by name if needed
+                console.warn(`Invalid Bank ID: ${bank}`);
+            }
+        }
 
-        res.redirect(`/case-view/${req.params.id}?success=true`);
+        if (zone) {
+            if (mongoose.Types.ObjectId.isValid(zone)) updateData.zone = zone;
+        }
+        if (region) {
+            if (mongoose.Types.ObjectId.isValid(region)) updateData.region = region;
+        }
+        if (branch) {
+            if (mongoose.Types.ObjectId.isValid(branch)) updateData.branch = branch;
+        }
+
+        const updatedCase = await NewCaseModel.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedCase) return res.status(404).send("Case Not Found");
+
+        res.redirect(`/case-view/${req.params.id}?success=updated`);
     } catch (error) {
-        console.error(error);
-        res.status(500).send("Update Failed");
+        console.error("Update Error:", error);
+        res.status(500).send("Update Failed: " + error.message);
     }
 });
 
