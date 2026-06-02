@@ -220,40 +220,32 @@
                                                 <option value="branch">Branch</option>
                                             </select>
                                         </div>
-                        
-                                        <!-- Access Level / Zone -->
-                                        <div>
-                                            <label class="block text-xs font-medium text-slate-500 mb-1.5">
-                                                Access Level (Zone)
-                                            </label>
-                        
-                                            <select name="zone"
-                                                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
-                        
-                                                <option value="">Select Zone</option>
-                                                <option value="north">North Zone</option>
-                                                <option value="south">South Zone</option>
-                                                <option value="east">East Zone</option>
-                                                <option value="west" selected>West Zone</option>
-                                                <option value="central">Central Zone</option>
-                                                <option value="all">All Zones</option>
-                                            </select>
-                                        </div>
                                         <!-- Bank -->
                                         <div>
                                             <label class="block text-xs font-medium text-slate-500 mb-1.5">
                                                 Bank
                                             </label>
                                         
-                                            <select name="bank"
-                                                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
-                                        
-                                                <option value="">Select Bank</option>
-                                                <option value="SBI">SBI</option>
-                                                <option value="HDFC">HDFC</option>
-                                                <option value="PNB">PNB</option>
-                                            </select>
+                                        <select name="bank" id="bankSelect" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm"
+                                            onchange="loadZones()">
+                                            <option value="">Select Bank</option>
+                                            <% banks.forEach(bank=> { %>
+                                                <option value="<%= bank._id %>">
+                                                    <%= bank.bankName %>
+                                                </option>
+                                                <% }); %>
+                                        </select>
                                         </div>
+                                            <!-- Access Level / Zone -->
+                                            <div>
+                                                <label class="block text-xs font-medium text-slate-500 mb-1.5">
+                                                    Access Level (Zone)
+                                                </label>
+                                            
+                                                <select name="zone" id="zoneSelect" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm">
+                                                    <option value="">Select Zone</option>
+                                                </select>
+                                            </div>
                                         <!-- Password -->
                                         <div>
                                             <label class="block text-xs font-medium text-slate-500 mb-1.5">
@@ -315,21 +307,26 @@
         </div>
     </div>
 
-    <script>
-        function logout() {
-            if (confirm('Logout?')) window.location.href = '/';
+  <script>
+    async function loadZones() {
+        const bankId = document.getElementById('bankSelect').value;
+        const zoneSelect = document.getElementById('zoneSelect');
+        zoneSelect.innerHTML = '<option value="">Loading...</option>';
+
+        if (!bankId) {
+            zoneSelect.innerHTML = '<option value="">Select Zone</option>';
+            return;
         }
 
-        function openSidebar() {
-            document.getElementById('sidebar').classList.add('open');
-            document.getElementById('sidebarOverlay').classList.add('active');
-        }
+        const res = await fetch(`/master-data/zones?bankId=${bankId}`);
+        const zones = await res.json();
 
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('sidebarOverlay').classList.remove('active');
-        }
-    </script>
+        zoneSelect.innerHTML = '<option value="">Select Zone</option>';
+        zones.forEach(zone => {
+            zoneSelect.innerHTML += `<option value="${zone._id}">${zone.zoneName}</option>`;
+        });
+    }
+</script>
 
 </body>
 

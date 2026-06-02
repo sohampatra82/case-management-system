@@ -1,0 +1,89 @@
+<div class="flex-1 overflow-auto p-6">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-xl font-semibold text-slate-800 mb-6">Create Zonal User</h1>
+
+        <form action="/create-account-zonal/create-zonal-user" method="POST" class="space-y-6">
+
+            <div>
+                <label class="block text-xs font-medium text-slate-500 mb-1.5">Full Name <span
+                        class="text-red-500">*</span></label>
+                <input name="fullName" type="text" required class="w-full border border-slate-200 rounded-xl px-4 py-3">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-500 mb-1.5">Login ID <span
+                        class="text-red-500">*</span></label>
+                <input name="loginId" type="text" required class="w-full border border-slate-200 rounded-xl px-4 py-3">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-500 mb-1.5">Email Address</label>
+                <input name="email" type="email" class="w-full border border-slate-200 rounded-xl px-4 py-3">
+            </div>
+
+            <!-- Bank -->
+            <div>
+                <label class="block text-xs font-medium text-slate-500 mb-1.5">Bank <span
+                        class="text-red-500">*</span></label>
+                <select name="bank" id="bankSelect" required class="w-full border border-slate-200 rounded-xl px-4 py-3"
+                    onchange="loadZones()">
+                    <option value="">Select Bank</option>
+                    <% banks.forEach(bank=> { %>
+                        <option value="<%= bank._id %>">
+                            <%= bank.bankName %>
+                        </option>
+                        <% }); %>
+                </select>
+            </div>
+
+            <!-- Zone -->
+            <div>
+                <label class="block text-xs font-medium text-slate-500 mb-1.5">Zone <span
+                        class="text-red-500">*</span></label>
+                <select name="zone" id="zoneSelect" required
+                    class="w-full border border-slate-200 rounded-xl px-4 py-3">
+                    <option value="">Select Zone</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-500 mb-1.5">Password <span
+                        class="text-red-500">*</span></label>
+                <input name="password" type="password" required
+                    class="w-full border border-slate-200 rounded-xl px-4 py-3">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-500 mb-1.5">Confirm Password <span
+                        class="text-red-500">*</span></label>
+                <input name="confirmPassword" type="password" required
+                    class="w-full border border-slate-200 rounded-xl px-4 py-3">
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-2xl">
+                Create Zonal User
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    async function loadZones() {
+        const bankId = document.getElementById('bankSelect').value;
+        const zoneSelect = document.getElementById('zoneSelect');
+        zoneSelect.innerHTML = '<option value="">Loading...</option>';
+
+        if (!bankId) {
+            zoneSelect.innerHTML = '<option value="">Select Zone</option>';
+            return;
+        }
+
+        const res = await fetch(`/master-data/zones?bankId=${bankId}`);
+        const zones = await res.json();
+
+        zoneSelect.innerHTML = '<option value="">Select Zone</option>';
+        zones.forEach(zone => {
+            zoneSelect.innerHTML += `<option value="${zone._id}">${zone.zoneName}</option>`;
+        });
+    }
+</script>

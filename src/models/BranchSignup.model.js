@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-require("dotenv").config();
 
 const BranchSchema = new mongoose.Schema(
   {
@@ -15,7 +14,7 @@ const BranchSchema = new mongoose.Schema(
       type: String,
       trim: true,
       lowercase: true,
-      sparse: true // Allows null/empty
+      sparse: true
     },
     role: {
       type: String,
@@ -23,15 +22,24 @@ const BranchSchema = new mongoose.Schema(
       default: "branch"
     },
     zone: {
-      type: String,
-      enum: ["north", "south", "east", "west", "central", "all"],
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Zone",
       required: true
     },
-
     bank: {
-      type: String,
-      required: true,
-      trim: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Bank",
+      required: true
+    },
+    region: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Region",
+      required: true
+    },
+    branch: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Branch",
+      required: true
     },
     password: { type: String, required: true },
     status: {

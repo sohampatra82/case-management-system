@@ -6,147 +6,211 @@ const AdminModel = require("../models/Admin.model");
 const ZonalModel = require("../models/ZonalSignUp.model");
 const RegionalModel = require("../models/RegionalSignup.model");
 const BranchModel = require("../models/BranchSignup.model");
+const { Zone, Bank, Region } = require("../models/MasterData.model");
 
 // ====================== LIST ALL USERS ======================
 router.get("/", async (req, res) => {
-    try {
-        const admins = await AdminModel.find({}).lean();
-        const zonals = await ZonalModel.find({}).lean();
-        const regionals = await RegionalModel.find({}).lean();
-        const branches = await BranchModel.find({}).lean();
+  try {
+    const admins = await AdminModel.find({}).lean();
 
-        const allUsers = [
-            ...admins.map(user => ({
-                id: user._id,
-                fullName: user.fullName,
-                username: user.username,
-                role: user.role || "SUPER_ADMIN",
-                scope: "All Zones (Global)",
-                color: "blue",
-                initials: getInitials(user.fullName),
-                type: "ADMIN",
-                model: "Admin"
-            })),
-            ...zonals.map(user => ({
-                id: user._id,
-                fullName: user.fullName,
-                username: user.loginId,
-                role: "ZONAL",
-                scope: `Zone: ${user.zone?.toUpperCase() || 'N/A'}`,
-                color: "violet",
-                initials: getInitials(user.fullName),
-                type: "ZONAL",
-                model: "Zonal"
-            })),
-            ...regionals.map(user => ({
-                id: user._id,
-                fullName: user.fullName,
-                username: user.loginId,
-                role: "REGIONAL",
-                scope: `Region: ${user.zone?.toUpperCase() || 'N/A'}`,
-                color: "emerald",
-                initials: getInitials(user.fullName),
-                type: "REGIONAL",
-                model: "Regional"
-            })),
-            ...branches.map(user => ({
-                id: user._id,
-                fullName: user.fullName,
-                username: user.loginId,
-                role: "BRANCH",
-                scope: user.bank ? `Branch: ${user.bank}` : "Branch: N/A",
-                color: "amber",
-                initials: getInitials(user.fullName),
-                type: "BRANCH",
-                model: "Branch"
-            }))
-        ];
+    const zonals = await ZonalModel.find({})
+      .populate("zone", "zoneName")
+      .populate("bank", "bankName")
+      .lean();
 
-        res.render("adminAllUsers", { users: allUsers, totalUsers: allUsers.length });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Server Error");
+    const regionals = await RegionalModel.find({})
+      .populate("zone", "zoneName")
+      .populate("region", "regionName")
+      .populate("bank", "bankName")
+      .lean();
+
+    const branches = await BranchModel.find({})
+      .populate("bank", "bankName")
+      .populate("zone", "zoneName")
+      .populate("region", "regionName")
+      .populate("branch", "branchName")
+      .lean();
+
+    const allUsers = [
+      ...admins.map(user => ({
+        id: user._id,
+        fullName: user.fullName,
+        username: user.username,
+        role: user.role || "SUPER_ADMIN",
+        scope: "All Zones (Global)",
+        color: "blue",
+        initials: getInitials(user.fullName),
+        type: "ADMIN",
+        model: "Admin"
+      })),
+
+      ...zonals.map(user => ({
+        id: user._id,
+        fullName: user.fullName,
+        username: user.loginId,
+        role: "ZONAL",
+        scope: user.zone ? `Zone: ${user.zone.zoneName}` : "N/A",
+        color: "violet",
+        initials: getInitials(user.fullName),
+        type: "ZONAL",
+        model: "Zonal"
+      })),
+
+      ...regionals.map(user => ({
+        id: user._id,
+        fullName: user.fullName,
+        username: user.loginId,
+        role: "REGIONAL",
+        scope: user.region ? `Region: ${user.region.regionName}` : "N/A",
+        color: "emerald",
+        initials: getInitials(user.fullName),
+        type: "REGIONAL",
+        model: "Regional"
+      })),
+
+      ...branches.map(user => ({
+        id: user._id,
+        fullName: user.fullName,
+        username: user.loginId,
+        role: "BRANCH",
+        scope: user.branch
+          ? `Branch: ${user.branch.branchName}`
+          : "Branch: N/A",
+        color: "amber",
+        initials: getInitials(user.fullName),
+        type: "BRANCH",
+        model: "Branch"
+      }))
+    ];
+
+    res.render("adminAllUsers", {
+      users: allUsers,
+      totalUsers: allUsers.length
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).send("Server Error");
+  }
+});
+
+// ====================== DELETE USER API ======================
+router.delete("/delete/:model/:id", async (req, res) => {
+  try {
+    const { model, id } = req.params;
+
+    let deletedUser = null;
+
+    switch (model) {
+      case "Admin":
+        deletedUser = await AdminModel.findByIdAndDelete(id);
+        break;
+
+      case "Zonal":
+        deletedUser = await ZonalModel.findByIdAndDelete(id);
+        break;
+
+      case "Regional":
+        deletedUser = await RegionalModel.findByIdAndDelete(id);
+        break;
+
+      case "Branch":
+        deletedUser = await BranchModel.findByIdAndDelete(id);
+        break;
+
+      default:
+        return res.status(400).json({
+          success: false,
+          message: "Invalid model type"
+        });
     }
+
+    if (!deletedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `${model} user deleted successfully`
+    });
+  } catch (error) {
+    console.error("Delete error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while deleting user"
+    });
+  }
 });
 
 // ====================== EDIT PAGE ======================
 router.get("/edit/:model/:id", async (req, res) => {
-    try {
-        const { model, id } = req.params;
-        let user = null;
+  try {
+    const { model, id } = req.params;
+    let user = null;
+    let banks = [],
+      zones = [],
+      regions = [];
 
-        if (model === "Admin") {
-            user = await AdminModel.findById(id).lean();
-            user.model = "Admin";
-        } else if (model === "Zonal") {
-            user = await ZonalModel.findById(id).lean();
-            user.model = "Zonal";
-        } else if (model === "Regional") {
-            user = await RegionalModel.findById(id).lean();
-            user.model = "Regional";
-        } else if (model === "Branch") {
-            user = await BranchModel.findById(id).lean();
-            user.model = "Branch";
-        }
+    if (model === "Admin") {
+      user = await AdminModel.findById(id).lean();
+      user.model = "Admin";
+    } else if (model === "Zonal") {
+      user = await ZonalModel.findById(id)
+        .populate("zone", "zoneName")
+        .populate("bank", "bankName")
+        .lean();
+      user.model = "Zonal";
 
-        if (!user) {
-            return res.status(404).send("User not found");
-        }
+      banks = await Bank.find({ isActive: true }).sort({ bankName: 1 });
+      if (user.bank) {
+        zones = await Zone.find({ bank: user.bank, isActive: true });
+      }
+    } else if (model === "Regional") {
+      user = await RegionalModel.findById(id)
+        .populate("region", "regionName")
+        .populate("zone", "zoneName")
+        .populate("bank", "bankName")
+        .lean();
+      user.model = "Regional";
 
-        res.render("adminEditUser", { user });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Server Error");
+      banks = await Bank.find({ isActive: true }).sort({ bankName: 1 });
+      if (user.bank)
+        zones = await Zone.find({ bank: user.bank, isActive: true });
+      if (user.zone)
+        regions = await Region.find({ zone: user.zone, isActive: true });
+    } else if (model === "Branch") {
+      user = await BranchModel.findById(id)
+        .populate("bank", "bankName")
+        .populate("zone", "zoneName")
+        .populate("region", "regionName")
+        .populate("branch", "branchName")
+        .lean();
+
+      user.model = "Branch";
+      banks = await Bank.find({ isActive: true }).sort({ bankName: 1 });
     }
+
+    if (!user) return res.status(404).send("User not found");
+
+    res.render("adminEditUser", { user, banks, zones, regions });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
 });
 
-// ====================== UPDATE USER ======================
-router.post("/edit/:model/:id", async (req, res) => {
-    try {
-        const { model, id } = req.params;
-        const { fullName, username, zone, bank } = req.body;
-
-        let updatedUser;
-
-        if (model === "Admin") {
-            updatedUser = await AdminModel.findByIdAndUpdate(id, { fullName, username }, { new: true });
-        } else if (model === "Zonal" || model === "Regional" || model === "Branch") {
-            updatedUser = await (model === "Zonal" ? ZonalModel :
-                                model === "Regional" ? RegionalModel : BranchModel)
-                .findByIdAndUpdate(id, { fullName, loginId: username?.toUpperCase(), zone, bank }, { new: true });
-        }
-
-        if (!updatedUser) return res.status(404).send("User not found");
-
-        res.redirect("/admin-users");
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Update failed");
-    }
-});
-
-// ====================== DELETE USER ======================
-router.delete("/delete/:model/:id", async (req, res) => {
-    try {
-        const { model, id } = req.params;
-        let result;
-
-        if (model === "Admin") result = await AdminModel.findByIdAndDelete(id);
-        else if (model === "Zonal") result = await ZonalModel.findByIdAndDelete(id);
-        else if (model === "Regional") result = await RegionalModel.findByIdAndDelete(id);
-        else if (model === "Branch") result = await BranchModel.findByIdAndDelete(id);
-
-        if (!result) return res.status(404).json({ success: false, message: "User not found" });
-
-        res.json({ success: true, message: "User deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Delete failed" });
-    }
-});
-
+// Helper Functions
 function getInitials(name) {
-    if (!name) return "NA";
-    return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+  if (!name || typeof name !== "string") return "NA";
+  return name
+    .trim()
+    .split(/\s+/)
+    .map(n => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 }
 
 module.exports = router;

@@ -11,12 +11,11 @@ router.get("/", (req, res) => {
 router.post("/banks", async (req, res) => {
   try {
     const { bankName } = req.body;
-    if (!bankName)
-      return res
-        .status(400)
-        .json({ success: false, message: "Bank name required" });
+    if (!bankName?.trim()) {
+      return res.status(400).json({ success: false, message: "Bank name required" });
+    }
 
-    const bank = new Bank({ bankName });
+    const bank = new Bank({ bankName: bankName.trim() });
     await bank.save();
     res.status(201).json({ success: true, data: bank });
   } catch (err) {
@@ -32,7 +31,12 @@ router.get("/banks", async (req, res) => {
 // ====================== ZONES ======================
 router.post("/zones", async (req, res) => {
   try {
-    const zone = new Zone(req.body);
+    const { zoneName, bank } = req.body;
+    if (!zoneName?.trim() || !bank) {
+      return res.status(400).json({ success: false, message: "Zone name and Bank are required" });
+    }
+
+    const zone = new Zone({ zoneName: zoneName.trim(), bank });
     await zone.save();
     res.status(201).json({ success: true, data: zone });
   } catch (err) {
@@ -51,17 +55,15 @@ router.get("/zones", async (req, res) => {
 router.post("/regions", async (req, res) => {
   try {
     const { regionName, bank, zone } = req.body;
-
-    if (!regionName || !bank || !zone) {
+    if (!regionName?.trim() || !bank || !zone) {
       return res.status(400).json({
         success: false,
         message: "Bank, Zone and Region Name are required"
       });
     }
 
-    const region = new Region({ regionName, bank, zone });
+    const region = new Region({ regionName: regionName.trim(), bank, zone });
     await region.save();
-
     res.status(201).json({ success: true, data: region });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
@@ -79,17 +81,20 @@ router.get("/regions", async (req, res) => {
 router.post("/branches", async (req, res) => {
   try {
     const { branchName, bank, zone, region } = req.body;
-
-    if (!branchName || !bank || !zone || !region) {
+    if (!branchName?.trim() || !bank || !zone || !region) {
       return res.status(400).json({
         success: false,
         message: "Bank, Zone, Region and Branch Name are required"
       });
     }
 
-    const branch = new Branch({ branchName, bank, zone, region });
+    const branch = new Branch({ 
+      branchName: branchName.trim(), 
+      bank, 
+      zone, 
+      region 
+    });
     await branch.save();
-
     res.status(201).json({ success: true, data: branch });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
@@ -98,11 +103,50 @@ router.post("/branches", async (req, res) => {
 
 router.get("/branches", async (req, res) => {
   const { regionId } = req.query;
-  const filter = regionId
-    ? { region: regionId, isActive: true }
-    : { isActive: true };
+  const filter = regionId ? { region: regionId, isActive: true } : { isActive: true };
   const branches = await Branch.find(filter).populate("region", "regionName");
   res.json(branches);
+});
+
+// ====================== DELETE ROUTES ======================
+router.delete("/banks/:id", async (req, res) => {
+  try {
+    const item = await Bank.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
+    if (!item) return res.status(404).json({ success: false, message: "Bank not found" });
+    res.json({ success: true, message: "Bank deleted successfully" });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
+
+router.delete("/zones/:id", async (req, res) => {
+  try {
+    const item = await Zone.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
+    if (!item) return res.status(404).json({ success: false, message: "Zone not found" });
+    res.json({ success: true, message: "Zone deleted successfully" });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
+
+router.delete("/regions/:id", async (req, res) => {
+  try {
+    const item = await Region.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
+    if (!item) return res.status(404).json({ success: false, message: "Region not found" });
+    res.json({ success: true, message: "Region deleted successfully" });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
+
+router.delete("/branches/:id", async (req, res) => {
+  try {
+    const item = await Branch.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
+    if (!item) return res.status(404).json({ success: false, message: "Branch not found" });
+    res.json({ success: true, message: "Branch deleted successfully" });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
 });
 
 module.exports = router;

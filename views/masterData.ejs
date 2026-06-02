@@ -531,6 +531,34 @@
     document.addEventListener('DOMContentLoaded', () => {
         showTab(0);
     });
+
+    async function deleteItem(type, id) {
+            if (!confirm(`Are you sure you want to delete this ${type.slice(0, -1)}?`)) return;
+
+            try {
+                const res = await fetch(`/master-data/${type}/${id}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    alert(`✅ ${type.slice(0, -1).toUpperCase()} deleted successfully!`);
+
+                    // Refresh current tab
+                    const activeTab = document.querySelector('.tab-button.active').dataset.tab;
+                    if (activeTab === '0') loadBanks();
+                    if (activeTab === '1') loadZones();
+                    if (activeTab === '2') loadRegions();
+                    if (activeTab === '3') loadBranches();
+                } else {
+                    alert("❌ " + (data.message || "Failed to delete"));
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Network error");
+            }
+        }
 </script>
 
 <style>

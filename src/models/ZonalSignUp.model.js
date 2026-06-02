@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-require("dotenv").config();
 
 const ZonalSchema = new mongoose.Schema(
   {
@@ -15,23 +14,26 @@ const ZonalSchema = new mongoose.Schema(
       type: String,
       trim: true,
       lowercase: true,
-      sparse: true // Allows null/empty
+      sparse: true
     },
     role: {
       type: String,
       enum: ["zonal", "regional", "branch"],
       default: "zonal"
     },
-    zone: {
-      type: String,
-      enum: ["north", "south", "east", "west", "central", "all"],
+
+    // ✅ Changed to ObjectId for proper linking with Master Data
+    bank: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Bank",
       required: true
     },
-    bank: {
-      type: String,
-      required: true,
-      trim: true
+    zone: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Zone",
+      required: true
     },
+
     password: { type: String, required: true },
     status: {
       type: String,

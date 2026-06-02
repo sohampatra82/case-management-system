@@ -1,3 +1,12 @@
 a8yOgZ9pjcOljJI6
 
 mongodb+srv://case-manage:a8yOgZ9pjcOljJI6@cluster0.3zlr9.mongodb.net/
+
+
+
+ <p><strong>Outstanding Amount:</strong> ₹${Number(caseDoc.outstandingAmount || 0).toLocaleString('en-IN')}</p>
+ 
+  <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/admin-case" 
+           style="background-color: #1e40af; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+           View Case Details
+        </a>

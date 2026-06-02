@@ -221,40 +221,44 @@
                             </select>
                         </div>
         
-                        <!-- Access Level / Zone -->
-                        <div>
-                            <label class="block text-xs font-medium text-slate-500 mb-1.5">
-                                Access Level (Zone)
-                            </label>
-        
-                            <select name="zone"
-                                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
-        
-                                <option value="">Select Zone</option>
-                                <option value="north">North Zone</option>
-                                <option value="south">South Zone</option>
-                                <option value="east">East Zone</option>
-                                <option value="west" selected>West Zone</option>
-                                <option value="central">Central Zone</option>
-                                <option value="all">All Zones</option>
-                            </select>
-                        </div>
-        
                     <!-- Bank -->
                     <div>
-                        <label class="block text-xs font-medium text-slate-500 mb-1.5">
-                            Bank
-                        </label>
-                    
-                        <select name="bank"
-                            class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors">
-                    
+                        <label class="block text-xs font-medium text-slate-500 mb-1.5">Bank <span class="text-red-500">*</span></label>
+                        <select name="bank" id="bank" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm">
                             <option value="">Select Bank</option>
-                            <option value="SBI">SBI</option>
-                            <option value="HDFC">HDFC</option>
-                            <option value="PNB">PNB</option>
+                            <% banks.forEach(bank=> { %>
+                                <option value="<%= bank._id %>">
+                                    <%= bank.bankName %>
+                                </option>
+                                <% }) %>
                         </select>
                     </div>
+
+
+                        
+                <!-- Zone -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 mb-1.5">Zone <span class="text-red-500">*</span></label>
+                    <select name="zone" id="zone" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm">
+                        <option value="">Select Zone</option>
+                    </select>
+                </div>
+        
+                <!-- Region -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 mb-1.5">Region <span class="text-red-500">*</span></label>
+                    <select name="region" id="region" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm">
+                        <option value="">Select Region</option>
+                    </select>
+                </div>
+                
+                <!-- Branch -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 mb-1.5">Branch <span class="text-red-500">*</span></label>
+                    <select name="branch" id="branch" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm">
+                        <option value="">Select Branch</option>
+                    </select>
+                </div>
 
 
                         <!-- Password -->
@@ -317,6 +321,61 @@
 
         </div>
     </div>
+
+
+<script>
+    // Cascading Dropdowns
+    const bankSelect = document.getElementById('bank');
+    const zoneSelect = document.getElementById('zone');
+    const regionSelect = document.getElementById('region');
+    const branchSelect = document.getElementById('branch');
+
+    bankSelect.addEventListener('change', async () => {
+        const bankId = bankSelect.value;
+        if (!bankId) return;
+
+        zoneSelect.innerHTML = '<option value="">Loading...</option>';
+
+        const res = await fetch(`/master-data/zones?bankId=${bankId}`);
+        const zones = await res.json();
+
+        zoneSelect.innerHTML = '<option value="">Select Zone</option>';
+        zones.forEach(z => {
+            zoneSelect.innerHTML += `<option value="${z._id}">${z.zoneName}</option>`;
+        });
+    });
+
+    zoneSelect.addEventListener('change', async () => {
+        const zoneId = zoneSelect.value;
+        if (!zoneId) return;
+
+        regionSelect.innerHTML = '<option value="">Loading...</option>';
+
+        const res = await fetch(`/master-data/regions?zoneId=${zoneId}`);
+        const regions = await res.json();
+
+        regionSelect.innerHTML = '<option value="">Select Region</option>';
+        regions.forEach(r => {
+            regionSelect.innerHTML += `<option value="${r._id}">${r.regionName}</option>`;
+        });
+    });
+
+    regionSelect.addEventListener('change', async () => {
+        const regionId = regionSelect.value;
+        if (!regionId) return;
+
+        branchSelect.innerHTML = '<option value="">Loading...</option>';
+
+        const res = await fetch(`/master-data/branches?regionId=${regionId}`);
+        const branches = await res.json();
+
+        branchSelect.innerHTML = '<option value="">Select Branch</option>';
+        branches.forEach(b => {
+            branchSelect.innerHTML += `<option value="${b._id}">${b.branchName}</option>`;
+        });
+    });
+</script>
+
 
     <script>
         function logout() {

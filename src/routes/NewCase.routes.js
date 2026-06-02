@@ -1,12 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const { Bank } = require("../models/MasterData.model");
 const NewCaseModel = require("../models/NewCase.model");
+const { sendCaseNotification } = require("../utils/emailService");
 
 // Render Form
 router.get("/", async (req, res) => {
   try {
-    const banks = await Bank.find({ isActive: true }).sort({ bankName: 1 });
+    const banks = await require("../models/MasterData.model").Bank
+      .find({ isActive: true })
+      .sort({ bankName: 1 });
     res.render("newCase", { banks });
   } catch (error) {
     console.error(error);
@@ -14,62 +16,29 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Create Case
+// Create Case + Send Email Notification
 router.post("/", async (req, res) => {
   try {
     const {
-      borrowerName,
-    //   loanAccountNumber,
-      outstandingAmount,
-      propertyAddress,
-
-      bank,
-      zone,
-      region,
-      branch,
-
-      currentStage,
-      initialRemarks,
-
-      allotmentDate,
-      noticeDate13_2,
-      ackDate,
-      noticeDate13_4,
-      publicationDate,
-
-      court,
-      filedBy,
-      applicationDate,
-      filingDate,
-      hearingDate,
-      orderDate,
-      advocateCommissioner,
-
-      policeLetterDate,
-      costReceiveDate,
-      costDepositDate,
-      preIntimationDate,
-      possessionDate,
-      saleDate
+      borrowerName, outstandingAmount, propertyAddress,
+      bank, zone, region, branch,
+      currentStage, initialRemarks,
+      allotmentDate, noticeDate13_2, ackDate, noticeDate13_4, publicationDate,
+      court, filedBy, applicationDate, filingDate, hearingDate, orderDate, advocateCommissioner,
+      policeLetterDate, costReceiveDate, costDepositDate, preIntimationDate, possessionDate, saleDate
     } = req.body;
 
-    // Required Field Validation
     if (!borrowerName || !bank || !zone || !region || !branch) {
       return res.status(400).send("Error: Borrower Name, Bank, Zone, Region and Branch are required");
     }
 
     const newCase = new NewCaseModel({
       caseNumber: `CASE-${Date.now()}`,
-
       borrowerName: borrowerName?.trim(),
-      // loanAccountNumber: loanAccountNumber?.trim() || "",
       outstandingAmount: Number(outstandingAmount) || 0,
       propertyAddress: propertyAddress?.trim() || "",
 
-      bank,
-      zone,
-      region,
-      branch,
+      bank, zone, region, branch,
 
       currentStage: currentStage || "ALLOTMENT",
       initialRemarks: initialRemarks?.trim() || "",
@@ -97,6 +66,9 @@ router.post("/", async (req, res) => {
     });
 
     await newCase.save();
+
+    // 🔥 Send Email Notification to Zone, Region & Branch Users
+    await sendCaseNotification(newCase);
 
     res.redirect("/admin-case?success=true");
 

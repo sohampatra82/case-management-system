@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-require("dotenv").config();
 
 const RegionalSchema = new mongoose.Schema(
   {
@@ -19,24 +18,31 @@ const RegionalSchema = new mongoose.Schema(
       type: String,
       trim: true,
       lowercase: true,
-      sparse: true // Allows null/empty
+      sparse: true
     },
     role: {
       type: String,
       enum: ["zonal", "regional", "branch"],
-      default: "branch"
+      default: "regional"
+    },
+
+    // ✅ Now using ObjectId to match Master Data
+    bank: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Bank",
+      required: true
     },
     zone: {
-      type: String,
-      enum: ["north", "south", "east", "west", "central", "all"],
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Zone",
+      required: true
+    },
+    region: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Region",
       required: true
     },
 
-    bank: {
-      type: String,
-      required: true,
-      trim: true
-    },
     password: { type: String, required: true },
     status: {
       type: String,
