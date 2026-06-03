@@ -8,29 +8,38 @@ router.get("/", (req, res) => res.render("adminReports"));
 // ==================== CSV DOWNLOAD - FIXED ====================
 router.get("/download/csv", async (req, res) => {
   try {
-    const cases = await NewCaseModel.find({}).lean().sort({ createdAt: -1 });
+  const cases = await NewCaseModel.find({})
+  .populate("bank", "bankName")
+  .populate("zone", "zoneName")
+  .populate("region", "regionName")
+  .populate("branch", "branchName")
+  .lean()
+  .sort({ createdAt: -1 });
 
     let csv =
       "SI No,Bank,Zone,Region,Branch,Account Name,Stage,Allotment Date,13(2) Date,13(4) Date,Possession Date,Created At\n";
 
 cases.forEach((c, i) => {
-  const formatDate = dateField => {
-    if (!dateField) return "";
-    const date = new Date(dateField);
+  const formatDate = (d) => {
+    if (!d) return "";
+    const date = new Date(d);
     return isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0];
   };
 
   csv +=
-    `${i + 1},"${c.bank || ""}","${c.zone || ""}","${c.region ||
-      ""}","${c.branch || ""}","${(c.accountName || "")
-      .replace(/"/g, '""')}","${c.currentStage || ""}",` +
-    `"${formatDate(c.allotmentDate)}","${formatDate(
-      c.noticeDate13_2
-    )}","${formatDate(c.noticeDate13_4)}","${formatDate(
-      c.possessionDate
-    )}","${formatDate(c.createdAt)}"\n`;
+    `${i + 1},` +
+    `"${c.bank?.bankName || ""}",` +
+    `"${c.zone?.zoneName || ""}",` +
+    `"${c.region?.regionName || ""}",` +
+    `"${c.branch?.branchName || ""}",` +
+    `"${c.borrowerName || ""}",` +
+    `"${c.currentStage || ""}",` +
+    `"${formatDate(c.allotmentDate)}",` +
+    `"${formatDate(c.noticeDate13_2)}",` +
+    `"${formatDate(c.noticeDate13_4)}",` +
+    `"${formatDate(c.possessionDate)}",` +
+    `"${formatDate(c.createdAt)}"\n`;
 });
-
     res.setHeader("Content-Type", "text/csv");
     res.setHeader(
       "Content-Disposition",

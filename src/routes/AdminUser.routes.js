@@ -93,7 +93,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ====================== DELETE USER API ======================
+// ====================== DELETE USER ======================
 router.delete("/delete/:model/:id", async (req, res) => {
   try {
     const { model, id } = req.params;
@@ -104,47 +104,37 @@ router.delete("/delete/:model/:id", async (req, res) => {
       case "Admin":
         deletedUser = await AdminModel.findByIdAndDelete(id);
         break;
-
       case "Zonal":
         deletedUser = await ZonalModel.findByIdAndDelete(id);
         break;
-
       case "Regional":
         deletedUser = await RegionalModel.findByIdAndDelete(id);
         break;
-
       case "Branch":
         deletedUser = await BranchModel.findByIdAndDelete(id);
         break;
-
       default:
-        return res.status(400).json({
-          success: false,
-          message: "Invalid model type"
-        });
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid model type" });
     }
 
     if (!deletedUser) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found"
-      });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
-    res.json({
-      success: true,
-      message: `${model} user deleted successfully`
-    });
+    res.json({ success: true, message: `${model} user deleted successfully` });
   } catch (error) {
     console.error("Delete error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error while deleting user"
-    });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error while deleting user" });
   }
 });
 
-// ====================== EDIT PAGE ======================
+// ====================== EDIT PAGE (GET) ======================
 router.get("/edit/:model/:id", async (req, res) => {
   try {
     const { model, id } = req.params;
@@ -201,7 +191,55 @@ router.get("/edit/:model/:id", async (req, res) => {
   }
 });
 
-// Helper Functions
+// ====================== UPDATE USER (POST) - IMPORTANT ======================
+router.post("/edit/:model/:id", async (req, res) => {
+  try {
+    const { model, id } = req.params;
+    const updateData = { ...req.body };
+
+    // Remove unwanted fields
+    delete updateData._method;
+    delete updateData.model;
+
+    let updatedUser = null;
+
+    switch (model) {
+      case "Admin":
+        updatedUser = await AdminModel.findByIdAndUpdate(id, updateData, {
+          new: true
+        });
+        break;
+      case "Zonal":
+        updatedUser = await ZonalModel.findByIdAndUpdate(id, updateData, {
+          new: true
+        });
+        break;
+      case "Regional":
+        updatedUser = await RegionalModel.findByIdAndUpdate(id, updateData, {
+          new: true
+        });
+        break;
+      case "Branch":
+        updatedUser = await BranchModel.findByIdAndUpdate(id, updateData, {
+          new: true
+        });
+        break;
+      default:
+        return res.status(400).send("Invalid model type");
+    }
+
+    if (!updatedUser) {
+      return res.status(404).send("User not found");
+    }
+
+    res.redirect("/admin-users?success=User updated successfully");
+  } catch (error) {
+    console.error("Update error:", error);
+    res.status(500).send("Server Error while updating user");
+  }
+});
+
+// Helper Function
 function getInitials(name) {
   if (!name || typeof name !== "string") return "NA";
   return name
