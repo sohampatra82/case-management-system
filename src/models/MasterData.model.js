@@ -1,9 +1,15 @@
 const mongoose = require("mongoose");
 
 // Bank Schema
+
 const bankSchema = new mongoose.Schema(
   {
-    bankName: { type: String, required: true, unique: true, trim: true },
+    bankName: { 
+      type: String, 
+      required: true, 
+      trim: true 
+      // unique: true  ← Remove this line
+    },
     isActive: { type: Boolean, default: true }
   },
   { timestamps: true }

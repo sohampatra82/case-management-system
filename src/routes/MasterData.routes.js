@@ -10,13 +10,38 @@ router.get("/", (req, res) => {
 // ====================== BANKS ======================
 router.post("/banks", async (req, res) => {
   try {
-    const { bankName } = req.body;
-    if (!bankName?.trim()) {
+    let { bankName } = req.body;
+    bankName = bankName?.trim();
+    
+    if (!bankName) {
       return res.status(400).json({ success: false, message: "Bank name required" });
     }
 
-    const bank = new Bank({ bankName: bankName.trim() });
+    // Check if bank already exists (active or inactive)
+    let existingBank = await Bank.findOne({ bankName: { $regex: new RegExp(`^${bankName}$`, 'i') } });
+
+    if (existingBank) {
+      if (existingBank.isActive) {
+        return res.status(409).json({ 
+          success: false, 
+          message: "Bank with this name already exists" 
+        });
+      } else {
+        // Reactivate the soft-deleted bank
+        existingBank.isActive = true;
+        await existingBank.save();
+        return res.status(200).json({ 
+          success: true, 
+          message: "Bank reactivated successfully", 
+          data: existingBank 
+        });
+      }
+    }
+
+    // Create new bank
+    const bank = new Bank({ bankName });
     await bank.save();
+
     res.status(201).json({ success: true, data: bank });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
@@ -111,9 +136,18 @@ router.get("/branches", async (req, res) => {
 // ====================== DELETE ROUTES ======================
 router.delete("/banks/:id", async (req, res) => {
   try {
-    const item = await Bank.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
-    if (!item) return res.status(404).json({ success: false, message: "Bank not found" });
-    res.json({ success: true, message: "Bank deleted successfully" });
+    const bankId = req.params.id;
+
+    // Soft delete bank
+    const bank = await Bank.findByIdAndUpdate(bankId, { isActive: false }, { new: true });
+    if (!bank) return res.status(404).json({ success: false, message: "Bank not found" });
+
+    // Cascade soft delete to children
+    await Zone.updateMany({ bank: bankId }, { isActive: false });
+    await Region.updateMany({ bank: bankId }, { isActive: false });
+    await Branch.updateMany({ bank: bankId }, { isActive: false });
+
+    res.json({ success: true, message: "Bank and related data deleted successfully" });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
   }
