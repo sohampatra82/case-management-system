@@ -319,7 +319,7 @@
         });
         const data = await res.json();
         if (data.success) {
-            alert("Bank added successfully!");
+            alert("✅ Bank added successfully!");
             document.getElementById('bankName').value = '';
             loadBanks();
         }
@@ -363,7 +363,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ zoneName, bank })
         });
-        alert("Zone added successfully!");
+        alert("✅ Zone added successfully!");
         document.getElementById('zoneName').value = '';
         loadZones();
     }
