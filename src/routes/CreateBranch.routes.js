@@ -37,12 +37,43 @@ router.post(
   async (req, res) => {
     try {
       const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.send(
-          `<h2>Validation Error: ${errors.array()[0]
-            .msg}</h2><a href="/create-account-branch">Try Again</a>`
-        );
-      }
+   if (!errors.isEmpty()) {
+     const errorMessage = errors.array()[0].msg;
+
+     return res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Validation Error</title>
+      <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+      <div class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+
+        <div class="w-20 h-20 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4">
+          <span class="text-4xl">⚠️</span>
+        </div>
+
+        <h2 class="text-2xl font-bold text-red-600 mb-3">
+          Validation Failed
+        </h2>
+
+        <p class="text-gray-700 mb-6">
+          ${errorMessage}
+        </p>
+
+        <a href="/create-account-branch"
+           class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition">
+           Go Back
+        </a>
+
+      </div>
+
+    </body>
+    </html>
+  `);
+   }
 
       const {
         fullName,
@@ -59,11 +90,44 @@ router.post(
         $or: [{ loginId: loginId.toUpperCase() }, { email }]
       });
 
-      if (existingUser) {
-        return res.send(
-          `<h2>Login ID or Email already exists!</h2><a href="/create-account-branch">Try Again</a>`
-        );
-      }
+ if (existingUser) {
+   return res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>User Already Exists</title>
+      <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+      <div class="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full text-center">
+
+        <div class="text-6xl mb-4">⚠️</div>
+
+        <h2 class="text-2xl font-bold text-red-600 mb-3">
+          Login ID or Email Already Exists
+        </h2>
+
+        <p class="text-gray-600 mb-2">
+          Please use a different Login ID or Email.
+        </p>
+
+        <p class="text-sm text-gray-500">
+          Redirecting in 3 seconds...
+        </p>
+
+        <script>
+          setTimeout(() => {
+            window.location.href = "/create-account-branch";
+          }, 3000);
+        </script>
+
+      </div>
+
+    </body>
+    </html>
+  `);
+ }
 
       const hashPassword = await bcrypt.hash(password, 10);
 

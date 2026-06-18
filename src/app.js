@@ -51,6 +51,15 @@ const  CreateRegional = require("./routes/CreateRegional.routes");
 const caseViewRouter = require("./routes/CaseView.routes");
 const AllLoginRouter = require("./routes/AllLogin.routes");
 const MasterDataRouter = require("./routes/MasterData.routes");
+const ZonalDashboard = require("./routes/Zonal/Zonal.routes");
+const RegionalDashboard = require("./routes/Regional/Regional.routes");
+const BranchDashboard = require("./routes/Branch/Branch.routes");
+const ZonalCase = require("./routes/Zonal/ZonalCase.routes");
+const ZonalReports = require("./routes/Zonal/ZonalReports.routes");
+const RegionalCase = require("./routes/Regional/RegionalCase.routes");
+const RegionalReports = require("./routes/Regional/RegionalReports.routes");
+const BranchCase = require("./routes/Branch/BranchCase.routes");
+const BranchReports = require("./routes/Branch/BranchReports.routes");
 
 const currentUserMiddleware = require("./middleware/authMiddleware");
 app.use(currentUserMiddleware);
@@ -78,6 +87,15 @@ app.use(
   require("./routes/AdminChangePassword.routes")
 );
 app.use("/master-data", MasterDataRouter); 
+app.use("/zonal-dashboard", ZonalDashboard);
+app.use("/regional-dashboard", RegionalDashboard);
+app.use("/branch-dashboard", BranchDashboard);
+app.use("/zonal-case", ZonalCase);
+app.use("/zonal-reports", ZonalReports);
+app.use("/regional-case", RegionalCase);
+app.use("/regional-reports", RegionalReports);
+app.use("/branch-case", BranchCase);
+app.use("/branch-reports", BranchReports);
 
 // Make sure this is at the bottom (before module.exports)
 app.use((err, req, res, next) => {
