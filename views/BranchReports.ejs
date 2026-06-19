@@ -45,7 +45,8 @@
 <body class="bg-slate-100 min-h-screen">
 
     <!-- Mobile Overlay -->
-    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 md:hidden" onclick="closeSidebar()"></div>
+<div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 md:hidden hidden" onclick="closeSidebar()">
+</div>
 
     <div class="flex h-screen overflow-hidden">
 
@@ -282,17 +283,18 @@
             </script>
 
             <script>
-                function logout() {
+             function logout() {
                     if (confirm('Logout?')) window.location.href = '/';
                 }
-                function openSidebar() {
-                    document.getElementById('sidebar').classList.add('open');
-                    document.getElementById('sidebarOverlay').classList.add('active');
-                }
-                function closeSidebar() {
-                    document.getElementById('sidebar').classList.remove('open');
-                    document.getElementById('sidebarOverlay').classList.remove('active');
-                }
+         function openSidebar() {
+                document.getElementById('sidebar').classList.add('open');
+                document.getElementById('sidebarOverlay').classList.remove('hidden');
+            }
+
+            function closeSidebar() {
+                document.getElementById('sidebar').classList.remove('open');
+                document.getElementById('sidebarOverlay').classList.add('hidden');
+            }
             </script>
 </body>
 

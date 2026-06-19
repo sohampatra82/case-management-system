@@ -5,9 +5,9 @@ const AdminModel = require("../models/Admin.model");
 
 // Middleware - Protect Route
 const isSuperAdmin = (req, res, next) => {
-    if (req.session?.user?.role === "SUPER_ADMIN" || req.session?.user?.role === "super-admin") {
-        return next();
-    }
+  if (req.session?.user?.role === "admin") {
+    return next();
+}
 res.status(401).send(`
 <!DOCTYPE html>
 <html lang="en">

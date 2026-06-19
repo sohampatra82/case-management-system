@@ -49,13 +49,16 @@
 
 <body class="bg-slate-100 min-h-screen">
 
-    <!-- Mobile Overlay -->
-    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 md:hidden" onclick="closeSidebar()"></div>
+<!-- Mobile Overlay -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 md:hidden hidden" onclick="closeSidebar()">
+</div>
 
-    <div class="flex h-screen overflow-hidden">
+<div class="flex h-screen overflow-hidden">
 
-        <!-- Sidebar -->
-        <div id="sidebar" class="w-52 bg-[#0f172a] text-white flex flex-col flex-shrink-0 md:relative md:translate-x-0">
+    <!-- Sidebar -->
+    <div id="sidebar" class="w-52 bg-[#0f172a] text-white flex flex-col flex-shrink-0 md:relative md:translate-x-0">
+
+
             <div class="p-4 border-b border-slate-700 flex items-center gap-2">
                 <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
                     <i class="fa-solid fa-shield-halved text-xs"></i>
@@ -246,18 +249,18 @@
                 window.onload = fetchCases;
 
                 function logout() {
-                    if (confirm('Logout?')) window.location.href = '/';
-                }
+                        if (confirm('Logout?')) window.location.href = '/';
+                    }
 
-                function openSidebar() {
-                    document.getElementById('sidebar').classList.add('open');
-                    document.getElementById('sidebarOverlay').classList.add('active');
-                }
+                  function openSidebar() {
+                        document.getElementById('sidebar').classList.add('open');
+                        document.getElementById('sidebarOverlay').classList.remove('hidden');
+                    }
 
-                function closeSidebar() {
-                    document.getElementById('sidebar').classList.remove('open');
-                    document.getElementById('sidebarOverlay').classList.remove('active');
-                }
+                    function closeSidebar() {
+                        document.getElementById('sidebar').classList.remove('open');
+                        document.getElementById('sidebarOverlay').classList.add('hidden');
+                    }
             </script>
 </body>
 
