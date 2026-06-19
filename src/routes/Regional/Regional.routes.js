@@ -83,7 +83,7 @@ router.get("/", ensureRegionalUser, async (req, res) => {
             }
         ]);
 
-        res.render("regionalDashboard", {
+        res.render("RegionalDashboard", {
             totalCases,
             pendingCases,
             completedCases,

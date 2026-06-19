@@ -93,7 +93,7 @@ router.get("/", ensureZonalUser, async (req, res) => {
       }
     ]);
 
-    res.render("zonalDashboard", {
+    res.render("ZonalDashboard", {
       totalCases,
       pendingCases,
       completedCases,
