@@ -1,13 +1,23 @@
 const express = require("express");
 const router = express.Router();
 const NewCaseModel = require("../../models/NewCase.model");
+const auth = require("../../middleware/auth");
 
-router.get("/", (req, res) => {
+const ensureRegionalUser = (req, res, next) => {
+    if (!req.session?.user || 
+        String(req.session.user.role || "").toLowerCase() !== "regional" || 
+        !req.session.user.region) {
+        return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
+    }
+    next();
+};
+
+router.get("/", auth("regional"), ensureRegionalUser, (req, res) => {
   res.render("RegionalReports");
 });
 
 // DATA API FOR CHART
-router.get("/data", async (req, res) => {
+router.get("/data", auth("regional"), ensureRegionalUser, async (req, res) => {
   try {
     const regionId = req.session?.user?.region;
     if (!regionId) {

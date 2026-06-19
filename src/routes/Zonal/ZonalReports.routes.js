@@ -1,13 +1,26 @@
 const express = require("express");
 const router = express.Router();
 const NewCaseModel = require("../../models/NewCase.model");
+const auth = require("../../middleware/auth");
 
-router.get("/", (req, res) => {
+
+const ensureZonalUser = (req, res, next) => {
+  if (
+    !req.session.user ||
+    req.session.user.role !== "zonal" ||
+    !req.session.user.zone
+  ) {
+    return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
+  }
+  next();
+};
+
+router.get("/", auth("zonal"), ensureZonalUser, (req, res) => {
   res.render("ZonalReports");
 });
 
 // DATA API FOR CHART
-router.get("/data", async (req, res) => {
+router.get("/data", auth("zonal"), ensureZonalUser, async (req, res) => {
   console.log("SESSION:", req.session);
 
   try {
@@ -43,7 +56,7 @@ router.get("/data", async (req, res) => {
 });
 
 
-router.get("/download/csv", async (req, res) => {
+router.get("/download/csv", auth("zonal"), ensureZonalUser, async (req, res) => {
   try {
     const zoneId = req.session?.user?.zone;
     if (!zoneId) return res.status(401).send("Unauthorized");

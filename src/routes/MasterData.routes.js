@@ -1,14 +1,24 @@
 const express = require("express");
 const router = express.Router();
 const { Bank, Zone, Region, Branch } = require("../models/MasterData.model");
+const auth = require("../middleware/auth");
+
+const ensureAdminUser = (req, res, next) => {
+    if (!req.session?.user || 
+        String(req.session.user.role || "").toLowerCase() !== "admin"
+        ) {
+        return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
+    }
+    next();
+};
 
 // Render Master Data Page
-router.get("/", (req, res) => {
+router.get("/", auth("admin"), ensureAdminUser, (req, res) => {
   res.render("masterData");
 });
 
 // ====================== BANKS ======================
-router.post("/banks", async (req, res) => {
+router.post("/banks", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     let { bankName } = req.body;
     bankName = bankName?.trim();
@@ -54,7 +64,7 @@ router.get("/banks", async (req, res) => {
 });
 
 // ====================== ZONES ======================
-router.post("/zones", async (req, res) => {
+router.post("/zones", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     const { zoneName, bank } = req.body;
     if (!zoneName?.trim() || !bank) {
@@ -77,7 +87,7 @@ router.get("/zones", async (req, res) => {
 });
 
 // ====================== REGIONS ======================
-router.post("/regions", async (req, res) => {
+router.post("/regions", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     const { regionName, bank, zone } = req.body;
     if (!regionName?.trim() || !bank || !zone) {
@@ -103,7 +113,7 @@ router.get("/regions", async (req, res) => {
 });
 
 // ====================== BRANCHES ======================
-router.post("/branches", async (req, res) => {
+router.post("/branches", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     const { branchName, bank, zone, region } = req.body;
     if (!branchName?.trim() || !bank || !zone || !region) {
@@ -134,7 +144,7 @@ router.get("/branches", async (req, res) => {
 });
 
 // ====================== DELETE ROUTES ======================
-router.delete("/banks/:id", async (req, res) => {
+router.delete("/banks/:id", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     const bankId = req.params.id;
 
@@ -153,7 +163,7 @@ router.delete("/banks/:id", async (req, res) => {
   }
 });
 
-router.delete("/zones/:id", async (req, res) => {
+router.delete("/zones/:id", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     const item = await Zone.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
     if (!item) return res.status(404).json({ success: false, message: "Zone not found" });
@@ -163,7 +173,7 @@ router.delete("/zones/:id", async (req, res) => {
   }
 });
 
-router.delete("/regions/:id", async (req, res) => {
+router.delete("/regions/:id", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     const item = await Region.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
     if (!item) return res.status(404).json({ success: false, message: "Region not found" });
@@ -173,7 +183,7 @@ router.delete("/regions/:id", async (req, res) => {
   }
 });
 
-router.delete("/branches/:id", async (req, res) => {
+router.delete("/branches/:id", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     const item = await Branch.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
     if (!item) return res.status(404).json({ success: false, message: "Branch not found" });

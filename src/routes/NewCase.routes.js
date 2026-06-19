@@ -2,9 +2,19 @@ const express = require("express");
 const router = express.Router();
 const NewCaseModel = require("../models/NewCase.model");
 const { sendCaseNotification } = require("../utils/emailService");
+const auth = require("../middleware/auth");
+
+const ensureAdminUser = (req, res, next) => {
+    if (!req.session?.user || 
+        String(req.session.user.role || "").toLowerCase() !== "admin"
+        ) {
+        return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
+    }
+    next();
+};
 
 // Render Form
-router.get("/", async (req, res) => {
+router.get("/", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     const banks = await require("../models/MasterData.model").Bank
       .find({ isActive: true })
@@ -17,7 +27,7 @@ router.get("/", async (req, res) => {
 });
 
 // Create Case + Send Email Notification
-router.post("/", async (req, res) => {
+router.post("/", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     const {
       borrowerName, outstandingAmount, propertyAddress,

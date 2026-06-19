@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const NewCaseModel = require("../../models/NewCase.model");
+const auth = require("../../middleware/auth");
 
 const ensureZonalUser = (req, res, next) => {
   if (
@@ -9,12 +10,12 @@ const ensureZonalUser = (req, res, next) => {
     req.session.user.role !== "zonal" ||
     !req.session.user.zone
   ) {
-    return res.status(403).send("Access Denied");
+    return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
   }
   next();
 };
 
-router.get("/", ensureZonalUser, async (req, res) => {
+router.get("/", auth("zonal"), ensureZonalUser, async (req, res) => {
   try {
     const userZoneId = req.session.user.zone;
 

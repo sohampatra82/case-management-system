@@ -1,6 +1,15 @@
 const express = require("express");
 const router = express.Router();
+const auth = require("../middleware/auth");
 
+const ensureAdminUser = (req, res, next) => {
+    if (!req.session?.user || 
+        String(req.session.user.role || "").toLowerCase() !== "admin"
+        ) {
+        return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
+    }
+    next();
+};
 // Import Models
 const AdminModel = require("../models/Admin.model");
 const ZonalModel = require("../models/ZonalSignUp.model");
@@ -9,7 +18,7 @@ const BranchModel = require("../models/BranchSignup.model");
 const { Zone, Bank, Region } = require("../models/MasterData.model");
 
 // ====================== LIST ALL USERS ======================
-router.get("/", async (req, res) => {
+router.get("/", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     const admins = await AdminModel.find({}).lean();
 
@@ -94,7 +103,7 @@ router.get("/", async (req, res) => {
 });
 
 // ====================== DELETE USER ======================
-router.delete("/delete/:model/:id", async (req, res) => {
+router.delete("/delete/:model/:id", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     const { model, id } = req.params;
 
@@ -135,7 +144,7 @@ router.delete("/delete/:model/:id", async (req, res) => {
 });
 
 // ====================== EDIT PAGE (GET) ======================
-router.get("/edit/:model/:id", async (req, res) => {
+router.get("/edit/:model/:id", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     const { model, id } = req.params;
     let user = null;
@@ -192,7 +201,7 @@ router.get("/edit/:model/:id", async (req, res) => {
 });
 
 // ====================== UPDATE USER (POST) - IMPORTANT ======================
-router.post("/edit/:model/:id", async (req, res) => {
+router.post("/edit/:model/:id", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     const { model, id } = req.params;
     const updateData = { ...req.body };

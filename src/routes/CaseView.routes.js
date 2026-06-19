@@ -3,9 +3,19 @@ const express = require("express");
 const router = express.Router();
 const NewCaseModel = require("../models/NewCase.model");
 const mongoose = require("mongoose");
+const auth = require("../middleware/auth");
+
+const ensureAdminUser = (req, res, next) => {
+    if (!req.session?.user || 
+        String(req.session.user.role || "").toLowerCase() !== "admin"
+        ) {
+        return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
+    }
+    next();
+};
 
 // GET - View Case
-router.get("/:id", async (req, res) => {
+router.get("/:id", auth("admin"), ensureAdminUser, async (req, res) => {
     try {
         const caseData = await NewCaseModel.findById(req.params.id)
             .populate("bank", "bankName")
@@ -24,7 +34,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // GET - Edit Form
-router.get("/edit/:id", async (req, res) => {
+router.get("/edit/:id", auth("admin"), ensureAdminUser, async (req, res) => {
     try {
         const caseData = await NewCaseModel.findById(req.params.id)
             .populate("bank", "bankName")
@@ -43,7 +53,7 @@ router.get("/edit/:id", async (req, res) => {
 });
 
 // POST - Update Case (Improved)
-router.post("/edit/:id", async (req, res) => {
+router.post("/edit/:id", auth("admin"), ensureAdminUser, async (req, res) => {
     try {
         const {
             borrowerName, bank, zone, region, branch, currentStage,
@@ -99,7 +109,7 @@ router.post("/edit/:id", async (req, res) => {
 });
 
 // DELETE - Delete Case
-router.post("/delete/:id", async (req, res) => {
+router.post("/delete/:id", auth("admin"), ensureAdminUser, async (req, res) => {
     try {
         await NewCaseModel.findByIdAndDelete(req.params.id);
         res.redirect("/admin-case?deleted=true");

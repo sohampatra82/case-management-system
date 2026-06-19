@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const NewCaseModel = require("../../models/NewCase.model");
+const auth = require("../../middleware/auth");
 
 const ensureBranchUser = (req, res, next) => {
   if (
@@ -9,12 +10,12 @@ const ensureBranchUser = (req, res, next) => {
     req.session.user.role !== "branch" ||
     !req.session.user.branch
   ) {
-    return res.status(403).send("Access Denied");
+    return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
   }
   next();
 };
 
-router.get("/", ensureBranchUser, async (req, res) => {
+router.get("/", auth("branch"), ensureBranchUser, async (req, res) => {
   try {
     const userBranchId = req.session.user.branch;
 

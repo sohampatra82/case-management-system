@@ -1,12 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const NewCaseModel = require("../models/NewCase.model");
+const auth = require("../middleware/auth");
+
+const ensureAdminUser = (req, res, next) => {
+    if (!req.session?.user || 
+        String(req.session.user.role || "").toLowerCase() !== "admin"
+        ) {
+        return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
+    }
+    next();
+};
 
 // GET Reports Page
-router.get("/", (req, res) => res.render("adminReports"));
+router.get("/", auth("admin"), ensureAdminUser, (req, res) => res.render("adminReports"));
 
 // ==================== CSV DOWNLOAD - FIXED ====================
-router.get("/download/csv", async (req, res) => {
+router.get("/download/csv", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
   const cases = await NewCaseModel.find({})
   .populate("bank", "bankName")
@@ -53,7 +63,7 @@ cases.forEach((c, i) => {
 });
 
 // ==================== EXCEL DOWNLOAD ====================
-router.get("/download/excel", async (req, res) => {
+router.get("/download/excel", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     const cases = await NewCaseModel.find({}).lean().sort({ createdAt: -1 });
 

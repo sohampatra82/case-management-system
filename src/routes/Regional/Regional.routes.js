@@ -2,18 +2,19 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const NewCaseModel = require("../../models/NewCase.model");
+const auth = require("../../middleware/auth");
+
 
 const ensureRegionalUser = (req, res, next) => {
-    if (!req.session?.user) return res.status(403).send("Access Denied");
-    
-    const role = String(req.session.user.role || "").toLowerCase();
-    if (role !== "regional") return res.status(403).send("Access Denied");
-    if (!req.session.user.region) return res.status(403).send("Region not assigned");
-
+    if (!req.session?.user || 
+        String(req.session.user.role || "").toLowerCase() !== "regional" || 
+        !req.session.user.region) {
+        return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
+    }
     next();
 };
 
-router.get("/", ensureRegionalUser, async (req, res) => {
+router.get("/", auth("regional"), ensureRegionalUser, async (req, res) => {
     try {
         const userRegionId = req.session.user.region;
 

@@ -6,7 +6,7 @@ const ensureRegionalUser = (req, res, next) => {
     if (!req.session?.user || 
         String(req.session.user.role || "").toLowerCase() !== "regional" || 
         !req.session.user.region) {
-        return res.status(403).send("Access Denied");
+        return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
     }
     next();
 };

@@ -8,7 +8,7 @@ const ensureZonalUser = (req, res, next) => {
     req.session.user.role !== "zonal" ||
     !req.session.user.zone
   ) {
-    return res.status(403).send("Access Denied");
+    return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
   }
   next();
 };

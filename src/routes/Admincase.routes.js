@@ -1,12 +1,23 @@
 const express = require("express");
 const router = express.Router();
 const NewCaseModel = require("../models/NewCase.model");
+const auth = require("../middleware/auth");
 
-router.get("/", (req, res) => {
+
+const ensureAdminUser = (req, res, next) => {
+    if (!req.session?.user || 
+        String(req.session.user.role || "").toLowerCase() !== "admin"
+        ) {
+        return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
+    }
+    next();
+};
+
+router.get("/", auth("admin"), ensureAdminUser, (req, res) => {
   res.render("adminCase");
 });
 
-router.get("/data", async (req, res) => {
+router.get("/data", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     const cases = await NewCaseModel.find({})
       .populate("bank", "bankName")
