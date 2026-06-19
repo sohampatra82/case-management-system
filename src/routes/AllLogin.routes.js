@@ -58,64 +58,108 @@ if (role === "super-admin") {
       return res.send(getSuccessHTML(fullName, redirectPath));
     }
    else if (role === "zonal") {
-      // ===================== OTHER ROLES =====================
-      user = await ZonalModel.findOne({ loginId: loginId.toUpperCase() });
+
+    user = await ZonalModel.findOne({
+        loginId: loginId.toUpperCase()
+    });
+
+    if (!user) {
+        return res.send(
+            getErrorHTML("Invalid Login ID for selected role")
+        );
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        return res.send(
+            getErrorHTML("Incorrect Password")
+        );
+    }
+
     redirectPath = "/zonal-dashboard";
     fullName = user.fullName || user.name || "User";
 
-    req.session.user = { id: user._id, fullName: fullName, loginId: user.loginId, role: user.role, bank: user.bank, zone: user.zone, region: user.region || null, branch: user.branch || null };
-
-    console.log("SESSION USER:", req.session.user);
-
-    return res.send(getSuccessHTML(fullName, redirectPath));
-    } else if (role === "regional") {
-    user = await RegionalModel.findOne({ loginId: loginId.toUpperCase() });
-    redirectPath = "/regional-dashboard";
-
-    if (!user) return res.send(getErrorHTML("Invalid Login ID for selected role"));
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.send(getErrorHTML("Incorrect Password"));
-
-    fullName = user.fullName || "Regional User";
-
     req.session.user = {
         id: user._id,
-        fullName: fullName,
+        fullName,
         loginId: user.loginId,
-        role: "regional",           // ← Must be lowercase
+        role: user.role,
         bank: user.bank,
-        zone: user.zone,
-        region: user.region,        // ← This must exist
-        branch: user.branch || null,
-        regionName: user.regionName || ""
+        zone: user.zone
     };
 
     return res.send(getSuccessHTML(fullName, redirectPath));
 }
-else if (role === "branch") {
-      user = await BranchModel.findOne({ loginId: loginId.toUpperCase() });
-      redirectPath = "/branch-dashboard";
 
-      if (!user) return res.send(getErrorHTML("Invalid Login ID for selected role"));
+else if (role === "regional") {
 
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) return res.send(getErrorHTML("Incorrect Password"));
+    user = await RegionalModel.findOne({
+        loginId: loginId.toUpperCase().trim()
+    });
 
-      fullName = user.fullName || "Branch User";
+    if (!user) {
+        return res.send(getErrorHTML("Invalid Login ID for selected role"));
+    }
 
-      req.session.user = {
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        return res.send(getErrorHTML("Incorrect Password"));
+    }
+
+    redirectPath = "/regional-dashboard";
+    fullName = user.fullName || "Regional User";
+
+    req.session.user = {
         id: user._id,
-        fullName: fullName,
+        fullName,
+        loginId: user.loginId,
+        role: "regional",
+        bank: user.bank,
+        zone: user.zone,
+        region: user.region,
+        branch: user.branch || null
+    };
+
+    console.log("REGIONAL SESSION:", req.session.user);
+
+    return res.send(getSuccessHTML(fullName, redirectPath));
+}
+else if (role === "branch") {
+
+    user = await BranchModel.findOne({
+        loginId: loginId.toUpperCase().trim()
+    });
+
+    if (!user) {
+        return res.send(getErrorHTML("Invalid Login ID for selected role"));
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        return res.send(getErrorHTML("Incorrect Password"));
+    }
+
+    redirectPath = "/branch-dashboard";
+    fullName = user.fullName || "Branch User";
+
+    req.session.user = {
+        id: user._id,
+        fullName,
         loginId: user.loginId,
         role: "branch",
         bank: user.bank,
         zone: user.zone,
         region: user.region,
-        branch: user.branch,
-        branchName: user.branchName || ""
-      };
-    } 
+        branch: user.branch
+    };
+
+    console.log("BRANCH SESSION:", req.session.user);
+
+    return res.send(getSuccessHTML(fullName, redirectPath));
+}
     else {
       return res.send(getErrorHTML("Invalid Role Selected"));
     }
