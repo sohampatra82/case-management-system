@@ -12,7 +12,7 @@ const ensureRegionalUser = (req, res, next) => {
 };
 
 router.get("/", ensureRegionalUser, (req, res) => {
-    res.render("regionalCase", {
+    res.render("RegionalCase", {
         currentUser: req.session.user
     });
 });
