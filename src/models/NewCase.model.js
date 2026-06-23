@@ -2,26 +2,43 @@ const mongoose = require("mongoose");
 
 const NewCaseSchema = new mongoose.Schema(
   {
-    caseNumber: { type: String, unique: true, trim: true },
+    caseNumber: {
+      type: String,
+      unique: true,
+      trim: true
+    },
 
-    // References to Master Data
-    bank: { type: mongoose.Schema.Types.ObjectId, ref: "Bank", required: true },
-    zone: { type: mongoose.Schema.Types.ObjectId, ref: "Zone", required: true },
+    // Master Data References
+    bank: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Bank",
+      required: true
+    },
+
+    zone: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Zone",
+      required: true
+    },
+
     region: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Region",
       required: true
     },
+
     branch: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Branch",
       required: true
     },
 
-    borrowerName: { type: String, required: true, trim: true },
-    // loanAccountNumber: { type: String, required: true, trim: true },
-    outstandingAmount: { type: Number, required: true },
-    propertyAddress: { type: String, trim: true },
+    // Basic Details
+    borrowerName: {
+      type: String,
+      required: true,
+      trim: true
+    },
 
     currentStage: {
       type: String,
@@ -32,29 +49,94 @@ const NewCaseSchema = new mongoose.Schema(
         "Section 14",
         "Possession",
         "Sale",
-        "Sale Completed", // ← Add
-        "Completed", // ← Add
+        "Sale Completed",
+        "Completed",
         "Close"
       ],
       default: "ALLOTMENT"
     },
 
-    // Existing timeline fields...
-    allotmentDate: Date,
-    noticeDate13_2: Date,
-    // ... (keep all your existing date fields)
+    // Remarks
+    initialRemarks: {
+      type: String,
+      default: ""
+    },
 
-    initialRemarks: String,
     remarksHistory: [
       {
         remark: String,
-        date: { type: Date, default: Date.now },
+        date: {
+          type: Date,
+          default: Date.now
+        },
         updatedBy: String
       }
-    ]
+    ],
+
+    // ======================
+    // SARFAESI Timeline
+    // ======================
+
+    allotmentDate: Date,
+
+    noticeDate13_2: Date,
+
+    ackDate: Date,
+
+    noticeDate13_4: Date,
+
+    publicationDate: Date,
+
+    // ======================
+    // Section 14 / Court
+    // ======================
+
+    court: {
+      type: String,
+      trim: true
+    },
+
+    filedBy: {
+      type: String,
+      trim: true
+    },
+
+    applicationDate: Date,
+
+    filingDate: Date,
+
+    hearingDate: Date,
+
+    orderDate: Date,
+
+    advocateCommissioner: {
+      type: String,
+      trim: true
+    },
+
+    // ======================
+    // Possession Details
+    // ======================
+
+    policeLetterDate: Date,
+
+    costReceiveDate: Date,
+
+    costDepositDate: Date,
+
+    preIntimationDate: Date,
+
+    possessionDate: Date,
+
+    // ======================
+    // Sale
+    // ======================
+
+    saleDate: Date
   },
-  { timestamps: true }
+  {
+    timestamps: true
+  }
 );
 
-const NewCaseModel = mongoose.model("NewCase", NewCaseSchema);
-module.exports = NewCaseModel;
+module.exports = mongoose.model("NewCase", NewCaseSchema);

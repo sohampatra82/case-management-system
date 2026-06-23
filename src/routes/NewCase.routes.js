@@ -45,8 +45,8 @@ router.post("/", auth("admin"), ensureAdminUser, async (req, res) => {
     const newCase = new NewCaseModel({
       caseNumber: `CASE-${Date.now()}`,
       borrowerName: borrowerName?.trim(),
-      outstandingAmount: Number(outstandingAmount) || 0,
-      propertyAddress: propertyAddress?.trim() || "",
+      // outstandingAmount: Number(outstandingAmount) || 0,
+      // propertyAddress: propertyAddress?.trim() || "",
 
       bank, zone, region, branch,
 

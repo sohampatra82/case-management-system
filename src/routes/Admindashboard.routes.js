@@ -35,15 +35,17 @@ router.get("/", auth("admin"), ensureAdminUser, async (req, res) => {
     });
 
     // Upcoming Hearings (Fixed + Safe)
-    const upcomingHearings = await NewCaseModel.find({
-      hearingDate: {
+   
+const upcomingHearings = await NewCaseModel.find({
+    hearingDate: {
         $gte: new Date(),
         $lte: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-      }
-    })
-      .populate("bank", "bankName")
-      .sort({ hearingDate: 1 })
-      .lean();
+    }
+})
+    .populate("bank", "bankName")
+    .select("borrowerName currentStage hearingDate court bank")   // Explicitly select needed fields
+    .sort({ hearingDate: 1 })
+    .lean();
 
     // Recent Activity
     const recentActivity = await NewCaseModel.find({})

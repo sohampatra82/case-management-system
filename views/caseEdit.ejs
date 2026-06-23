@@ -63,6 +63,11 @@
                         class="sidebar-active flex items-center gap-2 px-3 py-2 text-white rounded-lg text-xs font-medium">
                         <i class="fa-solid fa-users w-3.5 text-center"></i> Users
                     </a>
+                    <a href="/master-data"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-database w-3.5 text-center"></i>
+                        Master Data
+                    </a>
                 </nav>
             </div>
 
@@ -89,7 +94,7 @@
                     </a>
 
                     <form action="/case-view/edit/<%= caseData._id %>" method="POST"
-                        class="bg-white rounded-3xl shadow border">
+                        class="bg-white rounded-3xl shadow border text-sm">
                         <div class="p-8 space-y-10">
 
                             <!-- Basic Information -->
@@ -103,7 +108,7 @@
                                             class="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:border-blue-500"
                                             required>
                                     </div>
-
+                                   
                                     <div>
                                         <label class="detail-label block mb-1">Current Stage</label>
                                         <select name="currentStage"
@@ -129,33 +134,107 @@
                                                 %>>Close</option>
                                         </select>
                                     </div>
-
-                                    <div>
-                                        <label class="detail-label block mb-1">Bank</label>
-                                        <select name="bank"
-                                            class="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:border-blue-500"
-                                            required>
-                                            <option value="<%= caseData.bank?._id || caseData.bank %>">
-                                                <%= caseData.bank?.bankName || caseData.bank || 'Select Bank' %>
+                                <!-- Inside Basic Information grid -->
+                                
+                                <div>
+                                    <label class="detail-label block mb-1">Bank</label>
+                                    <select name="bank"
+                                        class="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:border-blue-500">
+                                        <% banks.forEach(bank=> { %>
+                                            <option value="<%= bank._id %>" <%=String(caseData.bank?._id || caseData.bank)===String(bank._id)
+                                                ? 'selected' : '' %>>
+                                                <%= bank.bankName %>
                                             </option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="detail-label block mb-1">Zone</label>
-                                        <select name="zone"
-                                            class="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:border-blue-500"
-                                            required>
-                                            <option value="<%= caseData.zone?._id || caseData.zone %>">
-                                                <%= caseData.zone?.zoneName || caseData.zone || 'Select Zone' %>
+                                            <% }); %>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="detail-label block mb-1">Zone</label>
+                                    <select name="zone"
+                                        class="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:border-blue-500">
+                                        <% zones.forEach(zone=> { %>
+                                            <option value="<%= zone._id %>" <%=String(caseData.zone?._id || caseData.zone)===String(zone._id)
+                                                ? 'selected' : '' %>>
+                                                <%= zone.zoneName %>
                                             </option>
-                                        </select>
-                                    </div>
+                                            <% }); %>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="detail-label block mb-1">Region</label>
+                                    <select name="region"
+                                        class="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:border-blue-500">
+                                        <% regions.forEach(region=> { %>
+                                            <option value="<%= region._id %>" <%=String(caseData.region?._id || caseData.region)===String(region._id)
+                                                ? 'selected' : '' %>>
+                                                <%= region.regionName %>
+                                            </option>
+                                            <% }); %>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="detail-label block mb-1">Branch</label>
+                                    <select name="branch"
+                                        class="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:border-blue-500">
+                                        <% branches.forEach(branch=> { %>
+                                            <option value="<%= branch._id %>" <%=String(caseData.branch?._id || caseData.branch)===String(branch._id)
+                                                ? 'selected' : '' %>>
+                                                <%= branch.branchName %>
+                                            </option>
+                                            <% }); %>
+                                    </select>
+                                </div>
+                                </div>
 
+                                <!-- Property Address -->
+                              
+                            </div>
+
+                            <!-- Court & Legal Details -->
+                            <div>
+                                <h3 class="section-title mb-5">Court & Legal Details</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label class="detail-label block mb-1">Branch</label>
-                                        <input type="text" name="branch"
-                                            value="<%= caseData.branch?.branchName || caseData.branch || '' %>"
+                                        <label class="detail-label block mb-1">Court</label>
+                                        <input type="text" name="court" value="<%= caseData.court || '' %>"
+                                            class="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label class="detail-label block mb-1">Filed By</label>
+                                        <input type="text" name="filedBy" value="<%= caseData.filedBy || '' %>"
+                                            class="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label class="detail-label block mb-1">Advocate Commissioner</label>
+                                        <input type="text" name="advocateCommissioner"
+                                            value="<%= caseData.advocateCommissioner || '' %>"
+                                            class="w-full px-4 py-3 border border-slate-300 rounded-2xl focus:outline-none focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label class="detail-label block mb-1">Application Date</label>
+                                        <input type="date" name="applicationDate"
+                                            value="<%= caseData.applicationDate ? caseData.applicationDate.toISOString().split('T')[0] : '' %>"
+                                            class="w-full px-4 py-3 border border-slate-300 rounded-2xl">
+                                    </div>
+                                    <div>
+                                        <label class="detail-label block mb-1">Filing Date</label>
+                                        <input type="date" name="filingDate"
+                                            value="<%= caseData.filingDate ? caseData.filingDate.toISOString().split('T')[0] : '' %>"
+                                            class="w-full px-4 py-3 border border-slate-300 rounded-2xl">
+                                    </div>
+                                    <div>
+                                        <label class="detail-label block mb-1">Hearing Date</label>
+                                        <input type="date" name="hearingDate"
+                                            value="<%= caseData.hearingDate ? caseData.hearingDate.toISOString().split('T')[0] : '' %>"
+                                            class="w-full px-4 py-3 border border-slate-300 rounded-2xl">
+                                    </div>
+                                    <div>
+                                        <label class="detail-label block mb-1">Order Date</label>
+                                        <input type="date" name="orderDate"
+                                            value="<%= caseData.orderDate ? caseData.orderDate.toISOString().split('T')[0] : '' %>"
                                             class="w-full px-4 py-3 border border-slate-300 rounded-2xl">
                                     </div>
                                 </div>
@@ -170,19 +249,44 @@
                                             value="<%= caseData.allotmentDate ? caseData.allotmentDate.toISOString().split('T')[0] : '' %>"
                                             class="w-full px-4 py-3 border border-slate-300 rounded-2xl">
                                     </div>
-                                    <div><label class="detail-label block mb-1">Section 13(2) Notice</label>
+                                    <div><label class="detail-label block mb-1">13(2) Notice Date</label>
                                         <input type="date" name="noticeDate13_2"
                                             value="<%= caseData.noticeDate13_2 ? caseData.noticeDate13_2.toISOString().split('T')[0] : '' %>"
                                             class="w-full px-4 py-3 border border-slate-300 rounded-2xl">
                                     </div>
-                                    <div><label class="detail-label block mb-1">Section 13(4) Notice</label>
+                                    <div><label class="detail-label block mb-1">Ack Date</label>
+                                        <input type="date" name="ackDate"
+                                            value="<%= caseData.ackDate ? caseData.ackDate.toISOString().split('T')[0] : '' %>"
+                                            class="w-full px-4 py-3 border border-slate-300 rounded-2xl">
+                                    </div>
+                                    <div><label class="detail-label block mb-1">13(4) Notice Date</label>
                                         <input type="date" name="noticeDate13_4"
                                             value="<%= caseData.noticeDate13_4 ? caseData.noticeDate13_4.toISOString().split('T')[0] : '' %>"
                                             class="w-full px-4 py-3 border border-slate-300 rounded-2xl">
                                     </div>
-                                    <div><label class="detail-label block mb-1">Hearing Date</label>
-                                        <input type="date" name="hearingDate"
-                                            value="<%= caseData.hearingDate ? caseData.hearingDate.toISOString().split('T')[0] : '' %>"
+                                    <div><label class="detail-label block mb-1">Publication Date</label>
+                                        <input type="date" name="publicationDate"
+                                            value="<%= caseData.publicationDate ? caseData.publicationDate.toISOString().split('T')[0] : '' %>"
+                                            class="w-full px-4 py-3 border border-slate-300 rounded-2xl">
+                                    </div>
+                                    <div><label class="detail-label block mb-1">Police Letter Date</label>
+                                        <input type="date" name="policeLetterDate"
+                                            value="<%= caseData.policeLetterDate ? caseData.policeLetterDate.toISOString().split('T')[0] : '' %>"
+                                            class="w-full px-4 py-3 border border-slate-300 rounded-2xl">
+                                    </div>
+                                    <div><label class="detail-label block mb-1">Cost Receive Date</label>
+                                        <input type="date" name="costReceiveDate"
+                                            value="<%= caseData.costReceiveDate ? caseData.costReceiveDate.toISOString().split('T')[0] : '' %>"
+                                            class="w-full px-4 py-3 border border-slate-300 rounded-2xl">
+                                    </div>
+                                    <div><label class="detail-label block mb-1">Cost Deposit Date</label>
+                                        <input type="date" name="costDepositDate"
+                                            value="<%= caseData.costDepositDate ? caseData.costDepositDate.toISOString().split('T')[0] : '' %>"
+                                            class="w-full px-4 py-3 border border-slate-300 rounded-2xl">
+                                    </div>
+                                    <div><label class="detail-label block mb-1">Pre Intimation Date</label>
+                                        <input type="date" name="preIntimationDate"
+                                            value="<%= caseData.preIntimationDate ? caseData.preIntimationDate.toISOString().split('T')[0] : '' %>"
                                             class="w-full px-4 py-3 border border-slate-300 rounded-2xl">
                                     </div>
                                     <div><label class="detail-label block mb-1">Possession Date</label>

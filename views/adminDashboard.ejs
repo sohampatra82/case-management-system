@@ -306,83 +306,82 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
         
                 <!-- Upcoming Hearings -->
-                <div class="lg:col-span-7 bg-white rounded-3xl shadow overflow-hidden">
-        
-                    <div class="px-5 py-4 border-b flex justify-between items-center">
-                        <h3 class="text-sm font-semibold text-slate-800">
-                            Upcoming Hearings (Next 30 Days)
-                        </h3>
-        
-                        <a href="/admin-case"
-                            class="text-blue-600 hover:text-blue-700 text-xs font-medium flex items-center gap-1">
-                            View All
-                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                        </a>
-                    </div>
-        
-                    <div class="overflow-x-auto">
-        
-                        <% if(upcomingHearings && upcomingHearings.length> 0) { %>
-        
-                            <table class="w-full text-xs">
-        
-                                <thead>
-                                    <tr class="bg-slate-50 text-[11px] text-slate-600">
-                                        <th class="py-3 px-5 text-left">Account Name</th>
-                                        <th class="py-3 px-5 text-left">Bank</th>
-                                        <th class="py-3 px-5 text-left">Stage</th>
-                                        <th class="py-3 px-5 text-left">Hearing Date</th>
-                                        <th class="py-3 px-5 text-left">Court</th>
-                                    </tr>
-                                </thead>
-        
-                                <tbody class="divide-y">
-        
-                                    <% upcomingHearings.forEach(c=> { %>
-        
-                                        <tr class="hover:bg-slate-50">
-        
-                                            <td class="px-5 py-3 font-medium text-xs">
-                                                <%= c.accountName %>
-                                            </td>
-        
+           
+            <div class="lg:col-span-7 bg-white rounded-3xl shadow overflow-hidden">
+            
+                <div class="px-5 py-4 border-b flex justify-between items-center">
+                    <h3 class="text-sm font-semibold text-slate-800">
+                        Upcoming Hearings (Next 30 Days)
+                    </h3>
+            
+                    <a href="/admin-case" class="text-blue-600 hover:text-blue-700 text-xs font-medium flex items-center gap-1">
+                        View All
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+            
+                <div class="overflow-x-auto">
+                    <% if(upcomingHearings && upcomingHearings.length> 0) { %>
+            
+                        <table class="w-full text-xs">
+            
+                            <thead>
+                                <tr class="bg-slate-50 text-[11px] text-slate-600">
+                                    <th class="py-3 px-5 text-left">Account Name</th>
+                                    <th class="py-3 px-5 text-left">Bank</th>
+                                    <th class="py-3 px-5 text-left">Stage</th>
+                                    <th class="py-3 px-5 text-left">Hearing Date</th>
+                                    <th class="py-3 px-5 text-left">Court</th>
+                                </tr>
+                            </thead>
+            
+                            <tbody class="divide-y">
+            
+                                <% upcomingHearings.forEach(c=> { %>
+            
+                                    <tr class="hover:bg-slate-50">
+            
+                                        <td class="px-5 py-3 font-medium text-xs">
+                                            <%= c.borrowerName || 'N/A' %> <!-- Fixed: Use borrowerName -->
+                                        </td>
+            
                                         <td class="px-5 py-3 text-xs">
                                             <%= c.bank?.bankName || 'N/A' %>
                                         </td>
-        
-                                            <td class="px-5 py-3">
-                                                <span
-                                                    class="px-2 py-1 text-[10px] font-medium rounded-full bg-purple-100 text-purple-700">
-                                                    <%= c.currentStage %>
-                                                </span>
-                                            </td>
-        
-                                            <td class="px-5 py-3 text-xs">
-                                                <%= new Date(c.hearingDate).toLocaleDateString('en-IN') %>
-                                            </td>
-        
-                                            <td class="px-5 py-3 text-xs text-slate-600">
-                                                <%= c.court || '—' %>
-                                            </td>
-        
-                                        </tr>
-        
-                                        <% }) %>
-        
-                                </tbody>
-        
-                            </table>
-        
-                            <% } else { %>
-        
-                                <div class="p-10 text-center text-xs text-slate-400">
-                                    No upcoming hearings scheduled.
-                                </div>
-        
-                                <% } %>
-        
-                    </div>
+            
+                                        <td class="px-5 py-3">
+                                            <span
+                                                class="px-2 py-1 text-[10px] font-medium rounded-full bg-purple-100 text-purple-700">
+                                                <%= c.currentStage %>
+                                            </span>
+                                        </td>
+            
+                                        <td class="px-5 py-3 text-xs">
+                                            <%= c.hearingDate ? new Date(c.hearingDate).toLocaleDateString('en-IN') : 'N/A' %>
+                                        </td>
+            
+                                        <td class="px-5 py-3 text-xs text-slate-600">
+                                            <%= c.court || '—' %>
+                                        </td>
+            
+                                    </tr>
+            
+                                    <% }) %>
+            
+                            </tbody>
+            
+                        </table>
+            
+                        <% } else { %>
+            
+                            <div class="p-10 text-center text-xs text-slate-400">
+                                No upcoming hearings scheduled.
+                            </div>
+            
+                            <% } %>
+            
                 </div>
+            </div>
         
                 <!-- Recent Activity -->
                 <div class="lg:col-span-5 bg-white rounded-3xl shadow p-5">

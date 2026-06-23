@@ -210,118 +210,250 @@
                             </span>
                     </div>
         
-                    <div class="p-8 space-y-10">
-        
-                        <!-- Basic Information -->
-                        <div>
-                            <h3 class="section-title mb-5">Basic Information</h3>
-                            <div class="info-grid">
-                                <div>
-                                    <p class="detail-label">Bank</p>
-                                    <p class="detail-value">
-                                        <%= caseData.bank?.bankName || caseData.bank || 'N/A' %>
-                                    </p>
-                                </div>
-                                <div>
-                                    <p class="detail-label">Zone</p>
-                                    <p class="detail-value">
-                                        <%= caseData.zone?.zoneName || caseData.zone || 'N/A' %>
-                                    </p>
-                                </div>
-                                <div>
-                                    <p class="detail-label">Region</p>
-                                    <p class="detail-value">
-                                        <%= caseData.region?.regionName || caseData.region || 'N/A' %>
-                                    </p>
-                                </div>
-                                <div>
-                                    <p class="detail-label">Branch</p>
-                                    <p class="detail-value">
-                                        <%= caseData.branch?.branchName || caseData.branch || 'N/A' %>
-                                    </p>
-                                </div>
-                                <div>
-                                    <p class="detail-label">Borrower Name</p>
-                                    <p class="detail-value">
-                                        <%= caseData.borrowerName || caseData.accountName || 'N/A' %>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-        
-                        <!-- Timeline -->
-                        <div>
-                            <h3 class="section-title mb-5">Key Dates & Timeline</h3>
-                            <div class="info-grid">
-                                <% if(caseData.allotmentDate) { %>
-                                    <div class="bg-slate-50 p-5 rounded-xl">
-                                        <p class="detail-label">Allotment Date</p>
-                                        <p class="detail-value">
-                                            <%= new Date(caseData.allotmentDate).toLocaleDateString('en-IN') %>
-                                        </p>
-                                    </div>
-                                    <% } %>
-                                        <% if(caseData.noticeDate13_2) { %>
-                                            <div class="bg-slate-50 p-5 rounded-xl">
-                                                <p class="detail-label">Section 13(2)</p>
-                                                <p class="detail-value">
-                                                    <%= new Date(caseData.noticeDate13_2).toLocaleDateString('en-IN') %>
-                                                </p>
-                                            </div>
-                                            <% } %>
-                                                <% if(caseData.noticeDate13_4) { %>
-                                                    <div class="bg-slate-50 p-5 rounded-xl">
-                                                        <p class="detail-label">Section 13(4)</p>
-                                                        <p class="detail-value">
-                                                            <%= new Date(caseData.noticeDate13_4).toLocaleDateString('en-IN') %>
-                                                        </p>
-                                                    </div>
-                                                    <% } %>
-                                                        <% if(caseData.hearingDate) { %>
-                                                            <div class="bg-slate-50 p-5 rounded-xl">
-                                                                <p class="detail-label">Hearing Date</p>
-                                                                <p class="detail-value">
-                                                                    <%= new
-                                                                        Date(caseData.hearingDate).toLocaleDateString('en-IN')
-                                                                        %>
-                                                                </p>
-                                                            </div>
-                                                            <% } %>
-                                                                <% if(caseData.possessionDate) { %>
-                                                                    <div class="bg-slate-50 p-5 rounded-xl">
-                                                                        <p class="detail-label">Possession Date</p>
-                                                                        <p class="detail-value">
-                                                                            <%= new
-                                                                                Date(caseData.possessionDate).toLocaleDateString('en-IN')
-                                                                                %>
-                                                                        </p>
-                                                                    </div>
-                                                                    <% } %>
-                                                                        <% if(caseData.saleDate) { %>
-                                                                            <div class="bg-slate-50 p-5 rounded-xl">
-                                                                                <p class="detail-label">Sale Date</p>
-                                                                                <p class="detail-value">
-                                                                                    <%= new
-                                                                                        Date(caseData.saleDate).toLocaleDateString('en-IN')
-                                                                                        %>
-                                                                                </p>
-                                                                            </div>
-                                                                            <% } %>
-                            </div>
-                        </div>
-        
-                        <!-- Remarks -->
-                        <% if(caseData.initialRemarks) { %>
+                <div class="p-8 space-y-10">
+                
+                    <!-- Basic Information -->
+                    <div>
+                        <h3 class="section-title mb-5">Basic Information</h3>
+                
+                        <div class="info-grid">
+                
                             <div>
-                                <h3 class="section-title mb-4">Remarks</h3>
-                                <div
-                                    class="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-slate-700 whitespace-pre-wrap">
-                                    <%= caseData.initialRemarks %>
-                                </div>
+                                <p class="detail-label">Bank</p>
+                                <p class="detail-value">
+                                    <%= caseData.bank?.bankName || caseData.bank || 'N/A' %>
+                                </p>
                             </div>
-                            <% } %>
-        
+                
+                            <div>
+                                <p class="detail-label">Zone</p>
+                                <p class="detail-value">
+                                    <%= caseData.zone?.zoneName || caseData.zone || 'N/A' %>
+                                </p>
+                            </div>
+                
+                            <div>
+                                <p class="detail-label">Region</p>
+                                <p class="detail-value">
+                                    <%= caseData.region?.regionName || caseData.region || 'N/A' %>
+                                </p>
+                            </div>
+                
+                            <div>
+                                <p class="detail-label">Branch</p>
+                                <p class="detail-value">
+                                    <%= caseData.branch?.branchName || caseData.branch || 'N/A' %>
+                                </p>
+                            </div>
+                
+                            <div>
+                                <p class="detail-label">Borrower Name</p>
+                                <p class="detail-value">
+                                    <%= caseData.borrowerName || 'N/A' %>
+                                </p>
+                            </div>
+                
+                          
+                
+                        </div>
                     </div>
+                
+                   
+                
+                    <!-- Current Status -->
+                    <div>
+                        <h3 class="section-title mb-5">Current Status</h3>
+                
+                        <div class="info-grid">
+                
+                            <div>
+                                <p class="detail-label">Current Stage</p>
+                                <p class="detail-value">
+                                    <%= caseData.currentStage || 'N/A' %>
+                                </p>
+                            </div>
+                
+                        </div>
+                    </div>
+                
+                    <!-- SARFAESI Timeline -->
+                    <div>
+                        <h3 class="section-title mb-5">SARFAESI Timeline</h3>
+                
+                        <div class="info-grid">
+                
+                            <div class="bg-slate-50 p-4 rounded-xl">
+                                <p class="detail-label">Allotment Date</p>
+                                <p class="detail-value">
+                                    <%= caseData.allotmentDate ? new Date(caseData.allotmentDate).toLocaleDateString('en-IN') : 'N/A' %>
+                                </p>
+                            </div>
+                
+                            <div class="bg-slate-50 p-4 rounded-xl">
+                                <p class="detail-label">Notice Date 13(2)</p>
+                                <p class="detail-value">
+                                    <%= caseData.noticeDate13_2 ? new Date(caseData.noticeDate13_2).toLocaleDateString('en-IN') : 'N/A'
+                                        %>
+                                </p>
+                            </div>
+                
+                           
+                
+                            <div class="bg-slate-50 p-4 rounded-xl">
+                                <p class="detail-label">Notice Date 13(4)</p>
+                                <p class="detail-value">
+                                    <%= caseData.noticeDate13_4 ? new Date(caseData.noticeDate13_4).toLocaleDateString('en-IN') : 'N/A'
+                                        %>
+                                </p>
+                            </div>
+                
+                            <div class="bg-slate-50 p-4 rounded-xl">
+                                <p class="detail-label">Publication Date</p>
+                                <p class="detail-value">
+                                    <%= caseData.publicationDate ? new Date(caseData.publicationDate).toLocaleDateString('en-IN')
+                                        : 'N/A' %>
+                                </p>
+                            </div>
+                
+                        </div>
+                    </div>
+                
+                    <!-- Court / Legal Details -->
+                    <div>
+                        <h3 class="section-title mb-5">Court / Legal Details</h3>
+                
+                        <div class="info-grid">
+                
+                            <div>
+                                <p class="detail-label">Court</p>
+                                <p class="detail-value">
+                                    <%= caseData.court || 'N/A' %>
+                                </p>
+                            </div>
+                
+                            <div>
+                                <p class="detail-label">Filed By</p>
+                                <p class="detail-value">
+                                    <%= caseData.filedBy || 'N/A' %>
+                                </p>
+                            </div>
+                
+                            <div>
+                                <p class="detail-label">Advocate Commissioner</p>
+                                <p class="detail-value">
+                                    <%= caseData.advocateCommissioner || 'N/A' %>
+                                </p>
+                            </div>
+                
+                            <div>
+                                <p class="detail-label">Application Date</p>
+                                <p class="detail-value">
+                                    <%= caseData.applicationDate ? new Date(caseData.applicationDate).toLocaleDateString('en-IN')
+                                        : 'N/A' %>
+                                </p>
+                            </div>
+                
+                            <div>
+                                <p class="detail-label">Filing Date</p>
+                                <p class="detail-value">
+                                    <%= caseData.filingDate ? new Date(caseData.filingDate).toLocaleDateString('en-IN') : 'N/A' %>
+                                </p>
+                            </div>
+                
+                            <div>
+                                <p class="detail-label">Hearing Date</p>
+                                <p class="detail-value">
+                                    <%= caseData.hearingDate ? new Date(caseData.hearingDate).toLocaleDateString('en-IN') : 'N/A' %>
+                                </p>
+                            </div>
+                
+                            <div>
+                                <p class="detail-label">Order Date</p>
+                                <p class="detail-value">
+                                    <%= caseData.orderDate ? new Date(caseData.orderDate).toLocaleDateString('en-IN') : 'N/A' %>
+                                </p>
+                            </div>
+                
+                        </div>
+                    </div>
+                
+                    <!-- Possession Details -->
+                    <div>
+                        <h3 class="section-title mb-5">Possession Details</h3>
+                
+                        <div class="info-grid">
+                
+                            <div>
+                                <p class="detail-label">Police Letter Date</p>
+                                <p class="detail-value">
+                                    <%= caseData.policeLetterDate ? new Date(caseData.policeLetterDate).toLocaleDateString('en-IN')
+                                        : 'N/A' %>
+                                </p>
+                            </div>
+                
+                            <div>
+                                <p class="detail-label">Cost Receive Date</p>
+                                <p class="detail-value">
+                                    <%= caseData.costReceiveDate ? new Date(caseData.costReceiveDate).toLocaleDateString('en-IN')
+                                        : 'N/A' %>
+                                </p>
+                            </div>
+                
+                            <div>
+                                <p class="detail-label">Cost Deposit Date</p>
+                                <p class="detail-value">
+                                    <%= caseData.costDepositDate ? new Date(caseData.costDepositDate).toLocaleDateString('en-IN')
+                                        : 'N/A' %>
+                                </p>
+                            </div>
+                
+                            <div>
+                                <p class="detail-label">Pre Intimation Date</p>
+                                <p class="detail-value">
+                                    <%= caseData.preIntimationDate ? new Date(caseData.preIntimationDate).toLocaleDateString('en-IN')
+                                        : 'N/A' %>
+                                </p>
+                            </div>
+                
+                            <div>
+                                <p class="detail-label">Possession Date</p>
+                                <p class="detail-value">
+                                    <%= caseData.possessionDate ? new Date(caseData.possessionDate).toLocaleDateString('en-IN') : 'N/A'
+                                        %>
+                                </p>
+                            </div>
+                
+                        </div>
+                    </div>
+                
+                    <!-- Sale Details -->
+                    <div>
+                        <h3 class="section-title mb-5">Sale Details</h3>
+                
+                        <div class="info-grid">
+                
+                            <div>
+                                <p class="detail-label">Sale Date</p>
+                                <p class="detail-value">
+                                    <%= caseData.saleDate ? new Date(caseData.saleDate).toLocaleDateString('en-IN') : 'N/A' %>
+                                </p>
+                            </div>
+                
+                        </div>
+                    </div>
+                
+                    <!-- Remarks -->
+                    <% if(caseData.initialRemarks) { %>
+                        <div>
+                            <h3 class="section-title mb-4">Remarks</h3>
+                
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-slate-700 whitespace-pre-wrap">
+                                <%= caseData.initialRemarks %>
+                            </div>
+                        </div>
+                        <% } %>
+                
+                </div>
         
                     <!-- Action Buttons -->
                 <!-- Action Buttons - Improved -->
@@ -337,7 +469,7 @@
                 
                         <!-- Delete Button -->
                         <form action="/case-view/delete/<%= caseData._id %>" method="POST" class="flex-1"
-                            onsubmit="return confirm('⚠️ Are you sure you want to permanently delete this case?\n\nThis action cannot be undone!')">
+                            onsubmit="return confirm('⚠️ Are you sure you want to permanently delete this case?')">
                 
                             <button type="submit"
                                 class="w-full flex items-center justify-center gap-3 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white py-4 px-6 rounded-2xl font-semibold transition-all duration-200 shadow-sm hover:shadow">
