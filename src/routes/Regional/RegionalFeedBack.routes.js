@@ -154,12 +154,17 @@ router.post("/",  auth("regional"), ensureRegionalUser, async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Feedback Error:", error);
-        res.status(500).json({ 
-            success: false, 
-            message: "Something went wrong. Please try again." 
-        });
-    }
+    console.error("======================");
+    console.error(error);
+    console.error(error.message);
+    console.error(error.stack);
+    console.error("======================");
+
+    res.status(500).json({
+        success: false,
+        message: error.message
+    });
+}
 });
 
 module.exports = router;
