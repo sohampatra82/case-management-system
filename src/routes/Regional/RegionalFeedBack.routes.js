@@ -18,23 +18,10 @@ const ensureRegionalUser = (req, res, next) => {
 };
 
 const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // IMPORTANT: false for port 587
+    service: 'gmail',
     auth: {
-        user: process.env.ADMIN_EMAIL,
+        user: process.env.ADMIN_EMAIL || "info@anroy.org",
         pass: process.env.EMAIL_PASSWORD
-    },
-    tls: {
-        rejectUnauthorized: false
-    }
-});
-
-transporter.verify((error, success) => {
-    if (error) {
-        console.error("SMTP VERIFY ERROR:", error);
-    } else {
-        console.log("SMTP Server is ready");
     }
 });
 
