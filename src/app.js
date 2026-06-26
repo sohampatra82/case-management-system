@@ -11,8 +11,8 @@ const ZonalModel = require("../src/models/ZonalSignUp.model");
 const FeedbackModel = require("./models/FeedBack.model");
 const path = require('path') //REQUIRE PATH
 app.set('view engine', 'ejs') //SET VIEW ENGINE TO EJS
-app.use(express.json()) //USE JSON
-app.use(express.urlencoded({ extended: true })) //USE URL ENCODED
+app.use(express.json({limit: '10mb'})) //USE JSON
+app.use(express.urlencoded({ extended: true, limit: '10mb' })) //USE URL ENCODED
 app.use(express.static(path.join(__dirname, 'public'))); //USE STATIC FILES
 
 app.use(express.static("public"));
