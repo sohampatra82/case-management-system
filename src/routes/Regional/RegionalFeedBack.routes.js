@@ -30,6 +30,14 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+transporter.verify((error, success) => {
+    if (error) {
+        console.error("SMTP VERIFY ERROR:", error);
+    } else {
+        console.log("SMTP Server is ready");
+    }
+});
+
 // ====================== PROFESSIONAL FEEDBACK EMAIL ======================
 const createFeedbackEmailHTML = (feedback, user) => {
     return `
