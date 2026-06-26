@@ -18,9 +18,11 @@ const ensureRegionalUser = (req, res, next) => {
 };
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
     auth: {
-        user: process.env.ADMIN_EMAIL || "info@anroy.org",
+        user: process.env.ADMIN_EMAIL,
         pass: process.env.EMAIL_PASSWORD
     }
 });
