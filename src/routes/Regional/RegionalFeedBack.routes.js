@@ -26,6 +26,7 @@ const transporter = nodemailer.createTransport({
         pass: process.env.SMTP_PASS
     }
 });
+
 // ====================== PROFESSIONAL FEEDBACK EMAIL ======================
 const createFeedbackEmailHTML = (feedback, user) => {
     return `
@@ -140,8 +141,8 @@ router.post("/",  auth("regional"), ensureRegionalUser, async (req, res) => {
 
         // Send Email
         const mailOptions = {
-           from: `"SARFAESI CMS" <${process.env.SMTP_USER}>`,
-           to: process.env.SMTP_USER,
+            from: `"SARFAESI CMS" <${process.env.ADMIN_EMAIL}>`,
+            to: "info@anroy.org",
             subject: `New Feedback - ${category}: ${subject}`,
             html: createFeedbackEmailHTML(feedback, enrichedUser)
         };

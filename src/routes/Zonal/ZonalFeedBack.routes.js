@@ -21,10 +21,12 @@ const ensureZonalUser = (req, res, next) => {
 };
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: false,
     auth: {
-        user: process.env.ADMIN_EMAIL || "info@anroy.org",
-        pass: process.env.EMAIL_PASSWORD
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
     }
 });
 
@@ -141,12 +143,12 @@ router.post("/",  auth("zonal"), ensureZonalUser, async (req, res) => {
         await feedback.save();
 
         // Send Email
-        const mailOptions = {
-            from: `"SARFAESI CMS" <${process.env.ADMIN_EMAIL}>`,
-            to: "info@anroy.org",
-            subject: `New Feedback - ${category}: ${subject}`,
-            html: createFeedbackEmailHTML(feedback, enrichedUser)
-        };
+            const mailOptions = {
+    from: `"SARFAESI CMS" <${process.env.SMTP_USER}>`,
+    to: process.env.ADMIN_EMAIL,
+    subject: `New Feedback - ${category}: ${subject}`,
+    html: createFeedbackEmailHTML(feedback, enrichedUser)
+};
 
         await transporter.sendMail(mailOptions);
 
