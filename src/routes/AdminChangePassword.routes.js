@@ -2,6 +2,18 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const AdminModel = require("../models/Admin.model");
+const auth = require("../middleware/auth");
+
+
+const ensureAdminUser = (req, res, next) => {
+    if (!req.session?.user || 
+        String(req.session.user.role || "").toLowerCase() !== "admin"
+        ) {
+        return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
+    }
+    next();
+};;
+
 
 // Middleware - Protect Route
 const isSuperAdmin = (req, res, next) => {
@@ -72,7 +84,7 @@ res.status(401).send(`
 `);};
 
 // GET - Show Profile Page
-router.get("/", isSuperAdmin, async (req, res) => {
+router.get("/", auth("admin"), ensureAdminUser, isSuperAdmin, async (req, res) => {
   try {
     const admin = await AdminModel.findById(req.session.user.id);
     res.render("AdminChangePassword", { admin: admin });
@@ -82,7 +94,7 @@ router.get("/", isSuperAdmin, async (req, res) => {
 });
 
 // POST - Update Username & Password
-router.post("/update", isSuperAdmin, async (req, res) => {
+router.post("/update", auth("admin"), ensureAdminUser, isSuperAdmin, async (req, res) => {
   try {
     const { newUsername, currentPassword, newPassword, confirmNewPassword } = req.body;
     const adminId = req.session.user.id;

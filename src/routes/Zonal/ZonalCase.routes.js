@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const NewCaseModel = require("../../models/NewCase.model");
+const auth = require("../../middleware/auth");
 
 const ensureZonalUser = (req, res, next) => {
   if (
@@ -13,13 +15,13 @@ const ensureZonalUser = (req, res, next) => {
   next();
 };
 
-router.get("/", ensureZonalUser, (req, res) => {
+router.get("/",  auth("zonal"), ensureZonalUser, (req, res) => {
   res.render("ZonalCase", {
     currentUser: req.session.user
   });
 });
 
-router.get("/data", ensureZonalUser, async (req, res) => {
+router.get("/data", ensureZonalUser, auth("zonal"), async (req, res) => {
   try {
     const zoneId = req.session.user.zone;
 

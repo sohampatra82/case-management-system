@@ -98,7 +98,11 @@
                         <i class="fa-solid fa-chart-bar w-3.5 text-center"></i>
                         Reports
                     </a>
-
+                    <a href="/zonal-feedback"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-comment w-3.5 text-center"></i>
+                        Send Feedback
+                    </a>
                 </nav>
             </div>
 
@@ -148,163 +152,164 @@
             <!-- ==================== PAGE CONTENT START ==================== -->
           
 
-<div class="flex-1 overflow-auto p-3.5 md:p-5">
+<div class=" flex-1 overflow-auto p-3.5 md:p-5">
 
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-3.5">
-        <h1 class="text-base font-bold text-slate-800">
-            Zone Cases
-        </h1>
-    </div>
+                            <!-- Header -->
+                            <div class="flex justify-between items-center mb-3.5">
+                                <h1 class="text-base font-bold text-slate-800">
+                                    Zone Cases
+                                </h1>
+                            </div>
 
-    <!-- Filters -->
-    <div class="bg-white rounded-2xl shadow-sm p-3 mb-3.5">
-        <div class="flex flex-wrap gap-2 items-center">
+                            <!-- Filters -->
+                            <div class="bg-white rounded-2xl shadow-sm p-3 mb-3.5">
+                                <div class="flex flex-wrap gap-2 items-center">
 
-            <!-- Search -->
-            <div class="flex-1 min-w-[180px]">
-                <div class="relative">
-                    <input id="searchInput" type="text" placeholder="Search account, branch..."
-                        class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500">
+                                    <!-- Search -->
+                                    <div class="flex-1 min-w-[180px]">
+                                        <div class="relative">
+                                            <input id="searchInput" type="text" placeholder="Search account, branch..."
+                                                class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-blue-500">
 
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                </div>
-            </div>
+                                            <i
+                                                class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                                        </div>
+                                    </div>
 
-            <!-- Stage -->
-            <select id="stageFilter" onchange="filterCases()"
-                class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none">
+                                    <!-- Stage -->
+                                    <select id="stageFilter" onchange="filterCases()"
+                                        class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none">
 
-                <option value="">All Stages</option>
-                <option value="ALLOTMENT">ALLOTMENT</option>
-                <option value="Section 13(2)">Section 13(2)</option>
-                <option value="Section 13(4)">Section 13(4)</option>
-                <option value="Section 14">Section 14</option>
-                <option value="Possession">Possession</option>
-                <option value="Sale">Sale</option>
-                <option value="Sale Completed">Sale Completed</option>
-                <option value="Completed">Completed</option>
-                <option value="Close">Close</option>
+                                        <option value="">All Stages</option>
+                                        <option value="ALLOTMENT">ALLOTMENT</option>
+                                        <option value="Section 13(2)">Section 13(2)</option>
+                                        <option value="Section 13(4)">Section 13(4)</option>
+                                        <option value="Section 14">Section 14</option>
+                                        <option value="Possession">Possession</option>
+                                        <option value="Sale">Sale</option>
+                                        <option value="Sale Completed">Sale Completed</option>
+                                        <option value="Completed">Completed</option>
+                                        <option value="Close">Close</option>
 
-            </select>
+                                    </select>
 
-            <!-- Bank -->
-            <select id="bankFilter" onchange="filterCases()"
-                class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none">
+                                    <!-- Bank -->
+                                    <select id="bankFilter" onchange="filterCases()"
+                                        class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none">
 
-                <option value="">All Banks</option>
-            </select>
+                                        <option value="">All Banks</option>
+                                    </select>
 
-            <!-- Region -->
-            <select id="regionFilter" onchange="filterCases()"
-                class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none">
+                                    <!-- Region -->
+                                    <select id="regionFilter" onchange="filterCases()"
+                                        class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none">
 
-                <option value="">All Regions</option>
-            </select>
+                                        <option value="">All Regions</option>
+                                    </select>
 
-            <!-- Reset -->
-            <button onclick="resetFilters()"
-                class="px-3 py-2 border border-slate-200 rounded-lg text-slate-500 hover:bg-slate-50 text-xs">
+                                    <!-- Reset -->
+                                    <button onclick="resetFilters()"
+                                        class="px-3 py-2 border border-slate-200 rounded-lg text-slate-500 hover:bg-slate-50 text-xs">
 
-                <i class="fa-solid fa-rotate"></i>
-            </button>
+                                        <i class="fa-solid fa-rotate"></i>
+                                    </button>
 
-        </div>
-    </div>
+                                </div>
+                            </div>
 
-    <!-- Table -->
-    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                            <!-- Table -->
+                            <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
 
-        <div class="overflow-x-auto">
+                                <div class="overflow-x-auto">
 
-            <table class="w-full min-w-[750px] text-xs">
+                                    <table class="w-full min-w-[750px] text-xs">
 
-                <thead>
-                    <tr class="bg-slate-50 border-b">
+                                        <thead>
+                                            <tr class="bg-slate-50 border-b">
 
-                        <th class="text-left px-4 py-3 font-semibold text-slate-500 uppercase">
-                            No
-                        </th>
+                                                <th class="text-left px-4 py-3 font-semibold text-slate-500 uppercase">
+                                                    No
+                                                </th>
 
-                        <th class="text-left px-4 py-3 font-semibold text-slate-500 uppercase">
-                            Account Name
-                        </th>
+                                                <th class="text-left px-4 py-3 font-semibold text-slate-500 uppercase">
+                                                    Account Name
+                                                </th>
 
-                        <th class="text-left px-4 py-3 font-semibold text-slate-500 uppercase">
-                            Bank
-                        </th>
+                                                <th class="text-left px-4 py-3 font-semibold text-slate-500 uppercase">
+                                                    Bank
+                                                </th>
 
-                        <th class="text-left px-4 py-3 font-semibold text-slate-500 uppercase">
-                            Region
-                        </th>
+                                                <th class="text-left px-4 py-3 font-semibold text-slate-500 uppercase">
+                                                    Region
+                                                </th>
 
-                        <th class="text-left px-4 py-3 font-semibold text-slate-500 uppercase">
-                            Branch
-                        </th>
+                                                <th class="text-left px-4 py-3 font-semibold text-slate-500 uppercase">
+                                                    Branch
+                                                </th>
 
-                        <th class="text-left px-4 py-3 font-semibold text-slate-500 uppercase">
-                            Stage
-                        </th>
+                                                <th class="text-left px-4 py-3 font-semibold text-slate-500 uppercase">
+                                                    Stage
+                                                </th>
 
-                        <th class="text-left px-4 py-3 font-semibold text-slate-500 uppercase">
-                            Action
-                        </th>
+                                                <th class="text-left px-4 py-3 font-semibold text-slate-500 uppercase">
+                                                    Action
+                                                </th>
 
-                    </tr>
-                </thead>
+                                            </tr>
+                                        </thead>
 
-                <tbody id="casesTableBody" class="divide-y divide-slate-100">
-                </tbody>
+                                        <tbody id="casesTableBody" class="divide-y divide-slate-100">
+                                        </tbody>
 
-            </table>
+                                    </table>
 
-        </div>
+                                </div>
 
-    </div>
+                            </div>
 
-    <p id="caseCount" class="text-xs text-slate-400 mt-2 px-1">
-    </p>
+                            <p id="caseCount" class="text-xs text-slate-400 mt-2 px-1">
+                            </p>
 
-</div>
+                    </div>
 
-            
+
                     <!-- ==================== PAGE CONTENT END ==================== -->
 
                 </div>
             </div>
 
             <!-- Chart.js -->
-<script>
-    let allCases = [];
+            <script>
+                let allCases = [];
 
-    async function fetchCases() {
+                async function fetchCases() {
 
-        const res = await fetch('/zonal-case/data');
-        const data = await res.json();
+                    const res = await fetch('/zonal-case/data');
+                    const data = await res.json();
 
-        allCases = data.map((c, i) => ({
-            ...c,
-            si: i + 1,
-            account: c.borrower
-        }));
+                    allCases = data.map((c, i) => ({
+                        ...c,
+                        si: i + 1,
+                        account: c.borrower
+                    }));
 
-        loadFilters();
-        renderCases(allCases);
-    }
+                    loadFilters();
+                    renderCases(allCases);
+                }
 
-    function renderCases(list) {
+                function renderCases(list) {
 
-        const tbody =
-            document.getElementById("casesTableBody");
+                    const tbody =
+                        document.getElementById("casesTableBody");
 
-        tbody.innerHTML = "";
+                    tbody.innerHTML = "";
 
-        document.getElementById("caseCount").textContent =
-            `${list.length} Cases Found`;
+                    document.getElementById("caseCount").textContent =
+                        `${list.length} Cases Found`;
 
-        list.forEach(c => {
+                    list.forEach(c => {
 
-           tbody.innerHTML += `
+                        tbody.innerHTML += `
 <tr class="hover:bg-slate-50">
 
     <td class="px-4 py-3 text-slate-500">
@@ -342,74 +347,74 @@
 
 </tr>
 `;
-        });
-    }
+                    });
+                }
 
-    function loadFilters() {
+                function loadFilters() {
 
-        const banks =
-            [...new Set(allCases.map(c => c.bank))];
+                    const banks =
+                        [...new Set(allCases.map(c => c.bank))];
 
-        const regions =
-            [...new Set(allCases.map(c => c.region))];
+                    const regions =
+                        [...new Set(allCases.map(c => c.region))];
 
-        const bankFilter =
-            document.getElementById("bankFilter");
+                    const bankFilter =
+                        document.getElementById("bankFilter");
 
-        const regionFilter =
-            document.getElementById("regionFilter");
+                    const regionFilter =
+                        document.getElementById("regionFilter");
 
-        banks.forEach(bank => {
-            bankFilter.innerHTML +=
-                `<option value="${bank}">${bank}</option>`;
-        });
+                    banks.forEach(bank => {
+                        bankFilter.innerHTML +=
+                            `<option value="${bank}">${bank}</option>`;
+                    });
 
-        regions.forEach(region => {
-            regionFilter.innerHTML +=
-                `<option value="${region}">${region}</option>`;
-        });
-    }
+                    regions.forEach(region => {
+                        regionFilter.innerHTML +=
+                            `<option value="${region}">${region}</option>`;
+                    });
+                }
 
-    function filterCases() {
+                function filterCases() {
 
-        const search =
-            document.getElementById("searchInput")
-                .value.toLowerCase();
+                    const search =
+                        document.getElementById("searchInput")
+                            .value.toLowerCase();
 
-        const stage =
-            document.getElementById("stageFilter").value;
+                    const stage =
+                        document.getElementById("stageFilter").value;
 
-        const bank =
-            document.getElementById("bankFilter").value;
+                    const bank =
+                        document.getElementById("bankFilter").value;
 
-        const region =
-            document.getElementById("regionFilter").value;
+                    const region =
+                        document.getElementById("regionFilter").value;
 
-        const filtered =
-            allCases.filter(c => {
+                    const filtered =
+                        allCases.filter(c => {
 
-                return (
-                    (!search ||
-                        c.account.toLowerCase().includes(search) ||
-                        c.branch.toLowerCase().includes(search)
-                    ) &&
-                    (!stage || c.stage === stage) &&
-                    (!bank || c.bank === bank) &&
-                    (!region || c.region === region)
-                );
-            });
+                            return (
+                                (!search ||
+                                    c.account.toLowerCase().includes(search) ||
+                                    c.branch.toLowerCase().includes(search)
+                                ) &&
+                                (!stage || c.stage === stage) &&
+                                (!bank || c.bank === bank) &&
+                                (!region || c.region === region)
+                            );
+                        });
 
-        renderCases(filtered);
-    }
+                    renderCases(filtered);
+                }
 
-    document
-        .getElementById("searchInput")
-        .addEventListener("input", filterCases);
+                document
+                    .getElementById("searchInput")
+                    .addEventListener("input", filterCases);
 
-    window.onload = fetchCases;
-</script>
+                window.onload = fetchCases;
+            </script>
             <script>
-              function logout() {
+                function logout() {
                     if (confirm('Logout?')) window.location.href = '/';
                 }
                 function openSidebar() {

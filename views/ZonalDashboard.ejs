@@ -99,6 +99,11 @@
                         <i class="fa-solid fa-chart-bar w-3.5 text-center"></i>
                         Reports
                     </a>
+                    <a href="/zonal-feedback"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-comment w-3.5 text-center"></i>
+                        Send Feedback
+                    </a>
                  
                 </nav>
             </div>
@@ -316,31 +321,27 @@
                                                     <% upcomingHearings.forEach(c=> { %>
 
                                                         <tr class="hover:bg-slate-50">
-
                                                             <td class="px-5 py-3 font-medium text-xs">
-                                                                <%= c.accountName %>
+                                                                <%= c.accountName || c.borrowerName || 'N/A' %>
                                                             </td>
-
+                                                        
                                                             <td class="px-5 py-3 text-xs">
                                                                 <%= c.bank?.bankName || 'N/A' %>
                                                             </td>
-
+                                                        
                                                             <td class="px-5 py-3">
-                                                                <span
-                                                                    class="px-2 py-1 text-[10px] font-medium rounded-full bg-purple-100 text-purple-700">
-                                                                    <%= c.currentStage %>
+                                                                <span class="px-2 py-1 text-[10px] font-medium rounded-full bg-purple-100 text-purple-700">
+                                                                    <%= c.currentStage || '—' %>
                                                                 </span>
                                                             </td>
-
+                                                        
                                                             <td class="px-5 py-3 text-xs">
-                                                                <%= new Date(c.hearingDate).toLocaleDateString('en-IN')
-                                                                    %>
+                                                                <%= c.hearingDate ? new Date(c.hearingDate).toLocaleDateString('en-IN') : '—' %>
                                                             </td>
-
+                                                        
                                                             <td class="px-5 py-3 text-xs text-slate-600">
                                                                 <%= c.court || '—' %>
                                                             </td>
-
                                                         </tr>
 
                                                         <% }) %>

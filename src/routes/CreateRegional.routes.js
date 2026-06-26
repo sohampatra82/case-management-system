@@ -4,9 +4,21 @@ const bcrypt = require("bcrypt");
 const RegionalModel = require("../models/RegionalSignup.model");
 const { Bank, Zone, Region } = require("../models/MasterData.model");
 const { body, validationResult } = require("express-validator");
+const auth = require("../middleware/auth");
+
+
+const ensureAdminUser = (req, res, next) => {
+    if (!req.session?.user || 
+        String(req.session.user.role || "").toLowerCase() !== "admin"
+        ) {
+        return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
+    }
+    next();
+};;
+
 
 // GET - Show Form with Master Data
-router.get("/", async (req, res) => {
+router.get("/", auth("admin"), ensureAdminUser, async (req, res) => {
   try {
     const banks = await Bank.find({ isActive: true }).sort({ bankName: 1 });
     res.render("CreateRegional", { banks });

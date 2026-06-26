@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const NewCaseModel = require("../../models/NewCase.model");
+const auth = require("../../middleware/auth");
 
 const ensureRegionalUser = (req, res, next) => {
     if (!req.session?.user || 
@@ -11,13 +12,13 @@ const ensureRegionalUser = (req, res, next) => {
     next();
 };
 
-router.get("/", ensureRegionalUser, (req, res) => {
+router.get("/", auth("regional"), ensureRegionalUser, (req, res) => {
     res.render("RegionalCase", {
         currentUser: req.session.user
     });
 });
 
-router.get("/data", ensureRegionalUser, async (req, res) => {
+router.get("/data", auth("regional"), ensureRegionalUser, async (req, res) => {
     try {
         const regionId = req.session.user.region;
 
@@ -49,7 +50,7 @@ router.get("/data", ensureRegionalUser, async (req, res) => {
 });
 
 
-router.get("/view/:id", ensureRegionalUser, async (req, res) => {
+router.get("/view/:id", auth("regional"), ensureRegionalUser, async (req, res) => {
   try {
     const caseId = req.params.id;
     const regionId = req.session.user.region; // Assuming region is the correct field for regional users

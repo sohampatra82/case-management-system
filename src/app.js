@@ -8,6 +8,7 @@ const AdminModel = require("./models/Admin.model");
 const session = require("express-session");
 const NewCaseModel = require("../src/models/NewCase.model");
 const ZonalModel = require("../src/models/ZonalSignUp.model");
+const FeedbackModel = require("./models/FeedBack.model");
 const path = require('path') //REQUIRE PATH
 app.set('view engine', 'ejs') //SET VIEW ENGINE TO EJS
 app.use(express.json()) //USE JSON
@@ -60,6 +61,9 @@ const RegionalCase = require("./routes/Regional/RegionalCase.routes");
 const RegionalReports = require("./routes/Regional/RegionalReports.routes");
 const BranchCase = require("./routes/Branch/BranchCase.routes");
 const BranchReports = require("./routes/Branch/BranchReports.routes");
+const ZonalFeedBack = require("./routes/Zonal/ZonalFeedBack.routes");
+const RegionalFeedBack = require("./routes/Regional/RegionalFeedBack.routes");
+const BranchFeedBack = require("./routes/Branch/BranchFeedBack.routes");
 
 const currentUserMiddleware = require("./middleware/authMiddleware");
 app.use(currentUserMiddleware);
@@ -96,6 +100,10 @@ app.use("/regional-case", RegionalCase);
 app.use("/regional-reports", RegionalReports);
 app.use("/branch-case", BranchCase);
 app.use("/branch-reports", BranchReports);
+app.use("/zonal-feedback", ZonalFeedBack);
+app.use("/regional-feedback", RegionalFeedBack);
+app.use("/branch-feedback", BranchFeedBack);
+
 
 // Make sure this is at the bottom (before module.exports)
 app.use((err, req, res, next) => {

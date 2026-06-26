@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SARFAESI Console - Zonal Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
@@ -57,7 +57,6 @@
             transform: translateY(-3px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-        
     </style>
 </head>
 
@@ -100,7 +99,11 @@
                         <i class="fa-solid fa-chart-bar w-3.5 text-center"></i>
                         Reports
                     </a>
-
+                    <a href="/zonal-feedback"
+                        class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:bg-slate-800 rounded-lg text-xs font-medium">
+                        <i class="fa-solid fa-comment w-3.5 text-center"></i>
+                        Send Feedback
+                    </a>
                 </nav>
             </div>
 
@@ -151,293 +154,297 @@
           
 
 <!-- Reports Content -->
-<div class="flex-1 overflow-auto p-6">
+<div class=" flex-1 overflow-auto p-6">
 
-    <div class="flex justify-between items-start mb-6">
-        <div>
-            <h1 class="text-xl font-semibold text-slate-800">
-                Zonal Reports & Analytics
-            </h1>
-            <p class="text-slate-500 text-xs">
-                View zone-wise distribution and export report data.
-            </p>
-        </div>
+                            <div class="flex justify-between items-start mb-6">
+                                <div>
+                                    <h1 class="text-xl font-semibold text-slate-800">
+                                        Zonal Reports & Analytics
+                                    </h1>
+                                    <p class="text-slate-500 text-xs">
+                                        View zone-wise distribution and export report data.
+                                    </p>
+                                </div>
 
-        <button onclick="downloadCSV()"
-            class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-medium">
-            <i class="fa-solid fa-download"></i>
-            Export CSV
-        </button>
-    </div>
+                                <button onclick="downloadCSV()"
+                                    class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-medium">
+                                    <i class="fa-solid fa-download"></i>
+                                    Export CSV
+                                </button>
+                            </div>
 
-    <!-- Tabs -->
-<div class="flex bg-slate-100 p-1 rounded-2xl w-fit mb-8">
-    <button onclick="switchTab(0)" class="tab-active tab-btn px-5 py-2.5 rounded-xl text-xs">By Zone</button>
-    <button onclick="switchTab(1)" class="tab-btn px-5 py-2.5 rounded-xl text-xs text-slate-600 hover:text-slate-800">By
-        Region</button>
-    <button onclick="switchTab(2)" class="tab-btn px-5 py-2.5 rounded-xl text-xs text-slate-600 hover:text-slate-800">By
-        Branch</button>
-    <button onclick="switchTab(3)" class="tab-btn px-5 py-2.5 rounded-xl text-xs text-slate-600 hover:text-slate-800">By
-        Stage</button>
-</div>
+                            <!-- Tabs -->
+                            <div class="flex bg-slate-100 p-1 rounded-2xl w-fit mb-8">
+                                <button onclick="switchTab(0)"
+                                    class="tab-active tab-btn px-5 py-2.5 rounded-xl text-xs">By Zone</button>
+                                <button onclick="switchTab(1)"
+                                    class="tab-btn px-5 py-2.5 rounded-xl text-xs text-slate-600 hover:text-slate-800">By
+                                    Region</button>
+                                <button onclick="switchTab(2)"
+                                    class="tab-btn px-5 py-2.5 rounded-xl text-xs text-slate-600 hover:text-slate-800">By
+                                    Branch</button>
+                                <button onclick="switchTab(3)"
+                                    class="tab-btn px-5 py-2.5 rounded-xl text-xs text-slate-600 hover:text-slate-800">By
+                                    Stage</button>
+                            </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        <!-- Chart -->
-        <div class="bg-white rounded-3xl shadow-sm p-6">
-            <h3 id="chartTitle" class="text-base font-semibold mb-1">
-                Region Distribution
-            </h3>
+                                <!-- Chart -->
+                                <div class="bg-white rounded-3xl shadow-sm p-6">
+                                    <h3 id="chartTitle" class="text-base font-semibold mb-1">
+                                        Region Distribution
+                                    </h3>
 
-            <p id="chartSubtitle" class="text-slate-500 text-xs mb-6">
-                Visual breakdown by region
-            </p>
+                                    <p id="chartSubtitle" class="text-slate-500 text-xs mb-6">
+                                        Visual breakdown by region
+                                    </p>
 
-            <div style="height:380px">
-                <canvas id="mainChart"></canvas>
-            </div>
-        </div>
+                                    <div style="height:380px">
+                                        <canvas id="mainChart"></canvas>
+                                    </div>
+                                </div>
 
-        <!-- Table -->
-        <div class="bg-white rounded-3xl shadow-sm p-6">
+                                <!-- Table -->
+                                <div class="bg-white rounded-3xl shadow-sm p-6">
 
-            <h3 id="tableTitle" class="text-base font-semibold mb-4">
-                Region Summary
-            </h3>
+                                    <h3 id="tableTitle" class="text-base font-semibold mb-4">
+                                        Region Summary
+                                    </h3>
 
-            <p id="tableSubtitle" class="text-slate-500 text-xs mb-4">
-                Detailed counts by region
-            </p>
+                                    <p id="tableSubtitle" class="text-slate-500 text-xs mb-4">
+                                        Detailed counts by region
+                                    </p>
 
-            <table class="w-full text-xs">
+                                    <table class="w-full text-xs">
 
-                <thead>
-                    <tr class="border-b">
-                        <th id="colName" class="text-left py-3 font-medium text-slate-600">
-                            Region Name
-                        </th>
+                                        <thead>
+                                            <tr class="border-b">
+                                                <th id="colName" class="text-left py-3 font-medium text-slate-600">
+                                                    Region Name
+                                                </th>
 
-                        <th class="text-right py-3 font-medium text-slate-600">
-                            Total Cases
-                        </th>
-                    </tr>
-                </thead>
+                                                <th class="text-right py-3 font-medium text-slate-600">
+                                                    Total Cases
+                                                </th>
+                                            </tr>
+                                        </thead>
 
-                <tbody id="tableBody" class="divide-y text-xs">
-                </tbody>
+                                        <tbody id="tableBody" class="divide-y text-xs">
+                                        </tbody>
 
-            </table>
+                                    </table>
 
-        </div>
+                                </div>
 
-    </div>
+                            </div>
 
-</div>
+                    </div>
 
                     <!-- ==================== PAGE CONTENT END ==================== -->
 
                 </div>
             </div>
 
-      
-          <script>
-            let allCases = [];
-            let mainChart;
-            let currentTab = 0;
 
-          async function loadReports() {
+            <script>
+                let allCases = [];
+                let mainChart;
+                let currentTab = 0;
 
-                try {
+                async function loadReports() {
 
-                    const res = await fetch('/zonal-reports/data');
+                    try {
 
-                    console.log("Response:", res);
+                        const res = await fetch('/zonal-reports/data');
 
-                    allCases = await res.json();
+                        console.log("Response:", res);
 
-                    console.log("Cases:", allCases);
+                        allCases = await res.json();
 
-                    switchTab(0);
+                        console.log("Cases:", allCases);
 
-                } catch (err) {
+                        switchTab(0);
 
-                    console.error(err);
+                    } catch (err) {
 
-                }
-            }
+                        console.error(err);
 
-            function switchTab(tab) {
-
-                currentTab = tab;
-
-                document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-
-                    if (i === tab) {
-                        btn.classList.add('bg-white', 'shadow', 'font-medium');
-                    } else {
-                        btn.classList.remove('bg-white', 'shadow', 'font-medium');
                     }
+                }
 
-                });
+                function switchTab(tab) {
 
-                if (tab === 0) renderZone();
-                if (tab === 1) renderRegion();
-                if (tab === 2) renderBranch();
-                if (tab === 3) renderStage();
-            }
+                    currentTab = tab;
+
+                    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+
+                        if (i === tab) {
+                            btn.classList.add('bg-white', 'shadow', 'font-medium');
+                        } else {
+                            btn.classList.remove('bg-white', 'shadow', 'font-medium');
+                        }
+
+                    });
+
+                    if (tab === 0) renderZone();
+                    if (tab === 1) renderRegion();
+                    if (tab === 2) renderBranch();
+                    if (tab === 3) renderStage();
+                }
 
 
-   function renderZone() {
-        const map = {};
+                function renderZone() {
+                    const map = {};
 
-        allCases.forEach(c => {
-            map[c.zone] = (map[c.zone] || 0) + 1;
-        });
+                    allCases.forEach(c => {
+                        map[c.zone] = (map[c.zone] || 0) + 1;
+                    });
 
-        renderChartAndTable(map);
-    }
+                    renderChartAndTable(map);
+                }
 
-            function renderRegion() {
+                function renderRegion() {
 
-                updateHeaders(
-                    "Region Distribution",
-                    "Visual breakdown by region",
-                    "Region Summary",
-                    "Detailed counts by region",
-                    "Region Name"
-                );
+                    updateHeaders(
+                        "Region Distribution",
+                        "Visual breakdown by region",
+                        "Region Summary",
+                        "Detailed counts by region",
+                        "Region Name"
+                    );
 
-                const map = {};
+                    const map = {};
 
-                allCases.forEach(c => {
-                    map[c.region] = (map[c.region] || 0) + 1;
-                });
+                    allCases.forEach(c => {
+                        map[c.region] = (map[c.region] || 0) + 1;
+                    });
 
-                renderChartAndTable(map);
-            }
+                    renderChartAndTable(map);
+                }
 
-            function renderBranch() {
+                function renderBranch() {
 
-                updateHeaders(
-                    "Branch Distribution",
-                    "Visual breakdown by branch",
-                    "Branch Summary",
-                    "Detailed counts by branch",
-                    "Branch Name"
-                );
+                    updateHeaders(
+                        "Branch Distribution",
+                        "Visual breakdown by branch",
+                        "Branch Summary",
+                        "Detailed counts by branch",
+                        "Branch Name"
+                    );
 
-                const map = {};
+                    const map = {};
 
-                allCases.forEach(c => {
-                    map[c.branch] = (map[c.branch] || 0) + 1;
-                });
+                    allCases.forEach(c => {
+                        map[c.branch] = (map[c.branch] || 0) + 1;
+                    });
 
-                renderChartAndTable(map);
-            }
+                    renderChartAndTable(map);
+                }
 
-            function renderStage() {
+                function renderStage() {
 
-                updateHeaders(
-                    "Stage Distribution",
-                    "Visual breakdown by stage",
-                    "Stage Summary",
-                    "Detailed counts by stage",
-                    "Stage Name"
-                );
+                    updateHeaders(
+                        "Stage Distribution",
+                        "Visual breakdown by stage",
+                        "Stage Summary",
+                        "Detailed counts by stage",
+                        "Stage Name"
+                    );
 
-                const map = {};
+                    const map = {};
 
-                allCases.forEach(c => {
-                    map[c.currentStage] = (map[c.currentStage] || 0) + 1;
-                });
+                    allCases.forEach(c => {
+                        map[c.currentStage] = (map[c.currentStage] || 0) + 1;
+                    });
 
-                renderChartAndTable(map);
-            }
+                    renderChartAndTable(map);
+                }
 
-            function updateHeaders(
-                chartTitle,
-                chartSubtitle,
-                tableTitle,
-                tableSubtitle,
-                colName
-            ) {
+                function updateHeaders(
+                    chartTitle,
+                    chartSubtitle,
+                    tableTitle,
+                    tableSubtitle,
+                    colName
+                ) {
 
-                document.getElementById("chartTitle").textContent = chartTitle;
-                document.getElementById("chartSubtitle").textContent = chartSubtitle;
+                    document.getElementById("chartTitle").textContent = chartTitle;
+                    document.getElementById("chartSubtitle").textContent = chartSubtitle;
 
-                document.getElementById("tableTitle").textContent = tableTitle;
-                document.getElementById("tableSubtitle").textContent = tableSubtitle;
+                    document.getElementById("tableTitle").textContent = tableTitle;
+                    document.getElementById("tableSubtitle").textContent = tableSubtitle;
 
-                document.getElementById("colName").textContent = colName;
-            }
+                    document.getElementById("colName").textContent = colName;
+                }
 
-            function renderChartAndTable(dataMap) {
+                function renderChartAndTable(dataMap) {
 
-                const labels = Object.keys(dataMap);
-                const values = Object.values(dataMap);
+                    const labels = Object.keys(dataMap);
+                    const values = Object.values(dataMap);
 
-                if (mainChart) mainChart.destroy();
+                    if (mainChart) mainChart.destroy();
 
-                mainChart = new Chart(
-                    document.getElementById("mainChart"),
-                    {
-                        type: "bar",
-                        data: {
-                            labels,
-                            datasets: [{
-                                data: values,
-                                backgroundColor: [
-                                    "#3b82f6",
-                                    "#22c55e",
-                                    "#f59e0b",
-                                    "#ef4444",
-                                    "#8b5cf6",
-                                    "#ec4899"
-                                ],
-                                borderRadius: 8
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    display: false
-                                }
+                    mainChart = new Chart(
+                        document.getElementById("mainChart"),
+                        {
+                            type: "bar",
+                            data: {
+                                labels,
+                                datasets: [{
+                                    data: values,
+                                    backgroundColor: [
+                                        "#3b82f6",
+                                        "#22c55e",
+                                        "#f59e0b",
+                                        "#ef4444",
+                                        "#8b5cf6",
+                                        "#ec4899"
+                                    ],
+                                    borderRadius: 8
+                                }]
                             },
-                            scales: {
-                                y: {
-                                    beginAtZero: true
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
                                 }
                             }
                         }
-                    }
-                );
+                    );
 
-                const tbody = document.getElementById("tableBody");
-                tbody.innerHTML = "";
+                    const tbody = document.getElementById("tableBody");
+                    tbody.innerHTML = "";
 
-                Object.entries(dataMap)
-                    .sort((a, b) => b[1] - a[1])
-                    .forEach(([name, count]) => {
+                    Object.entries(dataMap)
+                        .sort((a, b) => b[1] - a[1])
+                        .forEach(([name, count]) => {
 
-                   tbody.innerHTML += `
+                            tbody.innerHTML += `
 <tr>
     <td class="py-3">${name || '-'}</td>
     <td class="py-3 text-right font-medium">${count}</td>
 </tr>
 `;
-                    });
-            }
+                        });
+                }
 
-            function downloadCSV() {
-                window.location.href = "/zonal-reports/download/csv";
-            }
+                function downloadCSV() {
+                    window.location.href = "/zonal-reports/download/csv";
+                }
 
-            window.onload = loadReports;
-        </script>
+                window.onload = loadReports;
+            </script>
             <script>
-              function logout() {
+                function logout() {
                     if (confirm('Logout?')) window.location.href = '/';
                 }
                 function openSidebar() {
