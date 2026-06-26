@@ -18,19 +18,14 @@ const ensureRegionalUser = (req, res, next) => {
 };
 
 const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
     secure: false,
-    family: 4,              // Force IPv4
     auth: {
-        user: process.env.ADMIN_EMAIL,
-        pass: process.env.EMAIL_PASSWORD
-    },
-    tls: {
-        rejectUnauthorized: false
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
     }
 });
-
 // ====================== PROFESSIONAL FEEDBACK EMAIL ======================
 const createFeedbackEmailHTML = (feedback, user) => {
     return `
@@ -145,8 +140,8 @@ router.post("/",  auth("regional"), ensureRegionalUser, async (req, res) => {
 
         // Send Email
         const mailOptions = {
-            from: `"SARFAESI CMS" <${process.env.ADMIN_EMAIL}>`,
-            to: "info@anroy.org",
+           from: `"SARFAESI CMS" <${process.env.SMTP_USER}>`,
+           to: process.env.SMTP_USER,
             subject: `New Feedback - ${category}: ${subject}`,
             html: createFeedbackEmailHTML(feedback, enrichedUser)
         };
