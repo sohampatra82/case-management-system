@@ -18,10 +18,16 @@ const ensureRegionalUser = (req, res, next) => {
 };
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    family: 4,              // Force IPv4
     auth: {
-        user: process.env.ADMIN_EMAIL || "info@anroy.org",
+        user: process.env.ADMIN_EMAIL,
         pass: process.env.EMAIL_PASSWORD
+    },
+    tls: {
+        rejectUnauthorized: false
     }
 });
 
@@ -154,17 +160,12 @@ router.post("/",  auth("regional"), ensureRegionalUser, async (req, res) => {
         });
 
     } catch (error) {
-    console.error("======================");
-    console.error(error);
-    console.error(error.message);
-    console.error(error.stack);
-    console.error("======================");
-
-    res.status(500).json({
-        success: false,
-        message: error.message
-    });
-}
+        console.error("Feedback Error:", error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Something went wrong. Please try again." 
+        });
+    }
 });
 
 module.exports = router;
