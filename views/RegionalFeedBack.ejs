@@ -278,10 +278,17 @@
                     submitBtn.disabled = true;
 
                     try {
-                        const response = await fetch('/regional-feedback', {
+                       const response = await fetch('/regional-feedback', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ category, subject, description })
+                            body: JSON.stringify({
+                                category,
+                                subject,
+                                description,
+                                // Optional: send more context
+                                submittedBy: "<%= currentUser ? currentUser.fullName : '' %>",
+                                userEmail: "<%= currentUser ? currentUser.email : '' %>"
+                            })
                         });
 
                         const data = await response.json();

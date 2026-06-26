@@ -20,7 +20,7 @@ const ensureRegionalUser = (req, res, next) => {
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.ADMIN_EMAIL || "info@anroy.org",
+        user: process.env.ADMIN_EMAIL || "sohampatra866@gmail.com",
         pass: process.env.EMAIL_PASSWORD
     }
 });
@@ -87,28 +87,28 @@ router.get("/", auth("regional"),  ensureRegionalUser, (req, res) => {
     res.render("RegionalFeedBack");
 });
 
-router.post("/",  auth("regional"), ensureRegionalUser, async (req, res) => {
+router.post("/", auth("regional"), ensureRegionalUser, async (req, res) => {
     try {
         let { category, subject, description } = req.body;
 
-        if (category) {
-            category = category.trim().replace(/\s+/g, ' ');
-        }
+        // Trim and sanitize
+        category = category?.trim().replace(/\s+/g, ' ');
+        subject = subject?.trim();
+        description = description?.trim();
 
         if (!category || !subject || !description) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Category, Subject and Description are required" 
+            return res.status(400).json({
+                success: false,
+                message: "Category, Subject and Description are required"
             });
         }
 
-        let currentUser = req.session?.user;
-
-        if (!currentUser) {
-            return res.status(401).json({ success: false, message: "Please login first" });
+        const currentUser = req.session?.user;
+        if (!currentUser || !currentUser.id) {
+            return res.status(401).json({ success: false, message: "Session expired. Please login again." });
         }
 
-        // ✅ FIX: Populate email and zoneName
+        // Fetch full user with zone populated
         const regionalUser = await RegionalModel.findById(currentUser.id)
             .populate('zone', 'zoneName')
             .lean();
@@ -119,45 +119,47 @@ router.post("/",  auth("regional"), ensureRegionalUser, async (req, res) => {
 
         const enrichedUser = {
             ...currentUser,
-            fullName: regionalUser.fullName,
+            fullName: regionalUser.fullName || currentUser.fullName,
             email: regionalUser.email,
             zoneName: regionalUser.zone?.zoneName || 'N/A'
         };
 
-        // Save Feedback
+        // Save feedback
         const feedback = new FeedbackModel({
             category,
-            subject: subject.trim(),
-            description: description.trim(),
+            subject,
+            description,
             submittedBy: enrichedUser.fullName || enrichedUser.loginId,
             userEmail: enrichedUser.email,
             role: enrichedUser.role || "regional",
-            zone: enrichedUser.zone || regionalUser.zone?._id
+            zone: regionalUser.zone?._id || currentUser.zone
         });
 
         await feedback.save();
 
-        // Send Email
+        // Send email
         const mailOptions = {
-            from: `"SARFAESI CMS" <${process.env.ADMIN_EMAIL}>`,
-            to: "info@anroy.org",
+            from: `"SARFAESI CMS" <${process.env.ADMIN_EMAIL || "sohampatra866@gmail.com"}>`,
+            to: "sohampatra866@gmail.com",
             subject: `New Feedback - ${category}: ${subject}`,
             html: createFeedbackEmailHTML(feedback, enrichedUser)
         };
 
         await transporter.sendMail(mailOptions);
 
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,
             message: "Feedback submitted successfully!",
-            feedbackId: feedback._id 
+            feedbackId: feedback._id.toString()
         });
 
     } catch (error) {
-        console.error("Feedback Error:", error);
-        res.status(500).json({ 
-            success: false, 
-            message: "Something went wrong. Please try again." 
+        console.error("🔴 Feedback Error:", error.stack || error);
+        res.status(500).json({
+            success: false,
+            message: "Something went wrong. Please try again.",
+            // Remove this in production:
+            // error: error.message
         });
     }
 });
