@@ -1,23 +1,20 @@
-// routes/Zonal/ZonalFeedBack.routes.js
+// routes/Regional/RegionalFeedBack.routes.js
 require("dotenv").config();
 const express = require("express");
-const mongoose = require("mongoose");
 const router = express.Router();
 const FeedbackModel = require("../../models/FeedBack.model");
 const nodemailer = require("nodemailer");
-const ZonalModel = require("../../models/ZonalSignUp.model"); // ← Add this
+const RegionalModel = require("../../models/RegionalSignup.model"); // ← Add this
+
 const auth = require("../../middleware/auth");
 
 
-const ensureZonalUser = (req, res, next) => {
-  if (
-    !req.session.user ||
-    req.session.user.role !== "zonal" ||
-    !req.session.user.zone
-  ) {
-    return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
-  }
-  next();
+
+const ensureRegionalUser = (req, res, next) => {
+    if (!req.session.user || req.session.user.role !== "regional" || !req.session.user.zone) {
+        return res.status(403).send("PLEASE LOGIN WITH APPROPRIATE CREDENTIALS");
+    }
+    next();
 };
 
 const transporter = nodemailer.createTransport({
@@ -88,11 +85,11 @@ const createFeedbackEmailHTML = (feedback, user) => {
     </html>`;
 };
 
-router.get("/",  auth("zonal"), ensureZonalUser, (req, res) => {
-    res.render("ZonalFeedBack");
+router.get("/", auth("regional"),  ensureRegionalUser, (req, res) => {
+    res.render("regional-case-feedback");
 });
 
-router.post("/",  auth("zonal"), ensureZonalUser, async (req, res) => {
+router.post("/",  auth("regional"), ensureRegionalUser, async (req, res) => {
     try {
         let { category, subject, description } = req.body;
 
@@ -114,19 +111,19 @@ router.post("/",  auth("zonal"), ensureZonalUser, async (req, res) => {
         }
 
         // ✅ FIX: Populate email and zoneName
-        const zonalUser = await ZonalModel.findById(currentUser.id)
+        const regionalUser = await RegionalModel.findById(currentUser.id)
             .populate('zone', 'zoneName')
             .lean();
 
-        if (!zonalUser) {
+        if (!regionalUser) {
             return res.status(404).json({ success: false, message: "User not found" });
         }
 
         const enrichedUser = {
             ...currentUser,
-            fullName: zonalUser.fullName,
-            email: zonalUser.email,
-            zoneName: zonalUser.zone?.zoneName || 'N/A'
+            fullName: regionalUser.fullName,
+            email: regionalUser.email,
+            zoneName: regionalUser.zone?.zoneName || 'N/A'
         };
 
         // Save Feedback
@@ -136,19 +133,19 @@ router.post("/",  auth("zonal"), ensureZonalUser, async (req, res) => {
             description: description.trim(),
             submittedBy: enrichedUser.fullName || enrichedUser.loginId,
             userEmail: enrichedUser.email,
-            role: enrichedUser.role || "zonal",
-            zone: enrichedUser.zone || zonalUser.zone?._id
+            role: enrichedUser.role || "regional",
+            zone: enrichedUser.zone || regionalUser.zone?._id
         });
 
         await feedback.save();
 
         // Send Email
-            const mailOptions = {
-    from: `"SARFAESI CMS" <${process.env.SMTP_EMAIL}>`,
-    to: process.env.ADMIN_EMAIL,
-    subject: `New Feedback - ${category}: ${subject}`,
-    html: createFeedbackEmailHTML(feedback, enrichedUser)
-};
+        const mailOptions = {
+            from: `"SARFAESI CMS" <${process.env.ADMIN_EMAIL}>`,
+            to: "info@anroy.org",
+            subject: `New Feedback - ${category}: ${subject}`,
+            html: createFeedbackEmailHTML(feedback, enrichedUser)
+        };
 
         await transporter.sendMail(mailOptions);
 

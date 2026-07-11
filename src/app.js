@@ -64,6 +64,9 @@ const BranchReports = require("./routes/Branch/BranchReports.routes");
 const ZonalFeedBack = require("./routes/Zonal/ZonalFeedBack.routes");
 const RegionalFeedBack = require("./routes/Regional/RegionalFeedBack.routes");
 const BranchFeedBack = require("./routes/Branch/BranchFeedBack.routes");
+const ZonaCaseFeedBack = require("./routes/Zonal/zonal-case-feedback.routes");
+const BranchCaseFeedBack = require("./routes/Branch/branch-case-feedback.routes");
+const RegionalCaseFeedBack = require("./routes/Regional/regional-case-feedback.routes");
 
 const currentUserMiddleware = require("./middleware/authMiddleware");
 app.use(currentUserMiddleware);
@@ -103,7 +106,9 @@ app.use("/branch-reports", BranchReports);
 app.use("/zonal-feedback", ZonalFeedBack);
 app.use("/regional-feedback", RegionalFeedBack);
 app.use("/branch-feedback", BranchFeedBack);
-
+app.use("/zonal-case-feedback", ZonaCaseFeedBack);
+app.use("/regional-case-feedback", RegionalCaseFeedBack);
+app.use("/branch-case-feedback", BranchCaseFeedBack);
 
 // Make sure this is at the bottom (before module.exports)
 app.use((err, req, res, next) => {

@@ -21,7 +21,7 @@ const transporter = nodemailer.createTransport({
     port: Number(process.env.SMTP_PORT),
     secure: false,
     auth: {
-        user: process.env.SMTP_USER,
+        user: process.env.SMTP_EMAIL,
         pass: process.env.SMTP_PASS
     }
 });
@@ -140,7 +140,7 @@ router.post("/",  auth("branch"), ensureBranchUser, async (req, res) => {
 
         // Send Email
               const mailOptions = {
-    from: `"SARFAESI CMS" <${process.env.SMTP_USER}>`,
+    from: `"SARFAESI CMS" <${process.env.SMTP_EMAIL}>`,
     to: process.env.ADMIN_EMAIL,
     subject: `New Feedback - ${category}: ${subject}`,
     html: createFeedbackEmailHTML(feedback, enrichedUser)

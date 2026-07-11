@@ -15,8 +15,8 @@ const transporter = nodemailer.createTransport({
 const sendEmail = async (toEmails, subject, html) => {
   try {
     await transporter.sendMail({
-      from: `"SARFAESI CMS" <${process.env.SMTP_USER}>`,
-      to: process.env.SMTP_USER,
+      from: `"SARFAESI CMS" <${process.env.SMTP_EMAIL}>`,
+      to: process.env.SMTP_EMAIL,
       bcc: toEmails,
       subject: subject,
       html: html

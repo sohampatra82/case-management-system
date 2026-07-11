@@ -89,7 +89,7 @@ const createFeedbackEmailHTML = (feedback, user) => {
 };
 
 router.get("/",  auth("zonal"), ensureZonalUser, (req, res) => {
-    res.render("ZonalFeedBack");
+    res.render("zonal-case-feedback");
 });
 
 router.post("/",  auth("zonal"), ensureZonalUser, async (req, res) => {
