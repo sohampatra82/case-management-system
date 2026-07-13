@@ -283,21 +283,103 @@
             </div>
 
             <!-- Remarks -->
-            <% if (caseData.initialRemarks) { %>
-                <div>
-                    <h3 class="section-title mb-4">Remarks</h3>
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-slate-700 text-left">
-                    <%= caseData.initialRemarks %>
+        <div>
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="section-title">Remarks</h3>
+        
+                <button onclick="editRemarks()" id="edit-btn"
+                    class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-50 rounded-xl transition-colors">
+                    <i class="fa-solid fa-pen"></i>
+                    <span>Edit Remarks</span>
+                </button>
+            </div>
+        
+            <div id="remarks-display"
+                class="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-slate-700 text-left min-h-[120px]">
+                <p class="detail-value">
+                    <%= caseData.initialRemarks ? caseData.initialRemarks : 'N/A' %>
+                </p>
+            </div>
+        
+            <!-- Edit Mode -->
+            <div id="remarks-edit" class="hidden">
+                <textarea id="remarks-textarea"
+                    class="w-full h-40 p-5 border border-slate-300 rounded-2xl focus:outline-none focus:border-emerald-500 resize-y"
+                    placeholder="Write your remarks here..."><%= caseData.initialRemarks || '' %></textarea>
+        
+                <div class="flex gap-3 mt-4">
+                <button onclick="saveRemarks()"
+                    class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-medium">
+                    <i class="fas fa-pen-to-square mr-2"></i>
+                    Save Remarks
+                </button>
+                    <button onclick="cancelEdit()"
+                        class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-medium">
+                        <i class="fas fa-times mr-2"></i>
+                        Cancel
+                    </button>
                 </div>
-                </div>
-                <% } %>
-<a href="/regional-case-feedback"
+            </div>
+        </div>
+<!-- <a href="/regional-case-feedback"
     class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl font-medium rounded-xl">
     <i class="fa-solid fa-comments"></i>
     Case Feedback
-</a>
+</a> -->
         </div>
     </div>
+
+<script>
+    async function saveRemarks() {
+        const textarea = document.getElementById('remarks-textarea');
+        const newRemarks = textarea.value.trim();
+        const caseId = "<%= caseData._id %>";
+
+        if (!caseId) {
+            alert("Case ID not found");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/regional-case/${caseId}/remarks`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ initialRemarks: newRemarks })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                const displayDiv = document.getElementById('remarks-display');
+                displayDiv.innerHTML = newRemarks
+                    ? newRemarks.replace(/\n/g, '<br>')
+                    : '<span class="text-slate-400 italic">N/A</span>';
+
+                cancelEdit();
+                alert("✅ Remarks updated successfully!");
+            } else {
+                alert(result.message || "Failed to save remarks");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Error connecting to server");
+        }
+    }
+
+    // editRemarks() and cancelEdit() functions remain the same
+    function editRemarks() {
+        document.getElementById('remarks-display').classList.add('hidden');
+        document.getElementById('remarks-edit').classList.remove('hidden');
+        document.getElementById('edit-btn').classList.add('hidden');
+    }
+
+    function cancelEdit() {
+        document.getElementById('remarks-display').classList.remove('hidden');
+        document.getElementById('remarks-edit').classList.add('hidden');
+        document.getElementById('edit-btn').classList.remove('hidden');
+    }
+</script>
+
 
 </body>
 

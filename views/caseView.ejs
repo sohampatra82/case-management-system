@@ -443,15 +443,18 @@
                     </div>
                 
                     <!-- Remarks -->
-                    <% if(caseData.initialRemarks) { %>
+                    
                         <div>
                             <h3 class="section-title mb-4">Remarks</h3>
                 
-                            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-slate-700 text-left">
-                                <%= caseData.initialRemarks %>
-                            </div>
+                        <div id="remarks-display"
+                            class="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-slate-700 text-left min-h-[120px]">
+                            <p class="detail-value">
+                                <%= caseData.initialRemarks ? caseData.initialRemarks : 'N/A' %>
+                            </p>
                         </div>
-                        <% } %>
+                        </div>
+                        
                 
                 </div>
         

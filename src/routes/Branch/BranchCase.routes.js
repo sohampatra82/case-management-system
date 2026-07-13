@@ -83,4 +83,42 @@ router.get("/view/:id", auth("branch"), ensureBranchUser, async (req, res) => {
   }
 });
 
+// PATCH - Update Only Remarks (branch + Admin allowed)
+router.patch("/:id/remarks",  auth("branch") ,  ensureBranchUser, async (req, res) => {
+    try {
+        const { initialRemarks } = req.body;
+        const caseId = req.params.id;
+
+        const caseData = await NewCaseModel.findById(caseId);
+        if (!caseData) return res.status(404).json({ success: false, message: "Case not found" });
+
+        // Optional: Restrict to user's zone
+        if (caseData.zone.toString() !== req.session.user.zone.toString()) {
+            return res.status(403).json({ success: false, message: "Access Denied" });
+        }
+
+        // Push to history before updating
+        if (caseData.initialRemarks && caseData.initialRemarks !== initialRemarks) {
+            caseData.remarksHistory.push({
+                remark: caseData.initialRemarks,
+                date: new Date(),
+                updatedBy: req.session.user.fullName || req.session.user.username
+            });
+        }
+
+        caseData.initialRemarks = initialRemarks || "";
+        await caseData.save();
+
+        res.json({ 
+            success: true, 
+            message: "Remarks updated successfully",
+            initialRemarks: caseData.initialRemarks 
+        });
+    } catch (error) {
+        console.error("Update Remarks Error:", error);
+        res.status(500).json({ success: false, message: "Failed to update remarks" });
+    }
+});
+
+
 module.exports = router;
