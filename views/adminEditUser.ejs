@@ -27,6 +27,13 @@
                     required>
             </div>
 
+            <!-- Email -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                <input type="email" name="email" value="<%= user.email || '' %>"
+                    class="w-full px-4 py-3 border border-slate-300 rounded-xl">
+            </div>
+
             <!-- Username / Login ID -->
             <div class="mb-4">
                 <label class="block text-sm font-medium text-slate-700 mb-1">
@@ -38,12 +45,21 @@
                     required>
             </div>
 
+            <!-- Password -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+                    New Password <span class="text-xs text-slate-500">(Leave blank to keep current)</span>
+                </label>
+                <input type="password" name="password" placeholder="Enter new password"
+                    class="w-full px-4 py-3 border border-slate-300 rounded-xl">
+            </div>
+
             <% if (user.model !=="Admin" ) { %>
 
                 <!-- Bank -->
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-slate-700 mb-1">Bank</label>
-                    <select name="bank" class="w-full px-4 py-3 border border-slate-300 rounded-xl">
+                    <select name="bank" id="bankSelect" class="w-full px-4 py-3 border border-slate-300 rounded-xl">
                         <option value="">Select Bank</option>
                         <% banks.forEach(bank=> { %>
                             <option value="<%= bank._id %>" <%=String(user.bank)===String(bank._id) ? 'selected' : '' %>
@@ -57,14 +73,8 @@
                 <!-- Zone -->
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-slate-700 mb-1">Zone</label>
-                    <select name="zone" class="w-full px-4 py-3 border border-slate-300 rounded-xl">
+                    <select name="zone" id="zoneSelect" class="w-full px-4 py-3 border border-slate-300 rounded-xl">
                         <option value="">Select Zone</option>
-                        <% zones.forEach(zone=> { %>
-                            <option value="<%= zone._id %>" <%=String(user.zone)===String(zone._id) ? 'selected' : '' %>
-                                >
-                                <%= zone.zoneName %>
-                            </option>
-                            <% }); %>
                     </select>
                 </div>
 
@@ -72,27 +82,27 @@
                     <!-- Region -->
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-slate-700 mb-1">Region</label>
-                        <select name="region" class="w-full px-4 py-3 border border-slate-300 rounded-xl">
+                        <select name="region" id="regionSelect"
+                            class="w-full px-4 py-3 border border-slate-300 rounded-xl">
                             <option value="">Select Region</option>
-                            <% regions.forEach(region=> { %>
-                                <option value="<%= region._id %>" <%=String(user.region)===String(region._id)
-                                    ? 'selected' : '' %>>
-                                    <%= region.regionName %>
-                                </option>
-                                <% }); %>
                         </select>
                     </div>
                     <% } %>
 
-                        <% if (user.model==="Branch" ) { %>
-                            <!-- Branch Name -->
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-slate-700 mb-1">Branch Name</label>
-                                <input type="text" name="branchName"
-                                    value="<%= user.branch ? user.branch.branchName : '' %>"
-                                    class="w-full px-4 py-3 border border-slate-300 rounded-xl">
-                            </div>
-                            <% } %>
+                <% if (user.model==="Branch" ) { %>
+                    <!-- Branch (from Master Data) -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Branch</label>
+                        <select name="branch" id="branchSelect" class="w-full px-4 py-3 border border-slate-300 rounded-xl">
+                            <option value="">Select Branch</option>
+                            <% branches.forEach(br=> { %>
+                            <option value="<%= br._id %>" <%=String(user.branch?._id)===String(br._id) ? 'selected' : '' %>>
+                                <%= br.branchName %>
+                            </option>
+                                <% }); %>
+                        </select>
+                    </div>
+                    <% } %>
 
                                 <% } %>
 
@@ -109,6 +119,117 @@
         </form>
     </div>
 
+<script>
+    // Safe Dynamic Cascading Dropdowns - Fixed for Zonal
+    const bankSelect = document.getElementById('bankSelect');
+    const zoneSelect = document.getElementById('zoneSelect');
+    const regionSelect = document.getElementById('regionSelect');
+    const branchSelect = document.getElementById('branchSelect');
+
+    let currentBank = "<%= user.bank ? user.bank.toString() : '' %>";
+    let currentZone = "<%= user.zone ? user.zone.toString() : '' %>";
+    let currentRegion = "<%= user.region ? user.region.toString() : '' %>";
+
+    async function loadZones(bankId) {
+        if (!zoneSelect) return;
+        zoneSelect.innerHTML = '<option value="">Loading zones...</option>';
+
+        if (!bankId) {
+            zoneSelect.innerHTML = '<option value="">Select Zone</option>';
+            return;
+        }
+
+        try {
+            const res = await fetch(`/master-data/zones?bankId=${String(bankId)}`);
+            const zones = await res.json();
+
+            zoneSelect.innerHTML = '<option value="">Select Zone</option>';
+            zones.forEach(zone => {
+                const opt = document.createElement('option');
+                opt.value = zone._id;
+                opt.textContent = zone.zoneName;
+                if (String(zone._id) === currentZone) opt.selected = true;
+                zoneSelect.appendChild(opt);
+            });
+        } catch (e) {
+            console.error("Zones load error:", e);
+            zoneSelect.innerHTML = '<option value="">Error loading zones</option>';
+        }
+    }
+
+    async function loadRegions(zoneId) {
+        if (!regionSelect) return;
+        regionSelect.innerHTML = '<option value="">Loading regions...</option>';
+
+        if (!zoneId) {
+            regionSelect.innerHTML = '<option value="">Select Region</option>';
+            return;
+        }
+
+        try {
+            const res = await fetch(`/master-data/regions?zoneId=${String(zoneId)}`);
+            const regions = await res.json();
+
+            regionSelect.innerHTML = '<option value="">Select Region</option>';
+            regions.forEach(region => {
+                const opt = document.createElement('option');
+                opt.value = region._id;
+                opt.textContent = region.regionName;
+                if (String(region._id) === currentRegion) opt.selected = true;
+                regionSelect.appendChild(opt);
+            });
+        } catch (e) {
+            console.error("Regions load error:", e);
+            regionSelect.innerHTML = '<option value="">Error loading regions</option>';
+        }
+    }
+
+    async function loadBranches(regionId) {
+        if (!branchSelect) return;
+        branchSelect.innerHTML = '<option value="">Loading branches...</option>';
+
+        if (!regionId) {
+            branchSelect.innerHTML = '<option value="">Select Branch</option>';
+            return;
+        }
+
+        try {
+            const res = await fetch(`/master-data/branches?regionId=${String(regionId)}`);
+            const branches = await res.json();
+
+            branchSelect.innerHTML = '<option value="">Select Branch</option>';
+            branches.forEach(br => {
+                const opt = document.createElement('option');
+                opt.value = br._id;
+                opt.textContent = br.branchName;
+                branchSelect.appendChild(opt);
+            });
+        } catch (e) {
+            console.error("Branches load error:", e);
+            branchSelect.innerHTML = '<option value="">Error loading branches</option>';
+        }
+    }
+
+    // Event Listeners
+    bankSelect.addEventListener('change', () => loadZones(bankSelect.value));
+    zoneSelect.addEventListener('change', () => loadRegions(zoneSelect.value));
+    if (regionSelect) regionSelect.addEventListener('change', () => loadBranches(regionSelect.value));
+
+    // Initial Load - Critical for Zonal users
+    window.onload = async () => {
+        if (currentBank) {
+            await loadZones(currentBank);
+
+            // If already has zone selected (important for Zonal edit)
+            if (currentZone) {
+                await loadRegions(currentZone);
+            }
+            if (currentRegion) {
+                await loadBranches(currentRegion);
+            }
+        }
+    };
+</script>
 </body>
 
 </html>

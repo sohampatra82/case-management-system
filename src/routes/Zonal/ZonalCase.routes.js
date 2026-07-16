@@ -125,5 +125,59 @@ router.patch("/:id/remarks",  auth("zonal") ,  ensureZonalUser, async (req, res)
     }
 });
 
+// PATCH - Update Only Remarks
+router.patch("/:id/remarks", auth("zonal"), ensureZonalUser, async (req, res) => {
+    try {
+        const { initialRemarks } = req.body;
+        const caseId = req.params.id;
+        const user = req.session.user;
+
+        const caseData = await NewCaseModel.findById(caseId);
+        if (!caseData) return res.status(404).json({ success: false, message: "Case not found" });
+
+        if (caseData.zone.toString() !== user.zone.toString()) {
+            return res.status(403).json({ success: false, message: "Access Denied" });
+        }
+
+        const oldRemarks = caseData.initialRemarks;
+        const newRemarks = initialRemarks || "";
+
+        if (oldRemarks && oldRemarks !== newRemarks) {
+            caseData.remarksHistory.push({
+                remark: oldRemarks,
+                date: new Date(),
+                updatedBy: user.fullName || user.username
+            });
+        }
+
+        caseData.initialRemarks = newRemarks;
+        await caseData.save();
+
+        // === SEND EMAIL NOTIFICATION TO ADMIN ===
+        const { sendCaseUpdateNotification } = require("../../utils/emailNotifications");
+
+        console.log(`📧 Attempting to send remarks update email to Admin...`);
+
+        await sendCaseUpdateNotification(
+            caseData,
+            user.fullName || user.username,
+            user.role.toUpperCase(),
+            newRemarks
+        );
+
+        console.log(`✅ Email notification successfully sent to Admin for case ${caseData.caseNumber} by ${user.role}`);
+
+        res.json({ 
+            success: true, 
+            message: "Remarks updated successfully",
+            initialRemarks: caseData.initialRemarks 
+        });
+
+    } catch (error) {
+        console.error("Update Remarks Error:", error);
+        res.status(500).json({ success: false, message: "Failed to update remarks" });
+    }
+});
+
 
 module.exports = router;
