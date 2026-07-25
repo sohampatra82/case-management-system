@@ -204,6 +204,96 @@
                 font-size: 22px;
             }
         }
+
+        /* Install Popup */
+.install-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,.55);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding:20px;
+}
+
+.install-popup.show{
+    display:flex;
+}
+
+.install-card{
+    width:100%;
+    max-width:360px;
+    background:#fff;
+    border-radius:18px;
+    padding:25px;
+    text-align:center;
+    animation:popup .25s ease;
+}
+
+@keyframes popup{
+    from{
+        transform:translateY(20px);
+        opacity:0;
+    }
+    to{
+        transform:translateY(0);
+        opacity:1;
+    }
+}
+
+.install-icon{
+    width:70px;
+    height:70px;
+    background:#2563eb;
+    color:#fff;
+    border-radius:16px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin:auto;
+    font-size:28px;
+}
+
+.install-card h3{
+    margin-top:18px;
+    color:#0f172a;
+}
+
+.install-card p{
+    margin-top:10px;
+    color:#64748b;
+    line-height:1.6;
+    font-size:14px;
+}
+
+.install-buttons{
+    display:flex;
+    gap:12px;
+    margin-top:22px;
+}
+
+.install-buttons button{
+    flex:1;
+    height:46px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.btn-primary{
+    background:#2563eb;
+    color:white;
+}
+
+.btn-primary:hover{
+    background:#1d4ed8;
+}
+
+.btn-secondary{
+    background:#e2e8f0;
+}
     </style>
 </head>
 
@@ -283,8 +373,89 @@
 
     </div>
 
+    <!-- PWA Install Popup -->
+    <div id="installPopup" class="install-popup">
+        <div class="install-card">
+            <div class="install-icon">
+                <i class="fa-solid fa-mobile-screen-button"></i>
+            </div>
+    
+            <h3>Install CaseFlow</h3>
+    
+            <p>
+                Install CaseFlow on your mobile for faster access,
+                offline support and an app-like experience.
+            </p>
+    
+            <div class="install-buttons">
+                <button id="closeInstall" class="btn-secondary">
+                    Later
+                </button>
+    
+                <button id="installBtn" class="btn-primary">
+                    <i class="fa-solid fa-download"></i>
+                    Install App
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script src="/public/js/main.js"></script>
+
+    <script>
+        let deferredPrompt;
+
+        const installPopup = document.getElementById("installPopup");
+        const installBtn = document.getElementById("installBtn");
+        const closeInstall = document.getElementById("closeInstall");
+
+        // Only for Mobile Devices
+        function isMobile() {
+            return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        }
+
+        // Browser says app can be installed
+        window.addEventListener("beforeinstallprompt", (e) => {
+            e.preventDefault();
+
+            deferredPrompt = e;
+
+            if (isMobile()) {
+                setTimeout(() => {
+                    installPopup.classList.add("show");
+                }, 1500);
+            }
+        });
+
+        // Install button
+        installBtn.addEventListener("click", async () => {
+
+            if (!deferredPrompt) return;
+
+            deferredPrompt.prompt();
+
+            const { outcome } = await deferredPrompt.userChoice;
+
+            if (outcome === "accepted") {
+                console.log("PWA Installed");
+            }
+
+            deferredPrompt = null;
+
+            installPopup.classList.remove("show");
+        });
+
+        // Later button
+        closeInstall.addEventListener("click", () => {
+            installPopup.classList.remove("show");
+        });
+
+        // Hide after install
+        window.addEventListener("appinstalled", () => {
+            installPopup.classList.remove("show");
+            console.log("App Installed Successfully");
+        });
+    </script>
 </body>
 
 </html>
