@@ -1,4 +1,4 @@
-const CACHE_NAME = "hrms-v1";
+const CACHE_NAME = "cms-v1";
 
 const urlsToCache = ["/", "/css/style.css", "/js/main.js", "/icons/logo.png", "/manifest.json"];
 
